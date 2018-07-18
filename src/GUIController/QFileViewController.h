@@ -13,14 +13,18 @@
 
 class QFileView;
 
-class QFileViewController
+class QFileViewController : public QObject
 {
+	Q_OBJECT
 public:
 	QFileViewController(QFileView* pFileView);
 	virtual ~QFileViewController();
 
 	bool openFile(const QString& szFilePath);
 	void closeFile();
+
+public slots:
+	void moveToRow(int iRow);
 
 private:
 	QFileView* m_pFileView;

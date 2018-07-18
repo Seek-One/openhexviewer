@@ -15,6 +15,7 @@ class QScrollBar;
 
 class QFileView : public QWidget
 {
+	Q_OBJECT
 public:
 	QFileView(QWidget* pParent = NULL);
 	virtual ~QFileView();
@@ -25,8 +26,12 @@ public:
 	int getBytePerLine() const;
 	int getVisibleRowCount() const;
 
+	void setOffsetText(const QString& szText);
 	void setHexText(const QString& szText);
 	void setHumanText(const QString& szText);
+
+signals:
+	void rowChanged(int iRow);
 
 private:
 	QTextEdit* m_pOffsetEditor;

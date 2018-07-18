@@ -49,6 +49,8 @@ QFileView::QFileView(QWidget* pParent)
 
     m_pScrollBar = new QScrollBar(pParent);
     pMainLayout->addWidget(m_pScrollBar);
+
+    connect(m_pScrollBar, SIGNAL(valueChanged(int)), this, SIGNAL(rowChanged(int)));
 }
 
 QFileView::~QFileView()
@@ -88,6 +90,11 @@ int QFileView::getVisibleRowCount() const
 	QFontMetrics fontMetrics = m_pHumanEditor->fontMetrics();
 	QRect rectChar = fontMetrics.boundingRect("0");
 	return (int)floor(iHeight/(float)rectChar.height());
+}
+
+void QFileView::setOffsetText(const QString& szText)
+{
+	m_pOffsetEditor->setText(szText);
 }
 
 void QFileView::setHexText(const QString& szText)
