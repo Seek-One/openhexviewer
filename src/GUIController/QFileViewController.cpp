@@ -133,6 +133,6 @@ void QFileViewController::moveToRow(int iRow)
 {
 	iRow = qMin(iRow, m_iTotalRowCount - m_iVisibleRowCount);
 
-	qint64 iOffset = (iRow * m_iBytePerLine);
+	qint64 iOffset = (((qint64)iRow) * m_iBytePerLine);
 	readFile(iOffset);
 }
