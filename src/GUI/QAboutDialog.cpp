@@ -43,6 +43,7 @@ QAboutDialog::QAboutDialog(QWidget * parent)
 	szTmp = "<b>%1 %2</b><br>";
 	szTmp += "<br>";
 	szTmp += tr("This program is distributed under the terms of the <a href=\"https://www.gnu.org/licenses/gpl-3.0.fr.html\">GNU GPL version 3</a>.") + "<br>";
+	szTmp += tr("%1 is a product created and sponsored by %3: <a href=\"http://%4\">%4</a>") + "<br>";
 	szTmp += "<br>";
 	szTmp += tr("This product uses open source softwares:") + "<br/>";
 	szTmp = szTmp.arg(QApplication::applicationName());

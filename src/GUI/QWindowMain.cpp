@@ -28,7 +28,7 @@ QWindowMain::~QWindowMain()
 void QWindowMain::createMenu()
 {
     QMenu *pFileMenu = menuBar()->addMenu(tr("&File"));
-    m_pOpenAction = new QAction(tr("&Open"), this);
+    m_pOpenAction = new QAction(tr("&Open..."), this);
     pFileMenu->addAction(m_pOpenAction);
     pFileMenu->addSeparator();
     m_pQuitAction = new QAction(tr("&Quit"), this);
