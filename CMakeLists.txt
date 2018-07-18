@@ -154,13 +154,19 @@ include_directories (${PROJECT_SOURCE_DIR}/src)
 
 set(APPLICATION_SOURCES
 	src/main.cpp
+	src/GUI/QAboutDialog.cpp
+	src/GUI/QAboutDialog.h
 	src/GUI/QWindowMain.cpp
 	src/GUI/QWindowMain.h
+	src/GUIController/QWindowMainController.cpp
+	src/GUIController/QWindowMainController.h
 )
 
 # Creating MOC file for sources file using "slots" or Q_OBJECT macro
 set(APPLICATION_MOC_HEADERS
+	src/GUI/QAboutDialog.h
 	src/GUI/QWindowMain.h
+	src/GUIController/QWindowMainController.h
 )
 qt_wrap_cpp(
 	APPLICATION_MOC_OUTFILES
@@ -173,7 +179,9 @@ qt_wrap_cpp(
 
 set (I18N_FILES
 	src/main.cpp
+	src/GUI/QAboutDialog.cpp
 	src/GUI/QWindowMain.cpp
+	src/GUIController/QWindowMainController.cpp
 )
 
 set (TS_FILES

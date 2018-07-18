@@ -12,6 +12,7 @@
 #include <QLocale>
 
 #include "GUI/QWindowMain.h"
+#include "GUIController/QWindowMainController.h"
 
 // Enable memory leak detection
 #if defined(_MSC_VER) && defined(_DEBUG)
@@ -77,11 +78,11 @@ int main(int argc, char *argv[])
 
 	// Init GUI
 	QWindowMain* pWindowMain = NULL;
-	//QWindowMainController controller;
+	QWindowMainController controller;
 	if(bGoOn){
 		qDebug("[Main] Initializing GUI");
 		pWindowMain = new QWindowMain();
-		//controller.init(pWindowMain);
+		controller.init(pWindowMain);
 	}
 
 	// Show GUI
