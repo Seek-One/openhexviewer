@@ -11,6 +11,7 @@
 #include <QObject>
 
 class QWindowMain;
+class QFileViewController;
 
 class QWindowMainController : public QObject
 {
@@ -22,10 +23,16 @@ public:
 	void init(QWindowMain* pMainWindow);
 
 public slots:
+	void openFile();
 	void about();
 
 private:
+	void openFile(const QString& szFilePath);
+
+private:
 	QWindowMain* m_pMainWindow;
+
+	QFileViewController* m_pFileViewController;
 };
 
 #endif /* SRC_GUICONTROLLER_QWINDOWMAINCONTROLLER_H_ */

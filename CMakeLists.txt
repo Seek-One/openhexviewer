@@ -156,8 +156,12 @@ set(APPLICATION_SOURCES
 	src/main.cpp
 	src/GUI/QAboutDialog.cpp
 	src/GUI/QAboutDialog.h
+	src/GUI/QFileView.cpp
+	src/GUI/QFileView.h
 	src/GUI/QWindowMain.cpp
 	src/GUI/QWindowMain.h
+	src/GUIController/QFileViewController.cpp
+	src/GUIController/QFileViewController.h
 	src/GUIController/QWindowMainController.cpp
 	src/GUIController/QWindowMainController.h
 )
@@ -165,7 +169,9 @@ set(APPLICATION_SOURCES
 # Creating MOC file for sources file using "slots" or Q_OBJECT macro
 set(APPLICATION_MOC_HEADERS
 	src/GUI/QAboutDialog.h
+	src/GUI/QFileView.h
 	src/GUI/QWindowMain.h
+	src/GUIController/QFileViewController.h
 	src/GUIController/QWindowMainController.h
 )
 qt_wrap_cpp(
@@ -180,7 +186,9 @@ qt_wrap_cpp(
 set (I18N_FILES
 	src/main.cpp
 	src/GUI/QAboutDialog.cpp
+	src/GUI/QFileView.cpp
 	src/GUI/QWindowMain.cpp
+	src/GUIController/QFileViewController.cpp
 	src/GUIController/QWindowMainController.cpp
 )
 

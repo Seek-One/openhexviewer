@@ -12,6 +12,7 @@
 #include <QStackedWidget>
 
 class QAction;
+class QFileView;
 
 class QWindowMain : public QMainWindow
 {
@@ -24,6 +25,8 @@ public:
 	QAction* getQuitAction() const;
 	QAction* getAboutAction() const;
 
+	QFileView* getFileView() const;
+
 private:
 	void createMenu(); // Creates a menu bar
 
@@ -31,6 +34,8 @@ private:
 	QAction* m_pOpenAction;
 	QAction* m_pQuitAction;
 	QAction* m_pAboutAction;
+
+	QFileView* m_pFileView;
 };
 
 #endif /* SRC_MAINWINDOW_H_ */

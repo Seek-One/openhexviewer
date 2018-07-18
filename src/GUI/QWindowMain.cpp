@@ -9,6 +9,8 @@
 #include <QMenu>
 #include <QMenuBar>
 
+#include "GUI/QFileView.h"
+
 #include "QWindowMain.h"
 
 QWindowMain::QWindowMain(QWidget* parent)
@@ -18,6 +20,9 @@ QWindowMain::QWindowMain(QWidget* parent)
     setMinimumSize(800, 600);
 
     createMenu();
+
+	m_pFileView = new QFileView(this);
+    setCentralWidget(m_pFileView);
 }
 
 QWindowMain::~QWindowMain()
@@ -52,4 +57,9 @@ QAction* QWindowMain::getQuitAction() const
 QAction* QWindowMain::getAboutAction() const
 {
 	return m_pAboutAction;
+}
+
+QFileView* QWindowMain::getFileView() const
+{
+	return m_pFileView;
 }
