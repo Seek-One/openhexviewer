@@ -24,6 +24,7 @@ public:
 	void closeFile();
 
 public slots:
+	void updateView();
 	void moveToRow(int iRow);
 
 private:
@@ -40,6 +41,7 @@ private:
 	int m_iTotalRowCount;
 	int m_iVisibleRowCount;
 
+	void updateDisplayData();
 	bool readFile(qint64 iStartOffset);
 };
 

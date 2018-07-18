@@ -31,7 +31,11 @@ public:
 	void setHumanText(const QString& szText);
 
 signals:
+	void sizeChanged();
 	void rowChanged(int iRow);
+
+protected:
+	void resizeEvent(QResizeEvent *event);
 
 private:
 	QTextEdit* m_pOffsetEditor;

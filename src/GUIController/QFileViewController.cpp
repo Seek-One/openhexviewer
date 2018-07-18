@@ -22,6 +22,7 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	m_iVisibleRowCount = 0;
 	m_iTotalRowCount = 0;
 
+	connect(m_pFileView, SIGNAL(sizeChanged()), this, SLOT(updateView()));
 	connect(m_pFileView, SIGNAL(rowChanged(int)), this, SLOT(moveToRow(int)));
 }
 
@@ -44,11 +45,7 @@ bool QFileViewController::openFile(const QString& szFilePath)
 		m_bIsFileOpen = true;
 		m_iFileSize = m_file.size();
 
-		m_iBytePerLine = m_pFileView->getBytePerLine();
-
-		m_iTotalRowCount = floor(m_iFileSize / (float)m_iBytePerLine);
-		m_iVisibleRowCount = m_pFileView->getVisibleRowCount();
-		m_pFileView->setRowCount(m_iTotalRowCount);
+		updateDisplayData();
 
 		bRes = readFile(0);
 	}else{
@@ -80,12 +77,6 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 		for(int i=0; i<m_iVisibleRowCount; i++){
 			iNbRead = m_file.read(pBuffer, iBufferSize);
 			if(iNbRead > 0){
-
-				if(i != 0){
-					szOffsetText+="\n";
-					szHexText+="\n";
-					szHumanText+="\n";
-				}
 
 				iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
 				szTmp.sprintf("0x%08X", iOffset);
@@ -126,6 +117,22 @@ void QFileViewController::closeFile()
 	if(m_bIsFileOpen){
 		m_file.close();
 		m_bIsFileOpen = false;
+	}
+}
+
+void QFileViewController::updateDisplayData()
+{
+	m_iBytePerLine = m_pFileView->getBytePerLine();
+	m_iTotalRowCount = floor(m_iFileSize / (float)m_iBytePerLine);
+	m_iVisibleRowCount = m_pFileView->getVisibleRowCount();
+	m_pFileView->setRowCount(m_iTotalRowCount);
+}
+
+void QFileViewController::updateView()
+{
+	if(m_bIsFileOpen){
+		updateDisplayData();
+		readFile(m_iFilePos);
 	}
 }
 
