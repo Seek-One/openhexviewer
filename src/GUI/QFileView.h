@@ -8,13 +8,31 @@
 #ifndef SRC_GUI_QFILEVIEW_H_
 #define SRC_GUI_QFILEVIEW_H_
 
-/*
- *
- */
-class QFileView {
+#include <QWidget>
+
+class QTextEdit;
+class QScrollBar;
+
+class QFileView : public QWidget
+{
 public:
-	QFileView();
+	QFileView(QWidget* pParent = NULL);
 	virtual ~QFileView();
+
+	void setRowCount(int iMax);
+	void setCurrentRow(int iRow);
+
+	int getBytePerLine() const;
+	int getVisibleRowCount() const;
+
+	void setHexText(const QString& szText);
+	void setHumanText(const QString& szText);
+
+private:
+	QTextEdit* m_pOffsetEditor;
+	QTextEdit* m_pHexEditor;
+	QTextEdit* m_pHumanEditor;
+	QScrollBar* m_pScrollBar;
 };
 
 #endif /* SRC_GUI_QFILEVIEW_H_ */
