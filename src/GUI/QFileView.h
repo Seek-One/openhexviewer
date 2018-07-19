@@ -11,6 +11,7 @@
 #include <QWidget>
 
 class QTextEdit;
+class QPlainTextEdit;
 class QScrollBar;
 
 class QFileView : public QWidget
@@ -38,9 +39,9 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 
 private:
-	QTextEdit* m_pOffsetEditor;
-	QTextEdit* m_pHexEditor;
-	QTextEdit* m_pHumanEditor;
+	QPlainTextEdit* m_pOffsetEditor;
+	QPlainTextEdit* m_pHexEditor;
+	QPlainTextEdit* m_pHumanEditor;
 	QScrollBar* m_pScrollBar;
 };
 

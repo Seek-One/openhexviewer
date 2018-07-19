@@ -78,6 +78,13 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 			iNbRead = m_file.read(pBuffer, iBufferSize);
 			if(iNbRead > 0){
 
+				// Prepend a line break if not first row
+				if(i>0){
+					szOffsetText += "\n";
+					szHexText += "\n";
+					szHumanText += "\n";
+				}
+
 				iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
 				szTmp.sprintf("0x%08X", iOffset);
 				szOffsetText += szTmp;
