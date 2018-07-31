@@ -8,8 +8,10 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QMenuBar>
+#include <QSplitter>
 
 #include "GUI/QFileView.h"
+#include "GUI/QFileStructureView.h"
 
 #include "QWindowMain.h"
 
@@ -21,8 +23,19 @@ QWindowMain::QWindowMain(QWidget* parent)
 
     createMenu();
 
-	m_pFileView = new QFileView(this);
-    setCentralWidget(m_pFileView);
+    QSplitter* pSplitter = new QSplitter(parent);
+    pSplitter->setContentsMargins(0, 0, 0, 0);
+    setCentralWidget(pSplitter);
+
+    m_pFileView = new QFileView(pSplitter);
+    pSplitter->addWidget(m_pFileView);
+
+    m_pFileStructureView = new QFileStructureView(pSplitter);
+    pSplitter->addWidget(m_pFileStructureView);
+
+    QList<int> listSizes;
+    listSizes << 1 << 0;
+    pSplitter->setSizes(listSizes);
 }
 
 QWindowMain::~QWindowMain()
@@ -62,4 +75,9 @@ QAction* QWindowMain::getAboutAction() const
 QFileView* QWindowMain::getFileView() const
 {
 	return m_pFileView;
+}
+
+QFileStructureView* QWindowMain::getFileStructureView() const
+{
+	return m_pFileStructureView;
 }

@@ -158,10 +158,14 @@ set(APPLICATION_SOURCES
 	src/GUI/QAboutDialog.h
 	src/GUI/QFileView.cpp
 	src/GUI/QFileView.h
+	src/GUI/QFileStructureView.cpp
+	src/GUI/QFileStructureView.h
 	src/GUI/QWindowMain.cpp
 	src/GUI/QWindowMain.h
 	src/GUIController/QFileViewController.cpp
 	src/GUIController/QFileViewController.h
+	src/GUIController/QFileStructureViewController.cpp
+	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QWindowMainController.cpp
 	src/GUIController/QWindowMainController.h
 )
@@ -170,8 +174,10 @@ set(APPLICATION_SOURCES
 set(APPLICATION_MOC_HEADERS
 	src/GUI/QAboutDialog.h
 	src/GUI/QFileView.h
+	src/GUI/QFileStructureView.h
 	src/GUI/QWindowMain.h
 	src/GUIController/QFileViewController.h
+	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QWindowMainController.h
 )
 qt_wrap_cpp(
@@ -187,8 +193,10 @@ set (I18N_FILES
 	src/main.cpp
 	src/GUI/QAboutDialog.cpp
 	src/GUI/QFileView.cpp
+	src/GUI/QFileStructureView.cpp
 	src/GUI/QWindowMain.cpp
 	src/GUIController/QFileViewController.cpp
+	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QWindowMainController.cpp
 )
 

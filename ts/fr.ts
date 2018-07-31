@@ -43,29 +43,37 @@
     </message>
 </context>
 <context>
+    <name>QFileStructureView</name>
+    <message>
+        <location filename="../src/GUI/QFileStructureView.cpp" line="25"/>
+        <source>Load</source>
+        <translation>Charger</translation>
+    </message>
+</context>
+<context>
     <name>QWindowMain</name>
     <message>
-        <location filename="../src/GUI/QWindowMain.cpp" line="30"/>
+        <location filename="../src/GUI/QWindowMain.cpp" line="48"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../src/GUI/QWindowMain.cpp" line="31"/>
+        <location filename="../src/GUI/QWindowMain.cpp" line="49"/>
         <source>&amp;Open...</source>
         <translation>&amp;Ouvrir...</translation>
     </message>
     <message>
-        <location filename="../src/GUI/QWindowMain.cpp" line="34"/>
+        <location filename="../src/GUI/QWindowMain.cpp" line="52"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../src/GUI/QWindowMain.cpp" line="37"/>
+        <location filename="../src/GUI/QWindowMain.cpp" line="55"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../src/GUI/QWindowMain.cpp" line="38"/>
+        <location filename="../src/GUI/QWindowMain.cpp" line="56"/>
         <source>&amp;About</source>
         <translation>&amp;A propos</translation>
     </message>

@@ -12,6 +12,7 @@
 #include "GUI/QAboutDialog.h"
 #include "GUI/QWindowMain.h"
 #include "GUIController/QFileViewController.h"
+#include "GUIController/QFileStructureViewController.h"
 
 #include "QWindowMainController.h"
 
@@ -19,10 +20,15 @@ QWindowMainController::QWindowMainController()
 {
 	m_pMainWindow = NULL;
 	m_pFileViewController = NULL;
+	m_pFileStructureViewController = NULL;
 }
 
 QWindowMainController::~QWindowMainController()
 {
+	if(m_pFileStructureViewController){
+		delete m_pFileStructureViewController;
+		m_pFileStructureViewController = NULL;
+	}
 	if(m_pFileViewController){
 		delete m_pFileViewController;
 		m_pFileViewController = NULL;
@@ -38,6 +44,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
     connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
 
     m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
+
+    m_pFileStructureViewController = new QFileStructureViewController(m_pMainWindow->getFileStructureView());
 }
 
 void QWindowMainController::openFile()

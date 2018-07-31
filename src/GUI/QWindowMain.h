@@ -13,6 +13,7 @@
 
 class QAction;
 class QFileView;
+class QFileStructureView;
 
 class QWindowMain : public QMainWindow
 {
@@ -26,6 +27,7 @@ public:
 	QAction* getAboutAction() const;
 
 	QFileView* getFileView() const;
+	QFileStructureView* getFileStructureView() const;
 
 private:
 	void createMenu(); // Creates a menu bar
@@ -36,6 +38,7 @@ private:
 	QAction* m_pAboutAction;
 
 	QFileView* m_pFileView;
+	QFileStructureView* m_pFileStructureView;
 };
 
 #endif /* SRC_MAINWINDOW_H_ */

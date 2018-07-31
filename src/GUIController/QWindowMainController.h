@@ -12,6 +12,7 @@
 
 class QWindowMain;
 class QFileViewController;
+class QFileStructureViewController;
 
 class QWindowMainController : public QObject
 {
@@ -33,6 +34,7 @@ private:
 	QWindowMain* m_pMainWindow;
 
 	QFileViewController* m_pFileViewController;
+	QFileStructureViewController* m_pFileStructureViewController;
 };
 
 #endif /* SRC_GUICONTROLLER_QWINDOWMAINCONTROLLER_H_ */
