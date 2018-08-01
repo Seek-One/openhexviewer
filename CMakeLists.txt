@@ -119,8 +119,8 @@ set(WITH_PTHREAD ON CACHE BOOL "Enable build with pthread library")
 # GUI
 set(WITH_QT ON CACHE BOOL "Enable build with qt library")
 #set(QT_USE_VERSION 5)
-set(QT4_COMPONENTS QtCore QtGui QtNetwork QtTest)
-set(QT5_COMPONENTS Core Gui Widgets Network Test)
+set(QT4_COMPONENTS QtCore QtGui QtXml QtTest)
+set(QT5_COMPONENTS Core Gui Widgets Xml Test)
 set(QT_IMAGEFORMATS_COMPONENTS qjpeg)
 
 # Define output variable
@@ -168,6 +168,10 @@ set(APPLICATION_SOURCES
 	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QWindowMainController.cpp
 	src/GUIController/QWindowMainController.h
+	src/GUIModel/QFileStructureModel.cpp
+	src/GUIModel/QFileStructureModel.h
+	src/XML/StructureFileParserHandler.cpp
+	src/XML/StructureFileParserHandler.h
 )
 
 # Creating MOC file for sources file using "slots" or Q_OBJECT macro

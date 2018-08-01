@@ -19,8 +19,8 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 	QVBoxLayout* pMainLayout = new QVBoxLayout();
 	setLayout(pMainLayout);
 
-	m_pView = new QTreeView(this);
-	pMainLayout->addWidget(m_pView);
+	m_pTreeView = new QTreeView(this);
+	pMainLayout->addWidget(m_pTreeView);
 
 	m_pLoadButton = new QPushButton(tr("Load"), this);
 	pMainLayout->addWidget(m_pLoadButton);
@@ -34,4 +34,9 @@ QFileStructureView::~QFileStructureView()
 QPushButton* QFileStructureView::getLoadButton() const
 {
 	return m_pLoadButton;
+}
+
+void QFileStructureView::setModel(QAbstractItemModel* pItemModel)
+{
+	m_pTreeView->setModel(pItemModel);
 }

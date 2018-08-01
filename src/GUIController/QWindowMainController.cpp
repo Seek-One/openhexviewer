@@ -69,6 +69,7 @@ void QWindowMainController::openFile(const QString& szFilePath)
 {
 	qDebug("[Main] Opening file %s", qPrintable(szFilePath));
 	m_pFileViewController->openFile(szFilePath);
+	m_pFileStructureViewController->setCurrentFile(szFilePath);
 }
 
 void QWindowMainController::about()

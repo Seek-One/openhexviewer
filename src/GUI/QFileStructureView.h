@@ -12,6 +12,7 @@
 
 class QTreeView;
 class QPushButton;
+class QAbstractItemModel;
 
 class QFileStructureView : public QWidget
 {
@@ -22,8 +23,10 @@ public:
 
 	QPushButton* getLoadButton() const;
 
+	void setModel(QAbstractItemModel* pItemModel);
+
 private:
-	QTreeView* m_pView;
+	QTreeView* m_pTreeView;
 
 	QPushButton* m_pLoadButton;
 };

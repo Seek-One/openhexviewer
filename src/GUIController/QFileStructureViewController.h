@@ -11,6 +11,7 @@
 #include <QObject>
 
 class QFileStructureView;
+class QFileStructureModel;
 
 class QFileStructureViewController : public QObject
 {
@@ -19,11 +20,17 @@ public:
 	QFileStructureViewController(QFileStructureView* pFileStructureView);
 	virtual ~QFileStructureViewController();
 
+	void setCurrentFile(const QString& szFilePath);
+
 public slots:
 	void loadStructure();
 
 private:
 	QFileStructureView* m_pFileStructureView;
+
+	QString m_szCurrentFilePath;
+
+	QFileStructureModel* m_pModel;
 };
 
 #endif /* SRC_GUICONTROLLER_QFILESTRUCTUREVIEWCONTROLLER_H_ */
