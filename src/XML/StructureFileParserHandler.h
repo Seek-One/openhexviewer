@@ -11,11 +11,11 @@
 #include <QFile>
 #include <QXmlDefaultHandler>
 
-class QFileStructureModel;
+#include "FileStructure/FileStructure.h"
 
 class StructureFileParserHandler : public QXmlDefaultHandler {
 public:
-	StructureFileParserHandler(const QString& szFilePath, QFileStructureModel* pModel);
+	StructureFileParserHandler(FileStructure* pFileStructure);
 	virtual ~StructureFileParserHandler();
 
 	virtual bool startElement(const QString &namespaceURI,
@@ -29,15 +29,12 @@ public:
 	virtual bool fatalError(const QXmlParseException &exception);
 
 private:
-	QFile m_file;
-	QFileStructureModel* m_pModel;
-	QList<QStandardItem*> m_listItem;
+	FileStructure* m_pFileStructure;
 
-	int getSizeFromType(const QString& szType);
-	bool readField(const QString& szType, QString& szValue);
+	FileStructureItemSharedPtr m_pCurrentParentItem;
+	QList<FileStructureItemSharedPtr> m_stackCurrentItem;
 
-	void appendEntry(const QString& szName, const QString& szType, const QString& szSize, const QString& szOffsetStart, const QString& szValue);
-
+	FileStructureItem::ItemType getFileStructureItemType(const QString& szTagName, const QString& szType);
 };
 
 #endif /* SRC_XML_STRUCTUREFILEPARSERHANDLER_H_ */

@@ -38,25 +38,36 @@ void QFileStructureViewController::setCurrentFile(const QString& szFilePath)
 
 void QFileStructureViewController::loadStructure()
 {
+	bool bRes = true;
 	m_pModel->clear();
 
-	QFile fileStructure;
-	fileStructure.setFileName("./struct_recording.xml");
+	QString szStructureFilePath = "./struct_recording.xml";
 
-	if(fileStructure.open(QIODevice::ReadOnly)){
+	FileStructure loadedFileStructure;
 
-		QXmlInputSource source(&fileStructure);
+	// Load structure
+	if(bRes){
+		QFile fileStructure;
+		fileStructure.setFileName(szStructureFilePath);
+		bRes = fileStructure.open(QIODevice::ReadOnly);
+		if(bRes){
 
-		QXmlSimpleReader reader;
-		StructureFileParserHandler handler(m_szCurrentFilePath, m_pModel);
-		reader.setContentHandler(&handler);
-		reader.setErrorHandler(&handler);
+			QXmlInputSource source(&fileStructure);
 
-		if(!reader.parse(source)){
-			qWarning("[XML] Error to parse the content of file: %s", qPrintable(m_szCurrentFilePath));
+			QXmlSimpleReader reader;
+			StructureFileParserHandler handler(&loadedFileStructure);
+			reader.setContentHandler(&handler);
+			reader.setErrorHandler(&handler);
+
+			bRes = reader.parse(source);
+			if(!bRes){
+				qWarning("[XML] Error to parse the content of file: %s", qPrintable(szStructureFilePath));
+			}
+
+			fileStructure.close();
+		}else{
+			qWarning("[XML] Error to open the file: %s", qPrintable(szStructureFilePath));
 		}
-
-		fileStructure.close();
 	}
 
 /*

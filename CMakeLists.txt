@@ -158,6 +158,8 @@ set(APPLICATION_SOURCES
 	src/Event/QUserEvent.h
 	src/Event/QOpenFileEvent.cpp
 	src/Event/QOpenFileEvent.h
+	src/FileStructure/FileStructure.cpp
+	src/FileStructure/FileStructure.h
 	src/GUI/QAboutDialog.cpp
 	src/GUI/QAboutDialog.h
 	src/GUI/QFileView.cpp

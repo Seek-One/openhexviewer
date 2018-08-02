@@ -5,14 +5,16 @@
  *      Author: ebeuque
  */
 
-#include "GUIModel/QFileStructureModel.h"
+#include "FileStructure/FileStructure.h"
 
 #include "StructureFileParserHandler.h"
 
-StructureFileParserHandler::StructureFileParserHandler(const QString& szFilePath, QFileStructureModel* pModel)
+StructureFileParserHandler::StructureFileParserHandler(FileStructure* pFileStructure)
 {
-	m_pModel = pModel;
-	m_file.setFileName(szFilePath);
+	m_pFileStructure = pFileStructure;
+
+	m_pCurrentParentItem = pFileStructure->getRootItem();
+	m_stackCurrentItem.append(m_pCurrentParentItem);
 }
 
 StructureFileParserHandler::~StructureFileParserHandler()
@@ -20,105 +22,37 @@ StructureFileParserHandler::~StructureFileParserHandler()
 
 }
 
-int StructureFileParserHandler::getSizeFromType(const QString& szType)
+FileStructureItem::ItemType StructureFileParserHandler::getFileStructureItemType(const QString& szTagName, const QString& szType)
 {
-	if(szType == "int8"){
-		return 1;
+	if(szTagName == "field"){
+		if(szType == "int8"){
+			return FileStructureItem::INT8;
+		}
+		if(szType == "uint8"){
+			return FileStructureItem::UINT8;
+		}
+		if(szType == "int16"){
+			return FileStructureItem::INT16;
+		}
+		if(szType == "uint16"){
+			return FileStructureItem::UINT16;
+		}
+		if(szType == "int32"){
+			return FileStructureItem::INT32;
+		}
+		if(szType == "uint32"){
+			return FileStructureItem::UINT32;
+		}
+		if(szType == "int64"){
+			return FileStructureItem::UINT64;
+		}
+		if(szType == "uint64"){
+			return FileStructureItem::UINT64;
+		}
+	}else if(szTagName == "list"){
+		return FileStructureItem::LIST;
 	}
-	if(szType == "uint8"){
-		return 1;
-	}
-	if(szType == "int16"){
-		return 2;
-	}
-	if(szType == "uint16"){
-		return 2;
-	}
-	if(szType == "int32"){
-		return 4;
-	}
-	if(szType == "uint32"){
-		return 4;
-	}
-	if(szType == "int64"){
-		return 8;
-	}
-	if(szType == "uint64"){
-		return 8;
-	}
-	return 0;
-}
-
-bool StructureFileParserHandler::readField(const QString& szType, QString& szValue)
-{
-	bool bRes = false;
-
-	if(szType == "int8"){
-		qint8 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "uint8"){
-		quint8 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "int16"){
-		qint16 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "uint16"){
-		quint16 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "int32"){
-		qint32 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "uint32"){
-		quint32 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "int64"){
-		qint64 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	if(szType == "uint64"){
-		quint64 i;
-		bRes = m_file.read((char*)&i, sizeof(i));
-		szValue = QString::number(i);
-		return bRes;
-	}
-	return bRes;
-}
-
-void StructureFileParserHandler::appendEntry(const QString& szName, const QString& szType, const QString& szSize, const QString& szOffsetStart, const QString& szValue)
-{
-	QList<QStandardItem*> listColumns;
-	listColumns.append(new QStandardItem(szName));
-	listColumns.append(new QStandardItem(szType));
-	listColumns.append(new QStandardItem(szSize));
-	listColumns.append(new QStandardItem(szOffsetStart));
-	listColumns.append(new QStandardItem(szValue));
-
-	if(m_listItem.count() == 0){
-		m_pModel->appendRow(listColumns);
-	}else{
-		QStandardItem* pItem = m_listItem.last();
-		pItem->appendRow(listColumns);
-	}
+	return FileStructureItem::UNKNOWN;
 }
 
 bool StructureFileParserHandler::startElement(const QString &namespaceURI,
@@ -129,26 +63,28 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 	bool bRes = true;
 
 	if(qName == "structure_file"){
-		bRes = m_file.open(QIODevice::ReadOnly);
-		if(!bRes){
-			qCritical("[File] Cannot open file");
-		}
+		QString szVersion = attributes.value("version");
+		m_pFileStructure->setVersion(szVersion.toInt());
 	}
 
 	if(qName == "field"){
 		QString szName = attributes.value("name");
 		QString szType = attributes.value("type");
-		int iSize = getSizeFromType(szType);
-		qint64 iOffset = m_file.pos();
-		QString szValue;
-
-		bRes = readField(szType, szValue);
-
-		appendEntry(szName, szType, QString::number(iSize), QString::number(iOffset), szValue);
+		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
+		qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
+		FileStructureItemSharedPtr pItem = FileStructureItem::createFIELD(szName, iType, iSize);
+		m_pCurrentParentItem->append(pItem);
 	}
 
 	if(qName == "list"){
-
+		QString szName = attributes.value("name");
+		QString szCount = attributes.value("count");
+		int iCount = -1;
+		if(!szCount.isEmpty()){
+			iCount = szCount.toInt();
+		}
+		m_pCurrentParentItem = FileStructureItem::createLIST(szName, iCount);
+		m_stackCurrentItem.append(m_pCurrentParentItem);
 	}
 
 	return bRes;
@@ -160,11 +96,13 @@ bool StructureFileParserHandler::endElement(const QString &namespaceURI,
 {
 	bool bRes = true;
 
-	if(qName == "structure_file"){
-		if(m_file.isOpen()){
-			m_file.close();
-		}
+	if(qName == "list"){
+		m_stackCurrentItem.removeLast();
+		m_pCurrentParentItem = m_stackCurrentItem.last();
 	}
+
+
+	qDebug("-- %s", qPrintable(qName));
 
 	return bRes;
 }
@@ -176,5 +114,5 @@ bool StructureFileParserHandler::characters(const QString &str)
 
 bool StructureFileParserHandler::fatalError(const QXmlParseException &exception)
 {
-	return true;
+	return false;
 }
