@@ -9,9 +9,16 @@
 #define SRC_GUICONTROLLER_QFILESTRUCTUREVIEWCONTROLLER_H_
 
 #include <QObject>
+#include <QString>
+#include <QFile>
+
+#include "FileStructure/FileStructure.h"
 
 class QFileStructureView;
 class QFileStructureModel;
+class QStandardItem;
+
+class FileStructure;
 
 class QFileStructureViewController : public QObject
 {
@@ -24,6 +31,13 @@ public:
 
 public slots:
 	void loadStructure();
+
+private:
+	bool readFileWithStructure(const QString& szFilePath, const FileStructure& loadedFileStructure);
+
+	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, QStandardItem* pParentItem);
+
+	QStandardItem* appendEntry(const QString& szName, const QString& szType, const QString& szSize, const QString& szOffsetStart, const QString& szValue, QStandardItem* pParentItem);
 
 private:
 	QFileStructureView* m_pFileStructureView;

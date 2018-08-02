@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QTreeView>
 #include <QPushButton>
+#include <QHeaderView>
 
 #include "QFileStructureView.h"
 
@@ -22,6 +23,12 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 	m_pTreeView = new QTreeView(this);
 	pMainLayout->addWidget(m_pTreeView);
 
+	QHeaderView* pTreeHeader;
+	pTreeHeader = m_pTreeView->header();
+	if(pTreeHeader) {
+		pTreeHeader->setStretchLastSection(true);
+	}
+
 	m_pLoadButton = new QPushButton(tr("Load"), this);
 	pMainLayout->addWidget(m_pLoadButton);
 }
@@ -29,6 +36,11 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 QFileStructureView::~QFileStructureView()
 {
 
+}
+
+QTreeView* QFileStructureView::getTreeview() const
+{
+	return m_pTreeView;
 }
 
 QPushButton* QFileStructureView::getLoadButton() const

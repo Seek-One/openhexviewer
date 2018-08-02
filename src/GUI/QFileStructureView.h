@@ -21,6 +21,8 @@ public:
 	QFileStructureView(QWidget* pParent = NULL);
 	virtual ~QFileStructureView();
 
+	QTreeView* getTreeview() const;
+
 	QPushButton* getLoadButton() const;
 
 	void setModel(QAbstractItemModel* pItemModel);

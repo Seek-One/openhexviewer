@@ -62,6 +62,8 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 {
 	bool bRes = true;
 
+	FileStructureItemSharedPtr pItem;
+
 	if(qName == "structure_file"){
 		QString szVersion = attributes.value("version");
 		m_pFileStructure->setVersion(szVersion.toInt());
@@ -72,7 +74,7 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		QString szType = attributes.value("type");
 		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
 		qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
-		FileStructureItemSharedPtr pItem = FileStructureItem::createFIELD(szName, iType, iSize);
+		pItem = FileStructureItem::createFIELD(szName, iType, iSize);
 		m_pCurrentParentItem->append(pItem);
 	}
 
@@ -83,7 +85,10 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		if(!szCount.isEmpty()){
 			iCount = szCount.toInt();
 		}
-		m_pCurrentParentItem = FileStructureItem::createLIST(szName, iCount);
+
+		pItem = FileStructureItem::createLIST(szName, iCount);
+		m_pCurrentParentItem->append(pItem);
+		m_pCurrentParentItem = pItem;
 		m_stackCurrentItem.append(m_pCurrentParentItem);
 	}
 

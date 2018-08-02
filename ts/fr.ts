@@ -4,12 +4,12 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../src/main.cpp" line="109"/>
+        <location filename="../src/main.cpp" line="142"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="109"/>
+        <location filename="../src/main.cpp" line="142"/>
         <source>Error to initialize application</source>
         <translation>Erreur à l&apos;initialisation de l&apos;application</translation>
     </message>
@@ -45,9 +45,37 @@
 <context>
     <name>QFileStructureView</name>
     <message>
-        <location filename="../src/GUI/QFileStructureView.cpp" line="25"/>
+        <location filename="../src/GUI/QFileStructureView.cpp" line="32"/>
         <source>Load</source>
         <translation>Charger</translation>
+    </message>
+</context>
+<context>
+    <name>QFileStructureViewController</name>
+    <message>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="49"/>
+        <source>Name</source>
+        <translation>Nom</translation>
+    </message>
+    <message>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="50"/>
+        <source>Type</source>
+        <translation>Type</translation>
+    </message>
+    <message>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="51"/>
+        <source>Size</source>
+        <translation>Taille</translation>
+    </message>
+    <message>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="52"/>
+        <source>Offset</source>
+        <translation>Position</translation>
+    </message>
+    <message>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="53"/>
+        <source>Value</source>
+        <translation>Valeur</translation>
     </message>
 </context>
 <context>
