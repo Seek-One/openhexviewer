@@ -101,9 +101,6 @@ bool StructureFileParserHandler::endElement(const QString &namespaceURI,
 		m_pCurrentParentItem = m_stackCurrentItem.last();
 	}
 
-
-	qDebug("-- %s", qPrintable(qName));
-
 	return bRes;
 }
 
