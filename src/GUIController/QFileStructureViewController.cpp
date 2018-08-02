@@ -19,6 +19,30 @@
 
 #include "QFileStructureViewController.h"
 
+class EntryParams
+{
+public:
+	QString szName;
+	QString szType;
+	QString szSize;
+	QString szOffsetStart;
+	QString szValue;
+};
+
+class EntryContext
+{
+public:
+	QList<QStandardItem*> listColumns;
+};
+
+enum COLUMN {
+	ColumnName = 0,
+	ColumnType,
+	ColumnSize,
+	ColumnOffset,
+	ColumnValue,
+};
+
 QFileStructureViewController::QFileStructureViewController(QFileStructureView* pFileStructureView)
 {
 	m_pFileStructureView = pFileStructureView;
@@ -124,11 +148,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	QString szValue;
 
 	QString szSizeText = QString::number(pItem->m_iSize);
-	qint64 iOffset = fileToRead.pos();
-	QString szOffsetText = QString::number(iOffset);
+	qint64 iOffsetStart = fileToRead.pos();
+	QString szOffsetStartText = QString::number(iOffsetStart);
+	qint64 iOffsetEnd;
 
-	QStandardItem* pCurrentItem;
 	QString szTmp;
+
+	EntryParams entryParams;
+	entryParams.szName = pItem->m_szName;
+	entryParams.szType = pItem->getTypeString();
+	entryParams.szSize = szSizeText;
+	entryParams.szOffsetStart = szOffsetStartText;
+
+	EntryContext entryContext;
 
 	switch(pItem->m_type){
 	case FileStructureItem::ROOT:
@@ -146,13 +178,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iMaxCount = pItem->m_iSize;
 		qint64 iCount = 0;
 
-		QStandardItem* pListItem = appendEntry(pItem->m_szName, "list", "0", szOffsetText, "", pParentItem);
+		QStandardItem* pCurrentListItem;
+		qint64 iOffsetStartItem;
+		QString szOffsetStartItemText;
+		qint64 iOffsetEndItem;
+
+		entryParams.szSize = "0";
+		appendEntry(entryParams, pParentItem, entryContext);
 
 		bool bStop = false;
 		do{
 			// Check stop condition
 			if(iMaxCount == -1){
-				if(iOffset >= fileToRead.size()){
+				if(iOffsetStart >= fileToRead.size()){
 					bStop = true;
 				}
 			}else if(iCount == iMaxCount){
@@ -169,21 +207,38 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 					szTmp = QString("%0[%1]").arg(pItem->m_szName).arg(iCount);
 				}
 
+				iOffsetStartItem = fileToRead.pos();
+				szOffsetStartItemText = QString::number(iOffsetStartItem);
+
 				iCount++;
 
-				pCurrentItem = appendEntry(szTmp, "struct", "0", szOffsetText, "", pListItem);
+				EntryParams entryParamsItem;
+				entryParamsItem.szName = szTmp;
+				entryParamsItem.szType = "item";
+				entryParamsItem.szSize = "0";
+				entryParamsItem.szOffsetStart = szOffsetStartItemText;
+
+				EntryContext entryContextItem;
+				appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+
+				pCurrentListItem = entryContextItem.listColumns[0];
 
 				for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-					bRes = processFileStructureItem((*iter), fileToRead, pCurrentItem);
+					bRes = processFileStructureItem((*iter), fileToRead, pCurrentListItem);
 					if(!bRes){
 						break;
 					}
 				}
+
+				iOffsetEndItem = fileToRead.pos();
+				entryContextItem.listColumns[ColumnSize]->setText(QString::number(iOffsetEndItem-iOffsetStartItem));
+
 			}
 		}while(!bStop);
 
 		if(bRes){
-			//pListItem-> ;
+			iOffsetEnd = fileToRead.pos();
+			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
 		}
 	}
 		break;
@@ -192,7 +247,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "int8", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	case FileStructureItem::UINT8:
@@ -200,7 +255,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		quint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "uint8", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	case FileStructureItem::INT16:
@@ -208,7 +263,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "int16", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	case FileStructureItem::UINT16:
@@ -216,7 +271,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		quint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "uint16", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	case FileStructureItem::INT32:
@@ -224,7 +279,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "int32", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	case FileStructureItem::UINT32:
@@ -232,7 +287,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		quint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "uint32", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	case FileStructureItem::INT64:
@@ -240,7 +295,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "int64", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 	break;
 	case FileStructureItem::UINT64:
@@ -248,7 +303,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		quint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		szValue = QString::number(qFromBigEndian(i));
-		appendEntry(pItem->m_szName, "uint64", szSizeText, szOffsetText, szValue, pParentItem);
+		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
 	default:
@@ -258,24 +313,29 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	return bRes;
 }
 
-QStandardItem* QFileStructureViewController::appendEntry(const QString& szName, const QString& szType, const QString& szSize, const QString& szOffsetStart, const QString& szValue, QStandardItem* pParentItem)
+void QFileStructureViewController::appendEntry(const EntryParams& params, QStandardItem* pParentItem, EntryContext& context)
 {
-	QStandardItem* pMainColumn;
+	QStandardItem* pItem;
 
-	QList<QStandardItem*> listColumns;
-	pMainColumn = new QStandardItem((szName.isEmpty() ? szType : szName));
-	pMainColumn->setEditable(false);
-	listColumns.append(pMainColumn);
-	listColumns.append(new QStandardItem(szType));
-	listColumns.append(new QStandardItem(szSize));
-	listColumns.append(new QStandardItem(szOffsetStart));
-	listColumns.append(new QStandardItem(szValue));
+	QList<QStandardItem*>& listColumns = context.listColumns;
+
+	// Name
+	pItem = new QStandardItem((params.szName.isEmpty() ? params.szType : params.szName));
+	pItem->setEditable(false);
+	listColumns.append(pItem);
+
+	// Type
+	pItem = new QStandardItem(params.szType);
+	pItem->setEditable(false);
+	listColumns.append(pItem);
+
+	listColumns.append(new QStandardItem(params.szSize));
+	listColumns.append(new QStandardItem(params.szOffsetStart));
+	listColumns.append(new QStandardItem(params.szValue));
 
 	if(pParentItem){
 		pParentItem->appendRow(listColumns);
 	}else{
 		m_pModel->appendRow(listColumns);
 	}
-
-	return pMainColumn;
 }

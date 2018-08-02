@@ -64,6 +64,23 @@ void FileStructureItem::append(const FileStructureItemSharedPtr& pItem)
 	m_listChildren.append(pItem);
 }
 
+QString FileStructureItem::getTypeString() const
+{
+	switch(m_type){
+	case INT8: return "int8";
+	case UINT8: return "int8";
+	case INT16: return "int16";
+	case UINT16: return "uint16";
+	case INT32: return "int32";
+	case UINT32: return "uint32";
+	case INT64: return "int64";
+	case UINT64: return "uint64";
+	case LIST: return "list";
+	case ROOT: return "root";
+	}
+	return "";
+}
+
 FileStructure::FileStructure()
 {
 	m_iVersion = -1;

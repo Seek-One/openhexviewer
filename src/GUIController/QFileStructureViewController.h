@@ -20,6 +20,9 @@ class QStandardItem;
 
 class FileStructure;
 
+class EntryParams;
+class EntryContext;
+
 class QFileStructureViewController : public QObject
 {
 	Q_OBJECT
@@ -37,7 +40,7 @@ private:
 
 	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, QStandardItem* pParentItem);
 
-	QStandardItem* appendEntry(const QString& szName, const QString& szType, const QString& szSize, const QString& szOffsetStart, const QString& szValue, QStandardItem* pParentItem);
+	void appendEntry(const EntryParams& params, QStandardItem* pParentItem, EntryContext& context);
 
 private:
 	QFileStructureView* m_pFileStructureView;

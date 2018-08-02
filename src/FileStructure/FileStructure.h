@@ -46,6 +46,8 @@ public:
 
 	void append(const FileStructureItemSharedPtr& pItem);
 
+	QString getTypeString() const;
+
 public:
 	QString m_szName;
 	ItemType m_type;
