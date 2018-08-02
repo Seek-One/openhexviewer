@@ -154,6 +154,10 @@ include_directories (${PROJECT_SOURCE_DIR}/src)
 
 set(APPLICATION_SOURCES
 	src/main.cpp
+	src/Event/QUserEvent.cpp
+	src/Event/QUserEvent.h
+	src/Event/QOpenFileEvent.cpp
+	src/Event/QOpenFileEvent.h
 	src/GUI/QAboutDialog.cpp
 	src/GUI/QAboutDialog.h
 	src/GUI/QFileView.cpp
@@ -162,10 +166,12 @@ set(APPLICATION_SOURCES
 	src/GUI/QFileStructureView.h
 	src/GUI/QWindowMain.cpp
 	src/GUI/QWindowMain.h
-	src/GUIController/QFileViewController.cpp
-	src/GUIController/QFileViewController.h
 	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QFileStructureViewController.h
+	src/GUIController/QFileViewController.cpp
+	src/GUIController/QFileViewController.h
+	src/GUIController/QGUIEventFilter.cpp
+	src/GUIController/QGUIEventFilter.h
 	src/GUIController/QWindowMainController.cpp
 	src/GUIController/QWindowMainController.h
 	src/GUIModel/QFileStructureModel.cpp

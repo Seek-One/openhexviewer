@@ -13,6 +13,9 @@
 
 #include "GUI/QWindowMain.h"
 #include "GUIController/QWindowMainController.h"
+#include "GUIController/QGUIEventFilter.h"
+
+#include "Event/QOpenFileEvent.h"
 
 // Enable memory leak detection
 #if defined(_MSC_VER) && defined(_DEBUG)
@@ -30,6 +33,25 @@ int main(int argc, char *argv[])
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 	bool bGoOn = true;
+
+	// Load argument
+	bool bShowUsage = false;
+	QString szFileToLoad;
+	int i = 0;
+	for(i=0; i<argc; i++){
+		if(strcmp(argv[i], "--help") == 0){
+			bShowUsage = true;
+		}else{
+			szFileToLoad = argv[i];
+		}
+	}
+
+	if(bShowUsage) {
+		qDebug("Usage: " APPLICATION_NAME " [OPTION...] [FILENAME]");
+		qDebug("Options:");
+		qDebug("  --help                Show this help");
+		return -1;
+	}
 
 	// Initialize the QT application
 	QApplication app(argc, argv);
@@ -79,10 +101,14 @@ int main(int argc, char *argv[])
 	// Init GUI
 	QWindowMain* pWindowMain = NULL;
 	QWindowMainController controller;
+	QGUIEventFilter eventFilterGUI;
 	if(bGoOn){
 		qDebug("[Main] Initializing GUI");
 		pWindowMain = new QWindowMain();
 		controller.init(pWindowMain);
+
+		QCoreApplication::instance()->installEventFilter(&eventFilterGUI);
+		eventFilterGUI.setWindowMainController(&controller);
 	}
 
 	// Show GUI
@@ -98,6 +124,13 @@ int main(int argc, char *argv[])
 #else
 		pWindowMain->setWindowIconText(APPLICATION_PACKAGE_NAME);
 #endif
+	}
+
+	// Send auto load fil
+	if(!szFileToLoad.isEmpty()){
+		qDebug("[Main] Notify to open file %s", qPrintable(szFileToLoad));
+		QOpenFileEvent* pEvent = new QOpenFileEvent(szFileToLoad);
+		QCoreApplication::postEvent(QCoreApplication::instance(), pEvent);
 	}
 
 	// Run the event loop

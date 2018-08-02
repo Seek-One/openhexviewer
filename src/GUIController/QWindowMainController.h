@@ -27,7 +27,7 @@ public slots:
 	void openFile();
 	void about();
 
-private:
+public:
 	void openFile(const QString& szFilePath);
 
 private:
