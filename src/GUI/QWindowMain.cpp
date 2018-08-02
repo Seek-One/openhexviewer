@@ -33,9 +33,9 @@ QWindowMain::QWindowMain(QWidget* parent)
     m_pFileStructureView = new QFileStructureView(pSplitter);
     pSplitter->addWidget(m_pFileStructureView);
 
-    QList<int> listSizes;
-    listSizes << 1 << 0;
-    pSplitter->setSizes(listSizes);
+    //QList<int> listSizes;
+    //listSizes << 1 << 0;
+    //pSplitter->setSizes(listSizes);
 }
 
 QWindowMain::~QWindowMain()

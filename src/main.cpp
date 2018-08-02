@@ -115,9 +115,9 @@ int main(int argc, char *argv[])
 	if(bGoOn && pWindowMain){
 		qDebug("[Main] Show application");
 		//if (ApplicationSettings::getWindowMaximized()){
-		//			pWindowMain->showMaximized();
+			pWindowMain->showMaximized();
 		//}else{
-			pWindowMain->show();
+			//pWindowMain->show();
 		//}
 #ifdef WIN32
 		pWindowMain->setWindowIcon(QIcon(":/" APPLICATION_PACKAGE_NAME ".png"));
