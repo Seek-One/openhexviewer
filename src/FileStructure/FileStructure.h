@@ -29,6 +29,9 @@ public:
 		UINT32,
 		INT64,
 		UINT64,
+		// Bytes type
+		BYTES,
+		STRING,
 		// Collection
 		LIST,
 		// Condition

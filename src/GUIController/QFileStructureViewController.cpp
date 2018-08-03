@@ -155,12 +155,23 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	QList<FileStructureItemSharedPtr>::const_iterator iter;
 	QString szValue;
 
-	QString szSizeText = QString::number(pItem->m_iSize);
+	QString szTmp;
+	qint64 iSizeExpr;
+
+	// Compute element size
+	QString szSizeText;
+	if(pItem->m_iSize >= 0){
+		szSizeText = QString::number(pItem->m_iSize);
+	}else if(!pItem->m_szExpr.isEmpty()){
+		int iSize;
+		prepareExpr(pItem->m_szExpr, dict, szTmp);
+		iSizeExpr = evaluateIntExpr(szTmp);
+		szSizeText = QString::number(iSize);
+	}
+
 	qint64 iOffsetStart = fileToRead.pos();
 	QString szOffsetStartText = QString::number(iOffsetStart);
 	qint64 iOffsetEnd;
-
-	QString szTmp;
 
 	EntryParams entryParams;
 	entryParams.szName = pItem->m_szName;
@@ -336,6 +347,12 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		entryParams.szValue = QString::number(qFromBigEndian(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
+		appendEntry(entryParams, pParentItem, entryContext);
+	}
+		break;
+	case FileStructureItem::BYTES:
+	{
+		bRes = fileToRead.seek(iOffsetStart + iSizeExpr);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
