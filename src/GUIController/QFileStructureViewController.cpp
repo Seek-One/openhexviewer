@@ -52,6 +52,9 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 	m_pModel = new QFileStructureModel();
 
 	m_pFileStructureView->setModel(m_pModel);
+
+	connect(m_pFileStructureView->getTreeview()->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)), this, SLOT(entrySelected(const QModelIndex&, const QModelIndex &)));
+
 }
 
 QFileStructureViewController::~QFileStructureViewController()
@@ -338,4 +341,23 @@ void QFileStructureViewController::appendEntry(const EntryParams& params, QStand
 	}else{
 		m_pModel->appendRow(listColumns);
 	}
+}
+
+void QFileStructureViewController::entrySelected(const QModelIndex &current, const QModelIndex &previous)
+{
+	QModelIndex siblingIndex;
+	QStandardItem* pItem;
+
+	qint64 iOffset;
+	qint64 iSize;
+
+	siblingIndex = m_pModel->sibling(current.row(), ColumnSize, current);
+	pItem = m_pModel->itemFromIndex(siblingIndex);
+	iSize = pItem->text().toLongLong();
+
+	siblingIndex = m_pModel->sibling(current.row(), ColumnOffset, current);
+	pItem = m_pModel->itemFromIndex(siblingIndex);
+	iOffset = pItem->text().toLongLong();
+
+	emit fileStructureItemSelected(iOffset, iSize);
 }

@@ -46,6 +46,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
     m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
     m_pFileStructureViewController = new QFileStructureViewController(m_pMainWindow->getFileStructureView());
+
+    connect(m_pFileStructureViewController, SIGNAL(fileStructureItemSelected(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
 }
 
 void QWindowMainController::openFile()
@@ -70,6 +72,11 @@ void QWindowMainController::openFile(const QString& szFilePath)
 	qDebug("[Main] Opening file %s", qPrintable(szFilePath));
 	m_pFileViewController->openFile(szFilePath);
 	m_pFileStructureViewController->setCurrentFile(szFilePath);
+}
+
+void QWindowMainController::selectFileData(qint64 offset, qint64 size)
+{
+	m_pFileViewController->selectFileData(offset, size);
 }
 
 void QWindowMainController::about()

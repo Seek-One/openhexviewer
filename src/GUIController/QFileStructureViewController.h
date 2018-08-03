@@ -34,6 +34,10 @@ public:
 
 public slots:
 	void loadStructure();
+	void entrySelected(const QModelIndex &current, const QModelIndex &previous);
+
+signals:
+	void fileStructureItemSelected(qint64 offset, qint64 size);
 
 private:
 	bool readFileWithStructure(const QString& szFilePath, const FileStructure& loadedFileStructure);

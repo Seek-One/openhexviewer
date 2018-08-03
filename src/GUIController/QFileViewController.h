@@ -23,6 +23,8 @@ public:
 	bool openFile(const QString& szFilePath);
 	void closeFile();
 
+	void selectFileData(qint64 offset, qint64 size);
+
 public slots:
 	void updateView();
 	void moveToRow(int iRow);

@@ -31,6 +31,9 @@ public:
 	void setHexText(const QString& szText);
 	void setHumanText(const QString& szText);
 
+	void moveToRow(int iRow);
+	void selectText(int iPosStart, int iPosEnd);
+
 signals:
 	void sizeChanged();
 	void rowChanged(int iRow);

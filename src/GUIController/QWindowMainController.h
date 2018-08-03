@@ -27,6 +27,8 @@ public slots:
 	void openFile();
 	void about();
 
+	void selectFileData(qint64 offset, qint64 size);
+
 public:
 	void openFile(const QString& szFilePath);
 

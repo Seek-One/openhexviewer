@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <algorithm>
 
 #include "GUI/QFileView.h"
 
@@ -125,6 +126,18 @@ void QFileViewController::closeFile()
 		m_file.close();
 		m_bIsFileOpen = false;
 	}
+}
+
+void QFileViewController::selectFileData(qint64 offset, qint64 size)
+{
+	int iRow = offset / m_iBytePerLine;
+	int iCol = offset % m_iBytePerLine;
+
+	qint64 iMaxChar = m_iVisibleRowCount*m_iBytePerLine - iCol;
+	qint64 iSize = std::min(size, iMaxChar);
+
+	m_pFileView->moveToRow(iRow);
+	m_pFileView->selectText(iCol, iCol + (int)(iSize));
 }
 
 void QFileViewController::updateDisplayData()

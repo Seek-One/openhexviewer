@@ -99,6 +99,26 @@ int QFileView::getVisibleRowCount() const
 	return iVisibleRowCount;
 }
 
+void QFileView::moveToRow(int iRow)
+{
+	m_pScrollBar->setValue(iRow);
+}
+
+void QFileView::selectText(int iPosStart, int iPosEnd)
+{
+	QTextCursor c;
+
+	c = m_pHumanEditor->textCursor();
+	c.setPosition(iPosStart);
+	c.setPosition(iPosEnd, QTextCursor::KeepAnchor);
+	m_pHumanEditor->setTextCursor(c);
+
+	c = m_pHexEditor->textCursor();
+	c.setPosition(iPosStart*3);
+	c.setPosition(iPosEnd*3-1, QTextCursor::KeepAnchor);
+	m_pHexEditor->setTextCursor(c);
+}
+
 void QFileView::setOffsetText(const QString& szText)
 {
 	m_pOffsetEditor->setPlainText(szText);
