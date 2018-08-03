@@ -5,12 +5,16 @@
  *      Author: ebeuque
  */
 
+#include <QDebug>
+
 #include <QFile>
 #include <QtEndian>
 #include <QPushButton>
 #include <QXmlInputSource>
 #include <QTreeView>
 #include <QHeaderView>
+#include <QJSEngine>
+#include <QRegExp>
 
 #include "GUI/QFileStructureView.h"
 #include "GUIModel/QFileStructureModel.h"
@@ -135,7 +139,8 @@ bool QFileStructureViewController::readFileWithStructure(const QString& szFilePa
 
 	bRes = fileToRead.open(QIODevice::ReadOnly);
 	if(bRes){
-		processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, NULL);
+		DictVariable dict;
+		processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, dict, NULL);
 		fileToRead.close();
 	}
 
@@ -143,7 +148,7 @@ bool QFileStructureViewController::readFileWithStructure(const QString& szFilePa
 }
 
 
-bool QFileStructureViewController::processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, QStandardItem* pParentItem)
+bool QFileStructureViewController::processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem)
 {
 	bool bRes = true;
 
@@ -169,7 +174,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	case FileStructureItem::ROOT:
 	{
 		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-			bRes = processFileStructureItem((*iter), fileToRead, pParentItem);
+			bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem);
 			if(!bRes){
 				break;
 			}
@@ -227,7 +232,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				pCurrentListItem = entryContextItem.listColumns[0];
 
 				for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-					bRes = processFileStructureItem((*iter), fileToRead, pCurrentListItem);
+					bRes = processFileStructureItem((*iter), fileToRead, dict, pCurrentListItem);
 					if(!bRes){
 						break;
 					}
@@ -245,11 +250,29 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		}
 	}
 		break;
+	case FileStructureItem::COND:
+	{
+		QString szExpr;
+		prepareExpr(pItem->m_szExpr, dict, szExpr);
+
+		//qDebug() << pItem->m_szExpr << " = " << szExpr;
+
+		if(evaluateBooleanExpr(szExpr)){
+			for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
+				bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem);
+				if(!bRes){
+					break;
+				}
+			}
+		}
+	}
+		break;
 	case FileStructureItem::INT8:
 	{
 		qint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -257,7 +280,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -265,7 +289,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -273,7 +298,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -281,7 +307,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -289,7 +316,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -297,7 +325,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 	break;
@@ -305,7 +334,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian(i));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -343,6 +373,11 @@ void QFileStructureViewController::appendEntry(const EntryParams& params, QStand
 	}
 }
 
+void QFileStructureViewController::appendDict(DictVariable& dict, const QString& szName, const QString& szValue)
+{
+	dict.insert(szName, szValue);
+}
+
 void QFileStructureViewController::entrySelected(const QModelIndex &current, const QModelIndex &previous)
 {
 	QModelIndex siblingIndex;
@@ -360,4 +395,65 @@ void QFileStructureViewController::entrySelected(const QModelIndex &current, con
 	iOffset = pItem->text().toLongLong();
 
 	emit fileStructureItemSelected(iOffset, iSize);
+}
+
+bool QFileStructureViewController::prepareExpr(const QString& szExpression, const DictVariable& dict, QString& szNewExpression)
+{
+	bool bRes = true;
+
+	/*
+	qDebug() << "dict";
+	DictVariable::const_iterator iter;
+	for(iter = dict.constBegin(); iter != dict.constEnd(); ++iter)
+	{
+		qDebug() << iter.key() << "=" << iter.value();
+	}
+	*/
+
+	szNewExpression = szExpression;
+
+	QRegExp rx("\\$\\{([A-Za-z0-9]+)\\}*");
+
+	int iCurrentPos = 0;
+	int iFoundPos;
+
+	QString szVarName;
+	QString szDictValue;
+
+	do {
+		iFoundPos = rx.indexIn(szExpression, iCurrentPos);
+		if(iFoundPos != -1){
+			iCurrentPos += iFoundPos;
+
+			QStringList tokens = rx.capturedTexts();
+			if(tokens.count() >= 2){
+				szVarName = tokens[1];
+				iCurrentPos += (szVarName.size() + 3);
+
+				if(dict.contains(szVarName)){
+					szDictValue = dict.value(szVarName);
+					szNewExpression = szNewExpression.replace("${" + szVarName + "}", szDictValue);
+				}
+			}
+		}
+	}while(iFoundPos != -1);
+
+	szNewExpression = szNewExpression.replace("AND", "&&");
+	szNewExpression = szNewExpression.replace("OR", "||");
+
+	return bRes;
+}
+
+bool QFileStructureViewController::evaluateBooleanExpr(const QString& szExpression)
+{
+	QJSEngine expression;
+	bool bRes = expression.evaluate(szExpression).toBool();
+	return bRes;
+}
+
+int QFileStructureViewController::evaluateIntExpr(const QString& szExpression)
+{
+	QJSEngine expression;
+	int iRes = expression.evaluate(szExpression).toInt();
+	return iRes;
 }

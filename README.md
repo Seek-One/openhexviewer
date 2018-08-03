@@ -26,6 +26,11 @@ Compiling from source
 
 Install dependencies:
 
+    apt-get install libqt4-dev
+
+Or:
+
+    apt-get install qtbase5-dev qttools5-dev qttools5-dev-tools qtdeclarative5-dev
 
 
 Get the code:

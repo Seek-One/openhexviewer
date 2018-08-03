@@ -59,6 +59,15 @@ FileStructureItemSharedPtr FileStructureItem::createLIST(const QString& szName, 
 	return pItem;
 }
 
+FileStructureItemSharedPtr FileStructureItem::createCOND(const QString& szExpr)
+{
+	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
+	pItem->m_szExpr = szExpr;
+	pItem->m_type = COND;
+	pItem->m_iSize = -1;
+	return pItem;
+}
+
 void FileStructureItem::append(const FileStructureItemSharedPtr& pItem)
 {
 	m_listChildren.append(pItem);
@@ -76,7 +85,10 @@ QString FileStructureItem::getTypeString() const
 	case INT64: return "int64";
 	case UINT64: return "uint64";
 	case LIST: return "list";
+	case COND: return "cond";
 	case ROOT: return "root";
+	default:
+		break;
 	}
 	return "";
 }

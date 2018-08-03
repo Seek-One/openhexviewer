@@ -23,6 +23,8 @@ class FileStructure;
 class EntryParams;
 class EntryContext;
 
+typedef QHash<QString, QString> DictVariable;
+
 class QFileStructureViewController : public QObject
 {
 	Q_OBJECT
@@ -42,9 +44,14 @@ signals:
 private:
 	bool readFileWithStructure(const QString& szFilePath, const FileStructure& loadedFileStructure);
 
-	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, QStandardItem* pParentItem);
+	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem);
 
 	void appendEntry(const EntryParams& params, QStandardItem* pParentItem, EntryContext& context);
+	void appendDict(DictVariable& dict, const QString& szName, const QString& szValue);
+
+	bool prepareExpr(const QString& szExpression, const DictVariable& dict, QString& szNewExpression);
+	bool evaluateBooleanExpr(const QString& szExpression);
+	int evaluateIntExpr(const QString& szExpression);
 
 private:
 	QFileStructureView* m_pFileStructureView;

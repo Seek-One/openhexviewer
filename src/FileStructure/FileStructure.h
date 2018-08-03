@@ -31,6 +31,8 @@ public:
 		UINT64,
 		// Collection
 		LIST,
+		// Condition
+		COND,
 		// Root
 		ROOT
 	};
@@ -43,6 +45,7 @@ public:
 
 	static FileStructureItemSharedPtr createFIELD(const QString& szName, ItemType type, qint64 iSize);
 	static FileStructureItemSharedPtr createLIST(const QString& szName, qint64 iSize);
+	static FileStructureItemSharedPtr createCOND(const QString& szExpr);
 
 	void append(const FileStructureItemSharedPtr& pItem);
 
@@ -52,6 +55,8 @@ public:
 	QString m_szName;
 	ItemType m_type;
 	qint64 m_iSize;
+
+	QString m_szExpr; // COND
 
 	QList<FileStructureItemSharedPtr> m_listChildren;
 };

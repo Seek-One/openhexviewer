@@ -72,21 +72,31 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 	if(qName == "field"){
 		QString szName = attributes.value("name");
 		QString szType = attributes.value("type");
+		QString szSize = attributes.value("size");
 		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
 		qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
 		pItem = FileStructureItem::createFIELD(szName, iType, iSize);
+		pItem->m_szExpr = szSize;
 		m_pCurrentParentItem->append(pItem);
 	}
 
 	if(qName == "list"){
 		QString szName = attributes.value("name");
-		QString szCount = attributes.value("count");
+		QString szCount = attributes.value("size");
 		int iCount = -1;
 		if(!szCount.isEmpty()){
 			iCount = szCount.toInt();
 		}
 
 		pItem = FileStructureItem::createLIST(szName, iCount);
+		m_pCurrentParentItem->append(pItem);
+		m_pCurrentParentItem = pItem;
+		m_stackCurrentItem.append(m_pCurrentParentItem);
+	}
+
+	if(qName == "condition"){
+		QString szExpr = attributes.value("expr");
+		pItem = FileStructureItem::createCOND(szExpr);
 		m_pCurrentParentItem->append(pItem);
 		m_pCurrentParentItem = pItem;
 		m_stackCurrentItem.append(m_pCurrentParentItem);
