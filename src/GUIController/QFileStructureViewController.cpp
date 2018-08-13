@@ -163,10 +163,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	if(pItem->m_iSize >= 0){
 		szSizeText = QString::number(pItem->m_iSize);
 	}else if(!pItem->m_szExpr.isEmpty()){
-		int iSize;
 		prepareExpr(pItem->m_szExpr, dict, szTmp);
 		iSizeExpr = evaluateIntExpr(szTmp);
-		szSizeText = QString::number(iSize);
+		szSizeText = QString::number(iSizeExpr);
 	}
 
 	qint64 iOffsetStart = fileToRead.pos();

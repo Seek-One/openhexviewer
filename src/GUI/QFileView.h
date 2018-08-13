@@ -32,7 +32,7 @@ public:
 	void setHumanText(const QString& szText);
 
 	void moveToRow(int iRow);
-	void selectText(int iPosStart, int iPosEnd);
+	void selectText(int iPosStart, int iPosEnd, int iNbRow);
 
 signals:
 	void sizeChanged();

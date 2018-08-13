@@ -49,6 +49,9 @@ FileStructureItem::ItemType StructureFileParserHandler::getFileStructureItemType
 		if(szType == "uint64"){
 			return FileStructureItem::UINT64;
 		}
+		if(szType == "bytes"){
+			return FileStructureItem::BYTES;
+		}
 	}else if(szTagName == "list"){
 		return FileStructureItem::LIST;
 	}
