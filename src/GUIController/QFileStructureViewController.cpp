@@ -128,9 +128,17 @@ void QFileStructureViewController::loadStructure()
 		pTreeView->resizeColumnToContents(1);
 		pTreeView->resizeColumnToContents(2);
 		pTreeView->resizeColumnToContents(3);
+#if QT_VERSION_MAJOR >= 5
 		pTreeView->header()->setSectionResizeMode(4, QHeaderView::Fixed);
+#else
+		pTreeView->header()->setResizeMode(4, QHeaderView::Fixed);
+#endif
 		pTreeView->header()->resizeSection(4, 60);
+#if QT_VERSION_MAJOR >= 5 
 		pTreeView->header()->setSectionResizeMode(0, QHeaderView::Interactive);
+#else
+		pTreeView->header()->resizeSection(0, QHeaderView::Interactive);
+#endif
 		pTreeView->header()->resizeSection(0, 200);
 	}
 }
@@ -479,9 +487,10 @@ int QFileStructureViewController::evaluateIntExpr(const QString& szExpression)
 {
 #if QT_VERSION_MAJOR >= 5
 	QJSEngine expression;
+	int iRes = expression.evaluate(szExpression).toInt();
 #else
 	QScriptEngine expression;
+	int iRes = (int)expression.evaluate(szExpression).toInt32();
 #endif
-	int iRes = expression.evaluate(szExpression).toInt();
 	return iRes;
 }
