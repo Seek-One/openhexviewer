@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QString>
 #include <QFile>
+#include <QHash>
+#include <QModelIndex>
 
 #include "FileStructure/FileStructure.h"
 
