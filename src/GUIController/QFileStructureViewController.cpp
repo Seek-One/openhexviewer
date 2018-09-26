@@ -168,7 +168,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	QString szValue;
 
 	QString szTmp;
-	qint64 iSizeExpr;
+	qint64 iSizeExpr = 0;
 
 	// Compute element size
 	QString szSizeText;
@@ -293,7 +293,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<qint8>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -302,7 +302,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<quint8>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -311,7 +311,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<qint16>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -320,7 +320,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<quint16>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -329,7 +329,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<qint32>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -338,7 +338,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<quint32>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -347,7 +347,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<qint64>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -356,7 +356,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		entryParams.szValue = QString::number(qFromBigEndian(i));
+		entryParams.szValue = QString::number(qFromBigEndian<quint64>(i));
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
