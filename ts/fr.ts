@@ -53,27 +53,27 @@
 <context>
     <name>QFileStructureViewController</name>
     <message>
-        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="49"/>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="84"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="50"/>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="85"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="51"/>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="86"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="52"/>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="87"/>
         <source>Offset</source>
         <translation>Position</translation>
     </message>
     <message>
-        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="53"/>
+        <location filename="../src/GUIController/QFileStructureViewController.cpp" line="88"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>

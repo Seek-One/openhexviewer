@@ -13,7 +13,11 @@
 #include <QXmlInputSource>
 #include <QTreeView>
 #include <QHeaderView>
+#if QT_VERSION_MAJOR >= 5
 #include <QJSEngine>
+#else
+#include <QScriptEngine>
+#endif
 #include <QRegExp>
 
 #include "GUI/QFileStructureView.h"
@@ -462,14 +466,22 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 
 bool QFileStructureViewController::evaluateBooleanExpr(const QString& szExpression)
 {
+#if QT_VERSION_MAJOR >= 5
 	QJSEngine expression;
+#else
+	QScriptEngine expression;
+#endif
 	bool bRes = expression.evaluate(szExpression).toBool();
 	return bRes;
 }
 
 int QFileStructureViewController::evaluateIntExpr(const QString& szExpression)
 {
+#if QT_VERSION_MAJOR >= 5
 	QJSEngine expression;
+#else
+	QScriptEngine expression;
+#endif
 	int iRes = expression.evaluate(szExpression).toInt();
 	return iRes;
 }
