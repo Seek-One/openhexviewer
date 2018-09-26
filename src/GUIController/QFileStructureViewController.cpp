@@ -293,7 +293,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
+#if QT_VERSION_MAJOR >= 5
 		entryParams.szValue = QString::number(qFromBigEndian<qint8>(i));
+#else
+		entryParams.szValue = QString::number(i);
+#endif
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -302,7 +306,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
+#if QT_VERSION_MAJOR >= 5
 		entryParams.szValue = QString::number(qFromBigEndian<quint8>(i));
+#else
+		entryParams.szValue = QString::number(i);
+#endif
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -320,7 +328,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
+#if QT_VERSION_MAJOR >= 5
 		entryParams.szValue = QString::number(qFromBigEndian<quint16>(i));
+#else
+		entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i));
+#endif
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -338,7 +350,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
+#if QT_VERSION_MAJOR >= 5
 		entryParams.szValue = QString::number(qFromBigEndian<quint32>(i));
+#else
+		entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i));
+#endif
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
@@ -356,7 +372,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
+#if QT_VERSION_MAJOR >= 5
 		entryParams.szValue = QString::number(qFromBigEndian<quint64>(i));
+#else
+		entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i));
+#endif
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
