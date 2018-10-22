@@ -130,6 +130,8 @@ void QFileViewController::closeFile()
 
 void QFileViewController::selectFileData(qint64 offset, qint64 size)
 {
+	qDebug("%lld => %lld", offset, size);
+
 	int iRowStart = offset / m_iBytePerLine;
 	int iColStart = offset % m_iBytePerLine;
 
@@ -137,10 +139,14 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	int iRowEnd = offsetEnd / m_iBytePerLine;
 	//int iColEnd = offsetEnd % m_iBytePerLine;
 
+	int iFirstVisibleRow = std::min(iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
 	qint64 iMaxChar = m_iVisibleRowCount*m_iBytePerLine - iColStart;
 	qint64 iSize = std::min(size, iMaxChar);
+	if(iFirstVisibleRow < iRowStart){
+		iColStart += (iRowStart-iFirstVisibleRow) * m_iBytePerLine + (iRowStart-iFirstVisibleRow);
+	}
 
-	m_pFileView->moveToRow(iRowStart);
+	m_pFileView->moveToRow(iFirstVisibleRow);
 	m_pFileView->selectText(iColStart, iColStart + (int)(iSize), (iRowEnd-iRowStart));
 }
 
