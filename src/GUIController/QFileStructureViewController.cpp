@@ -199,7 +199,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	QString szValue;
 
 	QString szTmp;
-	qint64 iSizeExpr = 0;
+	qint64 iSizeExpr = -1;
 
 	// Compute element size
 	QString szSizeText;
@@ -236,7 +236,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::LIST:
 	{
-		qint64 iMaxCount = pItem->m_iSize;
+		qint64 iMaxCount = iSizeExpr;
 		qint64 iCount = 0;
 
 		QStandardItem* pCurrentListItem;
