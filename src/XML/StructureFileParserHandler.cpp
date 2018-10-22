@@ -52,6 +52,9 @@ FileStructureItem::ItemType StructureFileParserHandler::getFileStructureItemType
 		if(szType == "bytes"){
 			return FileStructureItem::BYTES;
 		}
+		if(szType == "string"){
+			return FileStructureItem::STRING;
+		}
 	}else if(szTagName == "list"){
 		return FileStructureItem::LIST;
 	}

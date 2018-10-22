@@ -418,6 +418,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
+	case FileStructureItem::STRING:
+	{
+		char* szString = new char[iSizeExpr];
+		bRes = fileToRead.read((char*)szString, iSizeExpr);
+		entryParams.szValue = szString;
+		appendDict(dict, entryParams.szName, entryParams.szValue);
+		appendEntry(entryParams, pParentItem, entryContext);
+	}
+		break;
 	default:
 		break;
 	}
