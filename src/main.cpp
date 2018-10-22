@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	bool bShowUsage = false;
 	QString szFileToLoad;
 	int i = 0;
-	for(i=0; i<argc; i++){
+	for(i=1; i<argc; i++){
 		if(strcmp(argv[i], "--help") == 0){
 			bShowUsage = true;
 		}else{
