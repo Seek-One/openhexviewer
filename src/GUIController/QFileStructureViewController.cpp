@@ -243,6 +243,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iOffsetStartItem;
 		QString szOffsetStartItemText;
 		qint64 iOffsetEndItem;
+		qint64 iOffsetCurrent;
 
 		entryParams.szSize = "0";
 		appendEntry(entryParams, pParentItem, entryContext);
@@ -251,7 +252,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		do{
 			// Check stop condition
 			if(iMaxCount == -1){
-				if(iOffsetStart >= fileToRead.size()){
+				iOffsetCurrent = fileToRead.pos();
+				if(iOffsetCurrent >= fileToRead.size()){
 					bStop = true;
 				}
 			}else if(iCount == iMaxCount){
@@ -423,7 +425,6 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		char* szString = new char[iSizeExpr];
 		bRes = fileToRead.read((char*)szString, iSizeExpr);
 		entryParams.szValue = szString;
-		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;

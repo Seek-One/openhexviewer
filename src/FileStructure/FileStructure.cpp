@@ -84,6 +84,8 @@ QString FileStructureItem::getTypeString() const
 	case UINT32: return "uint32";
 	case INT64: return "int64";
 	case UINT64: return "uint64";
+	case BYTES: return "bytes";
+	case STRING: return "string";
 	case LIST: return "list";
 	case COND: return "cond";
 	case ROOT: return "root";

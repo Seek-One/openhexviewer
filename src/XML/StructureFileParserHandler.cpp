@@ -88,13 +88,9 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 
 	if(qName == "list"){
 		QString szName = attributes.value("name");
-		QString szCount = attributes.value("size");
-		int iCount = -1;
-		if(!szCount.isEmpty()){
-			iCount = szCount.toInt();
-		}
-
-		pItem = FileStructureItem::createLIST(szName, iCount);
+		QString szSize = attributes.value("size");
+		pItem = FileStructureItem::createLIST(szName, -1);
+		pItem->m_szExpr = szSize;
 		m_pCurrentParentItem->append(pItem);
 		m_pCurrentParentItem = pItem;
 		m_stackCurrentItem.append(m_pCurrentParentItem);
