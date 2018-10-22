@@ -10,6 +10,7 @@
 
 #include <QWidget>
 
+class QComboBox;
 class QTreeView;
 class QPushButton;
 class QAbstractItemModel;
@@ -21,6 +22,7 @@ public:
 	QFileStructureView(QWidget* pParent = NULL);
 	virtual ~QFileStructureView();
 
+	QComboBox* getStructureFileComboBox() const;
 	QTreeView* getTreeview() const;
 
 	QPushButton* getLoadButton() const;
@@ -28,6 +30,7 @@ public:
 	void setModel(QAbstractItemModel* pItemModel);
 
 private:
+	QComboBox* m_pStructureFileComboBox;
 	QTreeView* m_pTreeView;
 
 	QPushButton* m_pLoadButton;

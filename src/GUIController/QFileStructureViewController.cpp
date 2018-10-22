@@ -8,10 +8,12 @@
 #include <QDebug>
 
 #include <QFile>
+#include <QDir>
 #include <QtEndian>
 #include <QPushButton>
 #include <QXmlInputSource>
 #include <QTreeView>
+#include <QComboBox>
 #include <QHeaderView>
 #if QT_VERSION_MAJOR >= 5
 #include <QJSEngine>
@@ -55,12 +57,13 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 {
 	m_pFileStructureView = pFileStructureView;
 
+	QString szFilePath = "./data/structure_files";
+	loadStructureFileList(szFilePath);
+
 	connect(m_pFileStructureView->getLoadButton(), SIGNAL(clicked()), this, SLOT(loadStructure()));
 
 	m_pModel = new QFileStructureModel();
-
 	m_pFileStructureView->setModel(m_pModel);
-
 	connect(m_pFileStructureView->getTreeview()->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)), this, SLOT(entrySelected(const QModelIndex&, const QModelIndex &)));
 
 }
@@ -68,6 +71,27 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 QFileStructureViewController::~QFileStructureViewController()
 {
 
+}
+
+
+void QFileStructureViewController::loadStructureFileList(const QString& szDirPath)
+{
+	qDebug("[GUI] Loading structure files from: %s", qPrintable(szDirPath));
+
+	QDir dir(szDirPath);
+
+	QStringList listFilters;
+	listFilters << "*.xml";
+	QStringList entryList = dir.entryList(listFilters, QDir::Files, QDir::Name);
+
+	QComboBox* pComboBox = m_pFileStructureView->getStructureFileComboBox();
+
+	QStringList::const_iterator iter;
+	for(iter = entryList.constBegin(); iter != entryList.constEnd(); ++iter)
+	{
+		QString szFilePath = dir.filePath(*iter);
+		pComboBox->addItem(*iter, szFilePath);
+	}
 }
 
 void QFileStructureViewController::setCurrentFile(const QString& szFilePath)
@@ -87,7 +111,14 @@ void QFileStructureViewController::loadStructure()
 	m_pModel->setHorizontalHeaderItem(3, new QStandardItem(tr("Offset")));
 	m_pModel->setHorizontalHeaderItem(4, new QStandardItem(tr("Value")));
 
-	QString szStructureFilePath = "./struct_recording.xml";
+	QComboBox* pFileStructComboBox = m_pFileStructureView->getStructureFileComboBox();
+	int iIndex = pFileStructComboBox->currentIndex();
+	QString szStructureFilePath;
+	if(iIndex != -1){
+		szStructureFilePath = pFileStructComboBox->itemData(iIndex).toString();
+	}else{
+		szStructureFilePath = pFileStructComboBox->currentText();
+	}
 
 	FileStructure loadedFileStructure;
 

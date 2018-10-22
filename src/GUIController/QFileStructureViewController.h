@@ -44,6 +44,8 @@ signals:
 	void fileStructureItemSelected(qint64 offset, qint64 size);
 
 private:
+	void loadStructureFileList(const QString& szDirPath);
+
 	bool readFileWithStructure(const QString& szFilePath, const FileStructure& loadedFileStructure);
 
 	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem);
