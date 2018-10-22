@@ -130,8 +130,6 @@ void QFileViewController::closeFile()
 
 void QFileViewController::selectFileData(qint64 offset, qint64 size)
 {
-	qDebug("%lld => %lld", offset, size);
-
 	int iRowStart = offset / m_iBytePerLine;
 	int iColStart = offset % m_iBytePerLine;
 
