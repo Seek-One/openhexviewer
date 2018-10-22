@@ -15,6 +15,7 @@ openhexviewer
 moc_*.c*
 *.sqlite
 README
+core
 build
 data/app.qrc
 data/logos/icon.rc
