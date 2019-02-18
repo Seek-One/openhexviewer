@@ -59,6 +59,7 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 
 	QString szFilePath = "./data/structure_files";
 	loadStructureFileList(szFilePath);
+	loadStructureFileList("/home/ebeuque/.config/openhexviewer/structure_files");
 
 	connect(m_pFileStructureView->getLoadButton(), SIGNAL(clicked()), this, SLOT(loadStructure()));
 
@@ -422,9 +423,14 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::STRING:
 	{
-		char* szString = new char[iSizeExpr];
-		bRes = fileToRead.read((char*)szString, iSizeExpr);
-		entryParams.szValue = szString;
+        if(iSizeExpr > 0){
+		    char* szString = new char[iSizeExpr+1];
+		    bRes = fileToRead.read((char*)szString, iSizeExpr);
+		    szString[iSizeExpr] = '\0';
+		    entryParams.szValue = szString;
+        }else{
+		    entryParams.szValue = "";
+        }
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
