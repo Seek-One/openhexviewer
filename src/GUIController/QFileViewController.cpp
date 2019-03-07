@@ -113,7 +113,7 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	}
 
 	if(pBuffer){
-		delete pBuffer;
+		delete[] pBuffer;
 		pBuffer = NULL;
 	}
 
