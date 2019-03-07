@@ -49,3 +49,4 @@ Run:
 Screenshot
 ----------
 
+![alt text](https://raw.githubusercontent.com/Jet1oeil/openhexviewer/master/doc/openhexviewer-screenshot-1.png)
