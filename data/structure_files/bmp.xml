@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure_file version="1" endianness="little-endian">
+  <field name="signature" type="string" size="2" />
+  <field name="size" type="uint32" />
+  <field name="reserved1" type="uint16" />
+  <field name="reserved2" type="uint16" />
+  <field name="startoffset" type="uint32" />
+  <block name="DIBHeader">
+    <field name="bcSize" type="uint32" />
+    <condition expr="${bcSize} == 12">
+      <field name="bcWidth" type="uint16" />
+      <field name="bcHeight" type="uint16" />
+      <field name="bcPlanes" type="uint16" />
+      <field name="bcBitCount" type="uint16" />
+   </condition>
+    <condition expr="${bcSize} == 108">
+      <field name="bV4Width" type="int32" />
+      <field name="bV4Height" type="int32" />
+      <field name="bV4Planes" type="uint16" />
+      <field name="bV4BitCount" type="uint16" />
+      <field name="bV4V4Compression" type="uint32" />
+      <field name="bV4SizeImage" type="uint32" />
+      <field name="bV4XPelsPerMeter" type="int32" />
+      <field name="bV4YPelsPerMeter" type="int32" />
+      <field name="bV4ClrUsed" type="uint32" />
+      <field name="bV4ClrImportant" type="uint32" />
+      <field name="bV4RedMask" type="uint32" />
+      <field name="bV4GreenMask" type="uint32" />
+      <field name="bV4BlueMask" type="uint32" />
+      <field name="bV4AlphaMask" type="uint32" />
+      <field name="bV4CSType" type="uint32" />
+      <block name="bV4Endpoints">
+        <block name="ciexyzRed">
+          <field name="ciexyzX" type="uint32" />
+          <field name="ciexyzY" type="uint32" />
+          <field name="ciexyzZ" type="uint32" />
+        </block>
+        <block name="ciexyzGreen">
+          <field name="ciexyzX" type="uint32" />
+          <field name="ciexyzY" type="uint32" />
+          <field name="ciexyzZ" type="uint32" />
+        </block>
+        <block name="ciexyzBlue">
+          <field name="ciexyzX" type="uint32" />
+          <field name="ciexyzY" type="uint32" />
+          <field name="ciexyzZ" type="uint32" />
+        </block>
+      </block>
+      <field name="bV4GammaRed" type="uint32" />
+      <field name="bV4GammaGreen" type="uint32" />
+      <field name="bV4GammaBlue" type="uint32" />
+   </condition>
+  </block>
+  <field name="bitmap" type="bytes" size="${size}-${bcSize}-14" />
+</structure_file>
