@@ -268,6 +268,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				break;
 			}
 		}
+
+		if(bRes){
+			iOffsetEnd = fileToRead.pos();
+			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+		}
 	}
 		break;
 	case FileStructureItem::LIST:

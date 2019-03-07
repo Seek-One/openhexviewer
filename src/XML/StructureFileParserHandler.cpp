@@ -143,7 +143,7 @@ bool StructureFileParserHandler::endElement(const QString &namespaceURI,
 {
 	bool bRes = true;
 
-	if(qName == "list" || qName == "condition"){
+	if(qName == "list" || qName == "condition" || qName == "block"){
 		m_stackCurrentItem.removeLast();
 		m_pCurrentParentItem = m_stackCurrentItem.last();
 	}
