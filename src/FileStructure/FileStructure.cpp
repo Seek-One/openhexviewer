@@ -11,6 +11,7 @@ FileStructureItem::FileStructureItem()
 {
 	m_type = FileStructureItem::UNKNOWN;
 	m_iSize = -1;
+	m_iFlags = 0;
 }
 
 FileStructureItem::~FileStructureItem()

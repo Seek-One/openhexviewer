@@ -79,10 +79,20 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		QString szName = attributes.value("name");
 		QString szType = attributes.value("type");
 		QString szSize = attributes.value("size");
+		QString szEndianness = attributes.value("endianness");
 		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
 		qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
 		pItem = FileStructureItem::createFIELD(szName, iType, iSize);
 		pItem->m_szExpr = szSize;
+        // Define endianess
+		if(!szEndianness.isEmpty()){
+			if(szEndianness == "big-endian"){
+				pItem->m_iFlags |= FileStructureItem::BigEndian;
+			}
+			if(szEndianness == "little-endian"){
+				pItem->m_iFlags |= FileStructureItem::LittleEndian;
+			}
+		}
 		m_pCurrentParentItem->append(pItem);
 	}
 

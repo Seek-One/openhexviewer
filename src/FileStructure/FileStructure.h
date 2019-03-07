@@ -40,6 +40,11 @@ public:
 		ROOT
 	};
 
+    enum ItemFlag {
+		LittleEndian = 0x01,
+		BigEndian = 0x02,
+    };
+
 public:
 	FileStructureItem();
 	virtual ~FileStructureItem();
@@ -58,6 +63,7 @@ public:
 	QString m_szName;
 	ItemType m_type;
 	qint64 m_iSize;
+	int m_iFlags;
 
 	QString m_szExpr; // COND
 
