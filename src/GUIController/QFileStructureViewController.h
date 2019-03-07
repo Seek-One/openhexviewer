@@ -60,6 +60,7 @@ private:
 private:
 	QFileStructureView* m_pFileStructureView;
 
+	Endianness::Mode m_iDefaultEndianness;
 	QString m_szCurrentFilePath;
 
 	QFileStructureModel* m_pModel;

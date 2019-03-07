@@ -71,8 +71,20 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 	FileStructureItemSharedPtr pItem;
 
 	if(qName == "structure_file"){
+		// Set version
 		QString szVersion = attributes.value("version");
 		m_pFileStructure->setVersion(szVersion.toInt());
+
+        // Set endianess
+		QString szEndianness = attributes.value("endianness");
+		if(!szEndianness.isEmpty()){
+			if(szEndianness == "big-endian"){
+				m_pFileStructure->setDefaultEndianness(Endianness::BigEndian);
+			}
+			if(szEndianness == "little-endian"){
+				m_pFileStructure->setDefaultEndianness(Endianness::LittleEndian);
+			}
+		}
 	}
 
 	if(qName == "field"){

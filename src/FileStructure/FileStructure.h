@@ -15,6 +15,16 @@
 class FileStructureItem;
 typedef QSharedPointer<FileStructureItem> FileStructureItemSharedPtr;
 
+class Endianness
+{
+public:
+	enum Mode {
+		Auto = 0,
+		LittleEndian,
+		BigEndian
+	};
+};
+
 class FileStructureItem
 {
 public:
@@ -79,10 +89,14 @@ public:
 	void setVersion(int iVersion);
 	int getVersion() const;
 
+	void setDefaultEndianness(Endianness::Mode iMode);
+	Endianness::Mode getDefaultEndianness() const;
+
 	FileStructureItemSharedPtr getRootItem() const;
 
 private:
 	int m_iVersion;
+	Endianness::Mode m_iDefaultEndianness;
 
 	FileStructureItemSharedPtr m_pRootItem;
 };

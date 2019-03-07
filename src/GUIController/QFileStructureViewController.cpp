@@ -56,6 +56,7 @@ enum COLUMN {
 QFileStructureViewController::QFileStructureViewController(QFileStructureView* pFileStructureView)
 {
 	m_pFileStructureView = pFileStructureView;
+	m_iDefaultEndianness = Endianness::Auto;
 
 	QString szFilePath = "./data/structure_files";
 	loadStructureFileList(szFilePath);
@@ -129,7 +130,6 @@ void QFileStructureViewController::loadStructure()
 		fileStructure.setFileName(szStructureFilePath);
 		bRes = fileStructure.open(QIODevice::ReadOnly);
 		if(bRes){
-
 			QXmlInputSource source(&fileStructure);
 
 			QXmlSimpleReader reader;
@@ -149,6 +149,7 @@ void QFileStructureViewController::loadStructure()
 	}
 
 	if(bRes){
+		m_iDefaultEndianness = loadedFileStructure.getDefaultEndianness();
 		bRes = readFileWithStructure(m_szCurrentFilePath, loadedFileStructure);
 		if(!bRes){
 			qCritical("[FileStructure] Cannot read file with structure");
@@ -222,18 +223,21 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	entryParams.szSize = szSizeText;
 	entryParams.szOffsetStart = szOffsetStartText;
 
-	int iEndiannessType = 0;
+	Endianness::Mode iEndiannessMode = Endianness::Auto;
 	if(pItem->m_iFlags & FileStructureItem::BigEndian){
-		iEndiannessType = FileStructureItem::BigEndian;
+		iEndiannessMode = Endianness::BigEndian;
 	}else if(pItem->m_iFlags & FileStructureItem::LittleEndian){
-		iEndiannessType = FileStructureItem::LittleEndian;
+		iEndiannessMode = Endianness::LittleEndian;
 	}else{
-#if QT_VERSION_MAJOR >= 5
-		iEndiannessType = FileStructureItem::BigEndian;
-#else
-		iEndiannessType = FileStructureItem::LittleEndian;
-#endif
+		iEndiannessMode = m_iDefaultEndianness;
+	}
 
+	if(iEndiannessMode == Endianness::Auto){
+#if QT_VERSION_MAJOR >= 5
+		iEndiannessMode = Endianness::BigEndian;
+#else
+		iEndiannessMode = Endianness::LittleEndian;
+#endif
 	}
 
 	EntryContext entryContext;
@@ -341,8 +345,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint8>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -355,8 +359,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint8 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint8>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -369,8 +373,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint16>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -383,8 +387,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint16 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint16>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -397,8 +401,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint32>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -411,8 +415,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint32>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -425,8 +429,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		qint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint64>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
@@ -439,8 +443,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		quint64 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessType){
-		case FileStructureItem::BigEndian:
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint64>(i)); break;
 		default:
 			entryParams.szValue = QString::number(i); break;
