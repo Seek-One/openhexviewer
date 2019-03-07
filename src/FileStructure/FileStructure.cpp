@@ -51,6 +51,15 @@ FileStructureItemSharedPtr FileStructureItem::createFIELD(const QString& szName,
 	return pItem;
 }
 
+FileStructureItemSharedPtr FileStructureItem::createBLOCK(const QString& szName)
+{
+	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
+	pItem->m_szName = szName;
+	pItem->m_type = BLOCK;
+	pItem->m_iSize = -1;
+	return pItem;
+}
+
 FileStructureItemSharedPtr FileStructureItem::createLIST(const QString& szName, qint64 iSize)
 {
 	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());

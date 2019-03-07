@@ -42,6 +42,8 @@ public:
 		// Bytes type
 		BYTES,
 		STRING,
+		// Block
+		BLOCK,
 		// Collection
 		LIST,
 		// Condition
@@ -62,6 +64,7 @@ public:
 	static qint64 getBasicItemTypeSize(FileStructureItem::ItemType type);
 
 	static FileStructureItemSharedPtr createFIELD(const QString& szName, ItemType type, qint64 iSize);
+	static FileStructureItemSharedPtr createBLOCK(const QString& szName);
 	static FileStructureItemSharedPtr createLIST(const QString& szName, qint64 iSize);
 	static FileStructureItemSharedPtr createCOND(const QString& szExpr);
 

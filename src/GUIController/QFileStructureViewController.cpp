@@ -253,6 +253,23 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		}
 	}
 		break;
+	case FileStructureItem::BLOCK:
+	{
+		QStandardItem* pBlockItem;
+
+		entryParams.szSize = "0";
+		appendEntry(entryParams, pParentItem, entryContext);
+
+		pBlockItem = entryContext.listColumns[0];
+
+		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
+			bRes = processFileStructureItem((*iter), fileToRead, dict, pBlockItem);
+			if(!bRes){
+				break;
+			}
+		}
+	}
+		break;
 	case FileStructureItem::LIST:
 	{
 		qint64 iMaxCount = iSizeExpr;

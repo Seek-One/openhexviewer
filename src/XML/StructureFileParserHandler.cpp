@@ -108,6 +108,14 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		m_pCurrentParentItem->append(pItem);
 	}
 
+	if(qName == "block"){
+		QString szName = attributes.value("name");
+		pItem = FileStructureItem::createBLOCK(szName);
+		m_pCurrentParentItem->append(pItem);
+		m_pCurrentParentItem = pItem;
+		m_stackCurrentItem.append(m_pCurrentParentItem);
+	}
+
 	if(qName == "list"){
 		QString szName = attributes.value("name");
 		QString szSize = attributes.value("size");
