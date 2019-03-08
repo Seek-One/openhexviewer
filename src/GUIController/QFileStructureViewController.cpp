@@ -397,7 +397,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
 			entryParams.szValue = QString::number(qFromBigEndian<qint16>(i)); break;
+#else
+			entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i)); break;
+#endif
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -413,7 +417,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint16>(i)); break;
 		default:
-			entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i)); break;
+			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
@@ -425,7 +429,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
 			entryParams.szValue = QString::number(qFromBigEndian<qint32>(i)); break;
+#else
+			entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i)); break;
+#endif
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -441,7 +449,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint32>(i)); break;
 		default:
-			entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i)); break;
+			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
@@ -453,7 +461,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		bRes = fileToRead.read((char*)&i, sizeof(i));
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
 			entryParams.szValue = QString::number(qFromBigEndian<qint64>(i)); break;
+#else
+			entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i)); break;
+#endif
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -469,7 +481,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<quint64>(i)); break;
 		default:
-			entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i)); break;
+			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
