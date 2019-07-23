@@ -374,6 +374,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 #else
 			entryParams.szValue = QString::number(i);
 #endif
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -392,6 +393,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 #else
 			entryParams.szValue = QString::number(i);
 #endif
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -406,6 +408,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint16>(i));
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -424,6 +427,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 #else
 			entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i));
 #endif
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -438,6 +442,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint32>(i));
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -456,6 +461,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 #else
 			entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i));
 #endif
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -470,6 +476,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
 			entryParams.szValue = QString::number(qFromBigEndian<qint64>(i));
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
@@ -488,6 +495,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 #else
 			entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i));
 #endif
+			break;
 		default:
 			entryParams.szValue = QString::number(i); break;
 		}
