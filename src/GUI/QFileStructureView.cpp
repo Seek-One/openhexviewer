@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QHeaderView>
 #include <QComboBox>
+#include <QToolButton>
 
 #include "QFileStructureView.h"
 
@@ -21,9 +22,21 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 	QVBoxLayout* pMainLayout = new QVBoxLayout();
 	setLayout(pMainLayout);
 
-	m_pStructureFileComboBox = new QComboBox(this);
-	m_pStructureFileComboBox->setEditable(true);
-	pMainLayout->addWidget(m_pStructureFileComboBox);
+	QBoxLayout* pTmpLayout;
+
+	{
+		pTmpLayout = new QHBoxLayout();
+		pMainLayout->addLayout(pTmpLayout);
+
+		m_pStructureFileComboBox = new QComboBox(this);
+		m_pStructureFileComboBox->setEditable(true);
+		pTmpLayout->addWidget(m_pStructureFileComboBox);
+
+		m_pRefreshFileButton = new QToolButton(this);
+		m_pRefreshFileButton->setText(tr("Refresh"));
+		m_pRefreshFileButton->setWindowIcon(QIcon::fromTheme("refresh"));
+		pTmpLayout->addWidget(m_pRefreshFileButton);
+	}
 
 	m_pTreeView = new QTreeView(this);
 	pMainLayout->addWidget(m_pTreeView);
@@ -46,6 +59,11 @@ QFileStructureView::~QFileStructureView()
 QComboBox* QFileStructureView::getStructureFileComboBox() const
 {
 	return m_pStructureFileComboBox;
+}
+
+QToolButton* QFileStructureView::getRefreshFileButton() const
+{
+	return m_pRefreshFileButton;
 }
 
 QTreeView* QFileStructureView::getTreeview() const

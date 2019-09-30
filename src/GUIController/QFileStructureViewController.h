@@ -43,6 +43,9 @@ public slots:
 signals:
 	void fileStructureItemSelected(qint64 offset, qint64 size);
 
+private slots:
+	void reloadStructureFiles();
+
 private:
 	void loadStructureFileList(const QString& szDirPath);
 

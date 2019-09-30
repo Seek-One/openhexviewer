@@ -18,6 +18,7 @@
 #include <QFile>
 #include <QDir>
 #include <QtEndian>
+#include <QToolButton>
 #include <QPushButton>
 #include <QXmlInputSource>
 #include <QTreeView>
@@ -66,6 +67,29 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 	m_pFileStructureView = pFileStructureView;
 	m_iDefaultEndianness = Endianness::Auto;
 
+	reloadStructureFiles();
+
+	connect(m_pFileStructureView->getRefreshFileButton(), SIGNAL(clicked()), this, SLOT(reloadStructureFiles()));
+
+	connect(m_pFileStructureView->getLoadButton(), SIGNAL(clicked()), this, SLOT(loadStructure()));
+
+	m_pModel = new QFileStructureModel();
+	m_pFileStructureView->setModel(m_pModel);
+	connect(m_pFileStructureView->getTreeview()->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)), this, SLOT(entrySelected(const QModelIndex&, const QModelIndex &)));
+
+}
+
+QFileStructureViewController::~QFileStructureViewController()
+{
+
+}
+
+
+void QFileStructureViewController::reloadStructureFiles()
+{
+	QComboBox* pComboBox = m_pFileStructureView->getStructureFileComboBox();
+	pComboBox->clear();
+
 	// Load from debug dir
 	QString szFilePath = "./data/structure_files";
 	loadStructureFileList(szFilePath);
@@ -81,20 +105,7 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 	dir = dir.filePath("structure_files");
 #endif
 	loadStructureFileList(dir.path());
-
-	connect(m_pFileStructureView->getLoadButton(), SIGNAL(clicked()), this, SLOT(loadStructure()));
-
-	m_pModel = new QFileStructureModel();
-	m_pFileStructureView->setModel(m_pModel);
-	connect(m_pFileStructureView->getTreeview()->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)), this, SLOT(entrySelected(const QModelIndex&, const QModelIndex &)));
-
 }
-
-QFileStructureViewController::~QFileStructureViewController()
-{
-
-}
-
 
 void QFileStructureViewController::loadStructureFileList(const QString& szDirPath)
 {

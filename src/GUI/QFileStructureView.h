@@ -13,6 +13,7 @@
 class QComboBox;
 class QTreeView;
 class QPushButton;
+class QToolButton;
 class QAbstractItemModel;
 
 class QFileStructureView : public QWidget
@@ -23,6 +24,7 @@ public:
 	virtual ~QFileStructureView();
 
 	QComboBox* getStructureFileComboBox() const;
+	QToolButton* getRefreshFileButton() const;
 	QTreeView* getTreeview() const;
 
 	QPushButton* getLoadButton() const;
@@ -32,6 +34,8 @@ public:
 private:
 	QComboBox* m_pStructureFileComboBox;
 	QTreeView* m_pTreeView;
+
+	QToolButton* m_pRefreshFileButton;
 
 	QPushButton* m_pLoadButton;
 };
