@@ -7,6 +7,14 @@
 
 #include <QDebug>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_VERSION_H
+#include <version.h>
+#endif
+
 #include <QFile>
 #include <QDir>
 #include <QtEndian>
@@ -58,9 +66,21 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 	m_pFileStructureView = pFileStructureView;
 	m_iDefaultEndianness = Endianness::Auto;
 
+	// Load from debug dir
 	QString szFilePath = "./data/structure_files";
 	loadStructureFileList(szFilePath);
-	loadStructureFileList("/home/ebeuque/.config/openhexviewer/structure_files");
+
+	// Load from user config dir
+	QDir dir = QDir::home();
+#ifdef UNIX
+	dir = dir.filePath(".config");
+	dir = dir.filePath(APPLICATION_PACKAGE_NAME);
+	dir = dir.filePath("structure_files");
+#else
+	dir = dir.filePath(APPLICATION_PACKAGE_NAME);
+	dir = dir.filePath("structure_files");
+#endif
+	loadStructureFileList(dir.path());
 
 	connect(m_pFileStructureView->getLoadButton(), SIGNAL(clicked()), this, SLOT(loadStructure()));
 
