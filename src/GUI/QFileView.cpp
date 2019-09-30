@@ -104,18 +104,18 @@ void QFileView::moveToRow(int iRow)
 	m_pScrollBar->setValue(iRow);
 }
 
-void QFileView::selectText(int iPosStart, int iPosEnd, int iNbRow)
+void QFileView::selectText(int iPosStart, int iPosEnd, int iStartNbRow, int iNbRow)
 {
 	QTextCursor c;
 
 	c = m_pHumanEditor->textCursor();
-	c.setPosition(iPosStart);
-	c.setPosition(iPosEnd+iNbRow, QTextCursor::KeepAnchor);
+	c.setPosition(iPosStart+iStartNbRow);
+	c.setPosition(iPosEnd+iStartNbRow+iNbRow, QTextCursor::KeepAnchor);
 	m_pHumanEditor->setTextCursor(c);
 
 	c = m_pHexEditor->textCursor();
-	c.setPosition(iPosStart*3);
-	c.setPosition(iPosEnd*3+iNbRow-1, QTextCursor::KeepAnchor);
+	c.setPosition(iPosStart*3+iStartNbRow);
+	c.setPosition(iPosEnd*3+iStartNbRow+iNbRow-1, QTextCursor::KeepAnchor);
 	m_pHexEditor->setTextCursor(c);
 }
 
