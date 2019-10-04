@@ -6,6 +6,8 @@
  */
 
 #include "FileStructure/FileStructure.h"
+#include "FileStructure/FileStructureItem.h"
+#include "FileStructure/FileStructureComplexType.h"
 
 #include "StructureFileParserHandler.h"
 
@@ -55,10 +57,22 @@ FileStructureItem::ItemType StructureFileParserHandler::getFileStructureItemType
 		if(szType == "string"){
 			return FileStructureItem::STRING;
 		}
+		if(!szType.isEmpty()){
+			return FileStructureItem::COMPLEXTYPE;
+		}
 	}else if(szTagName == "list"){
 		return FileStructureItem::LIST;
 	}
 	return FileStructureItem::UNKNOWN;
+}
+
+void StructureFileParserHandler::appendFileStructureItem(const FileStructureItemSharedPtr& pItem, bool bUpdateParent)
+{
+	m_pCurrentParentItem->append(pItem);
+	if(bUpdateParent){
+		m_pCurrentParentItem = pItem;
+		m_stackCurrentItem.append(m_pCurrentParentItem);
+	}
 }
 
 bool StructureFileParserHandler::startElement(const QString &namespaceURI,
@@ -69,6 +83,7 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 	bool bRes = true;
 
 	FileStructureItemSharedPtr pItem;
+	FileStructureComplexTypeSharedPtr pComplexType;
 
 	if(qName == "structure_file"){
 		// Set version
@@ -93,9 +108,19 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		QString szSize = attributes.value("size");
 		QString szEndianness = attributes.value("endianness");
 		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
-		qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
-		pItem = FileStructureItem::createFIELD(szName, iType, iSize);
-		pItem->m_szExpr = szSize;
+		if(iType == FileStructureItem::COMPLEXTYPE){
+			pComplexType = m_pFileStructure->getComplexType(szType);
+			if(pComplexType){
+				pItem = FileStructureItem::createFIELD_ComplexType(szName, pComplexType);
+			}else{
+				qCritical("[XML] Cannot find complex type: %s", qPrintable(szName));
+				bRes = false;
+			}
+		}else{
+			qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
+			pItem = FileStructureItem::createFIELD(szName, iType, iSize);
+			pItem->m_szExpr = szSize;
+		}
         // Define endianess
 		if(!szEndianness.isEmpty()){
 			if(szEndianness == "big-endian"){
@@ -105,15 +130,14 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 				pItem->m_iFlags |= FileStructureItem::LittleEndian;
 			}
 		}
-		m_pCurrentParentItem->append(pItem);
+
+		appendFileStructureItem(pItem, false);
 	}
 
 	if(qName == "block"){
 		QString szName = attributes.value("name");
 		pItem = FileStructureItem::createBLOCK(szName);
-		m_pCurrentParentItem->append(pItem);
-		m_pCurrentParentItem = pItem;
-		m_stackCurrentItem.append(m_pCurrentParentItem);
+		appendFileStructureItem(pItem, true);
 	}
 
 	if(qName == "list"){
@@ -121,16 +145,19 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		QString szSize = attributes.value("size");
 		pItem = FileStructureItem::createLIST(szName, -1);
 		pItem->m_szExpr = szSize;
-		m_pCurrentParentItem->append(pItem);
-		m_pCurrentParentItem = pItem;
-		m_stackCurrentItem.append(m_pCurrentParentItem);
+		appendFileStructureItem(pItem, true);
 	}
 
 	if(qName == "condition"){
 		QString szExpr = attributes.value("expr");
 		pItem = FileStructureItem::createCOND(szExpr);
-		m_pCurrentParentItem->append(pItem);
-		m_pCurrentParentItem = pItem;
+		appendFileStructureItem(pItem, true);
+	}
+
+	if(qName == "complex_type"){
+		QString szName = attributes.value("name");
+		m_pCurrentComplexType = FileStructureComplexType::create(szName);
+		m_pCurrentParentItem = m_pCurrentComplexType->getRootItem();
 		m_stackCurrentItem.append(m_pCurrentParentItem);
 	}
 
@@ -146,6 +173,14 @@ bool StructureFileParserHandler::endElement(const QString &namespaceURI,
 	if(qName == "list" || qName == "condition" || qName == "block"){
 		m_stackCurrentItem.removeLast();
 		m_pCurrentParentItem = m_stackCurrentItem.last();
+	}
+
+	if(qName == "complex_type"){
+		m_pFileStructure->addComplexType(m_pCurrentComplexType);
+		m_pCurrentComplexType.clear();
+
+		m_pCurrentParentItem = m_pFileStructure->getRootItem();
+		m_stackCurrentItem.append(m_pCurrentParentItem);
 	}
 
 	return bRes;

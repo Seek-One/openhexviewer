@@ -31,10 +31,16 @@ public:
 private:
 	FileStructure* m_pFileStructure;
 
+	// FileStructureType building
+	FileStructureComplexTypeSharedPtr m_pCurrentComplexType;
+
+	// FileStructure building
 	FileStructureItemSharedPtr m_pCurrentParentItem;
 	QList<FileStructureItemSharedPtr> m_stackCurrentItem;
 
 	FileStructureItem::ItemType getFileStructureItemType(const QString& szTagName, const QString& szType);
+
+	void appendFileStructureItem(const FileStructureItemSharedPtr& pItem, bool bUpdateParent);
 };
 
 #endif /* SRC_XML_STRUCTUREFILEPARSERHANDLER_H_ */

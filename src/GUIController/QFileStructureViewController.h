@@ -14,7 +14,7 @@
 #include <QHash>
 #include <QModelIndex>
 
-#include "FileStructure/FileStructure.h"
+#include "FileStructure/FileStructureDefinitions.h"
 
 class QFileStructureView;
 class QFileStructureModel;

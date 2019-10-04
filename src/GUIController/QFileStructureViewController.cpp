@@ -34,6 +34,10 @@
 #include "GUI/QFileStructureView.h"
 #include "GUIModel/QFileStructureModel.h"
 
+#include "FileStructure/FileStructure.h"
+#include "FileStructure/FileStructureItem.h"
+#include "FileStructure/FileStructureComplexType.h"
+
 #include "XML/StructureFileParserHandler.h"
 
 #include "QFileStructureViewController.h"
@@ -284,6 +288,35 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		}
 	}
 		break;
+
+	case FileStructureItem::COMPLEXTYPE:
+	{
+		FileStructureComplexTypeSharedPtr pComplexType = pItem->m_pComplexType;
+
+		bRes = processFileStructureItem(pComplexType->getRootItem(), fileToRead, dict, pParentItem);
+
+
+		/*
+		QStandardItem* pBlockItem;
+
+		entryParams.szSize = "0";
+		appendEntry(entryParams, pParentItem, entryContext);
+
+		pBlockItem = entryContext.listColumns[0];
+
+		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
+			bRes = processFileStructureItem((*iter), fileToRead, dict, pBlockItem);
+			if(!bRes){
+				break;
+			}
+		}
+
+		if(bRes){
+			iOffsetEnd = fileToRead.pos();
+			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+		}*/
+	}
+	break;
 	case FileStructureItem::BLOCK:
 	{
 		QStandardItem* pBlockItem;

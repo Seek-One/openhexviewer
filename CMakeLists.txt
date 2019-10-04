@@ -160,6 +160,11 @@ set(APPLICATION_SOURCES
 	src/Event/QOpenFileEvent.h
 	src/FileStructure/FileStructure.cpp
 	src/FileStructure/FileStructure.h
+	src/FileStructure/FileStructureComplexType.cpp
+	src/FileStructure/FileStructureComplexType.h
+	src/FileStructure/FileStructureDefinitions.h
+	src/FileStructure/FileStructureItem.cpp
+	src/FileStructure/FileStructureItem.h
 	src/GUI/QAboutDialog.cpp
 	src/GUI/QAboutDialog.h
 	src/GUI/QFileView.cpp
