@@ -72,77 +72,101 @@
   </complex_type>
 
   <root>
+
     <!-- RIFF header -->
     <field name="RIFF" type="string" size="4" />
     <field name="FileSize" type="uint32" />
     <field name="FileType" type="string" size="4" />
+    <!-- RIFF header -->
 
-    <!-- HDRL header -->
-    <block name="HDLR">
-      <field name="LIST" type="string" size="4" />
-      <field name="Size" type="uint32" />
-      <field name="Type" type="string" size="4" />
-      <field name="AVIMAINHEADER" type="AVIMAINHEADER" />
-      <list name="streams" size="${dwStreams}">
-        <block name="STRL">
-          <field name="LIST" type="string" size="4" />
-          <field name="Size" type="uint32" />
-          <field name="Type" type="string" size="4" />
-          <block name="STRH">
-            <field name="AVISTREAMHEADER" type="AVISTREAMHEADER" />
-          </block>
-          <block name="STRF">
-            <field name="LIST" type="string" size="4" />
+    <list name="RIFFTags" size="${FileSize}-4" mode="bytes" >
+      <field name="TagType" type="string" size="4" />
+      <field name="TagSize" type="uint32" />
+     
+      <!-- RIFF list -->
+      <condition expr="${TagType} == 'LIST'">
+
+        <field name="TagName" type="string" size="4" />
+
+        <!-- HDRL header -->
+        <condition expr="${TagName} == 'hdrl'">
+          <field name="AVIMAINHEADER" type="AVIMAINHEADER" />
+          <list name="streams" size="${dwStreams}">
+            <block name="STRL">
+              <field name="LIST" type="string" size="4" />
+              <field name="Size" type="uint32" />
+              <field name="Type" type="string" size="4" />
+              <block name="STRH">
+                <field name="AVISTREAMHEADER" type="AVISTREAMHEADER" />
+              </block>
+              <block name="STRF">
+                <field name="LIST" type="string" size="4" />
+                <field name="Size" type="uint32" />
+                <condition expr="${fccType} == 'vids'">
+                  <field name="BITMAPINFOHEADER" type="BITMAPINFOHEADER" />
+                </condition>
+                <condition expr="${fccType} == 'auds'">
+                  <field name="WAVEFORMATEX" type="WAVEFORMATEX" />
+                </condition>
+                <condition expr="${fccType} == 'dats'">
+                  <field name="DataSize" type="uint32" size="4" />
+                  <field name="Data" type="bytes" size="${DataSize}-4" />
+                </condition>
+              </block>
+            </block>
+          </list>
+        </condition>
+
+        <!-- INFO List -->
+        <condition expr="${TagName} == 'INFO'">
+          <list name="infos" size="${TagSize}-4" mode="bytes">
+            <field name="Name" type="string" size="4" />
             <field name="Size" type="uint32" />
-            <condition expr="${fccType} == 'vids'">
-              <field name="BITMAPINFOHEADER" type="BITMAPINFOHEADER" />
-            </condition>
-            <condition expr="${fccType} == 'auds'">
-              <field name="WAVEFORMATEX" type="WAVEFORMATEX" />
-            </condition>
-            <condition expr="${fccType} == 'dats'">
-              <field name="DataSize" type="uint32" size="4" />
-              <field name="Data" type="bytes" size="${DataSize}-4" />
-            </condition>
-          </block>
-        </block>
-      </list>
-    </block>
+            <field name="Data" type="bytes" size="${Size}" />
+          </list>
+        </condition>
 
-    <!-- INFO List -->
-    <block name="INFO">
-      <field name="LIST" type="string" size="4" />
-      <field name="Size" type="uint32" />
-      <field name="Type" type="string" size="4" />
-      <list name="infos" size="${Size}-4" mode="bytes">
-        <field name="Name" type="string" size="4" />
-        <field name="Size" type="uint32" />
-        <field name="Data" type="bytes" size="${Size}" />
-      </list>
-    </block>
+        <!-- MOVI List -->
+        <condition expr="${TagName} == 'movi'">
+          <list name="frames" size="${TagSize}-4" mode="bytes">
+            <field name="ckid" type="string" size="4" />
+            <field name="dwSize" type="uint32" />
+            <field name="data" type="bytes" size="${dwSize}" />
+          </list>
+        </condition>
 
-    <!-- MOVI List -->
-    <block name="MOVI">
-      <field name="LIST" type="string" size="4" />
-      <field name="Size" type="uint32" />
-      <field name="Type" type="string" size="4" />
-      <list name="frames" size="${Size}-4" mode="bytes">
-        <field name="ckid" type="string" size="4" />
-        <field name="dwSize" type="uint32" />
-        <field name="data" type="bytes" size="${dwSize}" />
-      </list>
-    </block>
+        <!-- Unknown List -->
+        <condition expr="['hdrl', 'INFO', 'movi'].indexOf(${TagName}) == -1">
+          <field name="Data" type="bytes" size="${TagSize}-4" />
+        </condition>
 
-    <block name="idx1">
-      <field name="LIST" type="string" size="4" />
-      <field name="Size" type="uint32" />
-      <list name="idxs" size="${Size}" mode="bytes">
-        <field name="ckid" type="string" size="4" />
-        <field name="dwFlags" type="uint32" />
-        <field name="dwChunkOffset" type="uint32" />
-        <field name="dwChunkLength" type="uint32" />
-      </list>
-    </block>
+      </condition>
+      <!-- RIFF list -->
+
+      <!-- RIFF chunk -->
+      <condition expr="${TagType} != 'LIST'">
+
+        <!-- IDX1 List -->
+        <condition expr="${TagType} == 'idx1'">
+          <list name="idxs" size="${TagSize}" mode="bytes">
+            <field name="ckid" type="string" size="4" />
+            <field name="dwFlags" type="uint32" />
+            <field name="dwChunkOffset" type="uint32" />
+            <field name="dwChunkLength" type="uint32" />
+          </list>
+        </condition>
+
+        <!-- Unknown data -->
+        <condition expr="['idx1'].indexOf(${TagType}) == -1">
+          <field name="Data" type="bytes" size="${TagSize}" />
+        </condition>
+
+      </condition>
+      <!-- RIFF chunk -->
+
+    </list>
+
+    
   </root>
 
 </structure_file>
