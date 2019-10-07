@@ -57,7 +57,7 @@ private:
 	void appendDict(DictVariable& dict, const QString& szName, const QString& szValue);
 
 	bool prepareExpr(const QString& szExpression, const DictVariable& dict, QString& szNewExpression);
-	bool evaluateBooleanExpr(const QString& szExpression);
+	bool evaluateBooleanExpr(const QString& szExpression, bool& bError);
 	int evaluateIntExpr(const QString& szExpression);
 
 	bool isNumber(const QString& szStr) const;

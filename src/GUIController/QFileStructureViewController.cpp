@@ -423,7 +423,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				entryContextItem.listColumns[ColumnSize]->setText(QString::number(iOffsetEndItem-iOffsetStartItem));
 
 			}
-		}while(!bStop);
+		}while(!bStop && bRes);
 
 		if(bRes){
 			iOffsetEnd = fileToRead.pos();
@@ -434,11 +434,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	case FileStructureItem::COND:
 	{
 		QString szExpr;
-		prepareExpr(pItem->m_szExpr, dict, szExpr);
+		bRes = prepareExpr(pItem->m_szExpr, dict, szExpr);
 
-		//qDebug() << pItem->m_szExpr << " = " << szExpr;
+		bool bExprResult = false;
+		if(bRes){
+			bRes = evaluateBooleanExpr(szExpr, bExprResult);
+		}
+		qDebug() << pItem->m_szExpr << " = " << szExpr << " : " << bExprResult;
 
-		if(evaluateBooleanExpr(szExpr)){
+		if(bRes && bExprResult){
 			for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
 				bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem);
 				if(!bRes){
@@ -719,21 +723,22 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 	return bRes;
 }
 
-bool QFileStructureViewController::evaluateBooleanExpr(const QString& szExpression)
+bool QFileStructureViewController::evaluateBooleanExpr(const QString& szExpression, bool& bResult)
 {
 #if QT_VERSION_MAJOR >= 5
 	QJSEngine expression;
 	QJSValue result = expression.evaluate(szExpression);
 	if(result.isBool()){
-		return result.toBool();
+		bResult = result.toBool();
+		return true;
 	}else if(result.isError()){
-		qWarning("[FileStructure] Error to evaluate boolean expression");
+		qWarning("[FileStructure] Error to evaluate boolean expression : %s", qPrintable(szExpression));
 	}
 	return false;
 #else
 	QScriptEngine expression;
-	bool bRes = expression.evaluate(szExpression).toBool();
-	return bRes;
+	bResult = expression.evaluate(szExpression).toBool();
+	return true;
 #endif
 }
 
