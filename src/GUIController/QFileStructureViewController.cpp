@@ -30,6 +30,7 @@
 #include <QScriptEngine>
 #endif
 #include <QRegExp>
+#include <QMessageBox>
 
 #include "GUI/QFileStructureView.h"
 #include "GUIModel/QFileStructureModel.h"
@@ -209,6 +210,11 @@ void QFileStructureViewController::loadStructure()
 #endif
 		pTreeView->header()->resizeSection(0, 200);
 	}
+
+
+	if(!bRes){
+		QMessageBox::critical(m_pFileStructureView, tr("Error"), tr("Error while creating the structure of the file"));
+	}
 }
 
 
@@ -220,7 +226,7 @@ bool QFileStructureViewController::readFileWithStructure(const QString& szFilePa
 	bRes = fileToRead.open(QIODevice::ReadOnly);
 	if(bRes){
 		DictVariable dict;
-		processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, dict, NULL);
+		bRes = processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, dict, NULL);
 		fileToRead.close();
 	}
 
@@ -243,9 +249,12 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	if(pItem->m_iSize >= 0){
 		szSizeText = QString::number(pItem->m_iSize);
 	}else if(!pItem->m_szExpr.isEmpty()){
-		prepareExpr(pItem->m_szExpr, dict, szTmp);
+		bRes = prepareExpr(pItem->m_szExpr, dict, szTmp);
 		iSizeExpr = evaluateIntExpr(szTmp);
 		szSizeText = QString::number(iSizeExpr);
+	}
+	if(!bRes){
+		return false;
 	}
 
 	qint64 iOffsetStart = fileToRead.pos();
@@ -583,6 +592,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
         }else{
 		    entryParams.szValue = "";
         }
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 		appendEntry(entryParams, pParentItem, entryContext);
 	}
 		break;
@@ -679,6 +689,10 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 
 				if(dict.contains(szVarName)){
 					szDictValue = dict.value(szVarName);
+					// String must have simple quote
+					if(!isNumber(szDictValue)){
+						szDictValue = "'" + szDictValue + "'";
+					}
 					szNewExpression = szNewExpression.replace("${" + szVarName + "}", szDictValue);
 				}
 			}
@@ -695,11 +709,18 @@ bool QFileStructureViewController::evaluateBooleanExpr(const QString& szExpressi
 {
 #if QT_VERSION_MAJOR >= 5
 	QJSEngine expression;
+	QJSValue result = expression.evaluate(szExpression);
+	if(result.isBool()){
+		return result.toBool();
+	}else if(result.isError()){
+		qWarning("[FileStructure] Error to evaluate boolean expression");
+	}
+	return false;
 #else
 	QScriptEngine expression;
-#endif
 	bool bRes = expression.evaluate(szExpression).toBool();
 	return bRes;
+#endif
 }
 
 int QFileStructureViewController::evaluateIntExpr(const QString& szExpression)
@@ -712,4 +733,15 @@ int QFileStructureViewController::evaluateIntExpr(const QString& szExpression)
 	int iRes = (int)expression.evaluate(szExpression).toInt32();
 #endif
 	return iRes;
+}
+
+bool QFileStructureViewController::isNumber(const QString& szStr) const
+{
+	for (int i =0;i<szStr.size();i++)
+	{
+		if (!szStr[i].isDigit()){
+			return false;
+		}
+	}
+	return true;
 }

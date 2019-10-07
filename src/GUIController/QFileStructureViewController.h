@@ -60,6 +60,8 @@ private:
 	bool evaluateBooleanExpr(const QString& szExpression);
 	int evaluateIntExpr(const QString& szExpression);
 
+	bool isNumber(const QString& szStr) const;
+
 private:
 	QFileStructureView* m_pFileStructureView;
 
