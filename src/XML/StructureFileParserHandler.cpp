@@ -142,8 +142,18 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 
 	if(qName == "list"){
 		QString szName = attributes.value("name");
+		QString szSizeMode = attributes.value("mode");
 		QString szSize = attributes.value("size");
-		pItem = FileStructureItem::createLIST(szName, -1);
+		pItem = FileStructureItem::createLIST(szName);
+		if(!szSizeMode.isEmpty()){
+			if(szSizeMode == "bytes"){
+				pItem->m_iSizeMode = FileStructureItem::ModeBytes;
+			}else{
+				pItem->m_iSizeMode = FileStructureItem::ModeCount;
+			}
+		}else{
+			pItem->m_iSizeMode = FileStructureItem::ModeCount;
+		}
 		pItem->m_szExpr = szSize;
 		appendFileStructureItem(pItem, true);
 	}

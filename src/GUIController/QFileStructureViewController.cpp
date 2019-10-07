@@ -350,8 +350,10 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::LIST:
 	{
-		qint64 iMaxCount = iSizeExpr;
+		qint64 iMaxSize = iSizeExpr;
 		qint64 iCount = 0;
+		qint64 iOffsetStartList = fileToRead.pos();
+
 
 		QStandardItem* pCurrentListItem;
 		qint64 iOffsetStartItem;
@@ -362,17 +364,27 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		entryParams.szSize = "0";
 		appendEntry(entryParams, pParentItem, entryContext);
 
+		FileStructureItem::SizeMode iSizeMode = pItem->m_iSizeMode;
+
 		bool bStop = false;
 		do{
 			// Check stop condition
-			if(iMaxCount == -1){
-				iOffsetCurrent = fileToRead.pos();
+			iOffsetCurrent = fileToRead.pos();
+			if(iMaxSize == -1){
 				if(iOffsetCurrent >= fileToRead.size()){
 					bStop = true;
 				}
-			}else if(iCount == iMaxCount){
-				// If count is set to
-				bStop = true;
+			}else{
+				if(iSizeMode == FileStructureItem::ModeCount){
+					if(iCount == iMaxSize){
+						// If count is set to
+						bStop = true;
+					}
+				}else{
+					if((iOffsetCurrent - iOffsetStartList) >= iMaxSize){
+						bStop = true;
+					}
+				}
 			}
 
 			// Iterate over all children
@@ -578,8 +590,10 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::BYTES:
 	{
-		bRes = fileToRead.seek(iOffsetStart + iSizeExpr);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(iSizeExpr > 0){
+			bRes = fileToRead.seek(iOffsetStart + iSizeExpr);
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::STRING:

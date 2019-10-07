@@ -10,6 +10,7 @@
 FileStructureItem::FileStructureItem()
 {
 	m_type = FileStructureItem::UNKNOWN;
+	m_iSizeMode = ModeBytes,
 	m_iSize = -1;
 	m_iFlags = 0;
 }
@@ -68,12 +69,13 @@ FileStructureItemSharedPtr FileStructureItem::createBLOCK(const QString& szName)
 	return pItem;
 }
 
-FileStructureItemSharedPtr FileStructureItem::createLIST(const QString& szName, qint64 iSize)
+FileStructureItemSharedPtr FileStructureItem::createLIST(const QString& szName)
 {
 	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
 	pItem->m_szName = szName;
 	pItem->m_type = LIST;
-	pItem->m_iSize = iSize;
+	pItem->m_iSizeMode = ModeCount;
+	pItem->m_iSize = -1;
 	return pItem;
 }
 

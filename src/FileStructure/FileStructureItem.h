@@ -43,6 +43,11 @@ public:
 		ROOT
 	};
 
+	enum SizeMode {
+		ModeBytes = 1,
+		ModeCount
+	};
+
     enum ItemFlag {
 		LittleEndian = 0x01,
 		BigEndian = 0x02,
@@ -57,7 +62,7 @@ public:
 	static FileStructureItemSharedPtr createFIELD(const QString& szName, ItemType type, qint64 iSize);
 	static FileStructureItemSharedPtr createFIELD_ComplexType(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType);
 	static FileStructureItemSharedPtr createBLOCK(const QString& szName);
-	static FileStructureItemSharedPtr createLIST(const QString& szName, qint64 iSize);
+	static FileStructureItemSharedPtr createLIST(const QString& szName);
 	static FileStructureItemSharedPtr createCOND(const QString& szExpr);
 
 	void append(const FileStructureItemSharedPtr& pItem);
@@ -67,8 +72,12 @@ public:
 public:
 	QString m_szName;
 	ItemType m_type;
-	qint64 m_iSize;
+
+	SizeMode m_iSizeMode;
+	qint64 m_iSize; // Size in bytes
+
 	FileStructureComplexTypeSharedPtr m_pComplexType;
+
 	int m_iFlags;
 
 	QString m_szExpr; // COND
