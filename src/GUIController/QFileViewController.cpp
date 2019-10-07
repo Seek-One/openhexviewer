@@ -151,7 +151,7 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 void QFileViewController::updateDisplayData()
 {
 	m_iBytePerLine = m_pFileView->getBytePerLine();
-	m_iTotalRowCount = floor(m_iFileSize / (float)m_iBytePerLine);
+	m_iTotalRowCount = ceil(m_iFileSize / (float)m_iBytePerLine);
 	m_iVisibleRowCount = m_pFileView->getVisibleRowCount();
 	m_pFileView->setRowCount(m_iTotalRowCount);
 }
