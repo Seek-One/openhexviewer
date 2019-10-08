@@ -37,6 +37,7 @@ public:
 		BLOCK,
 		// Collection
 		LIST,
+		LIST_ITEM_INFOS,
 		// Condition
 		COND,
 		// Root
@@ -64,6 +65,7 @@ public:
 	static FileStructureItemSharedPtr createFIELD_ComplexType(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType);
 	static FileStructureItemSharedPtr createBLOCK(const QString& szName);
 	static FileStructureItemSharedPtr createLIST(const QString& szName);
+	static FileStructureItemSharedPtr createLIST_ITEM_INFOS(const QString& szName);
 	static FileStructureItemSharedPtr createCOND(const QString& szExpr);
 
 	void append(const FileStructureItemSharedPtr& pItem);

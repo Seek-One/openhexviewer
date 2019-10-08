@@ -79,6 +79,14 @@ FileStructureItemSharedPtr FileStructureItem::createLIST(const QString& szName)
 	return pItem;
 }
 
+FileStructureItemSharedPtr FileStructureItem::createLIST_ITEM_INFOS(const QString& szName)
+{
+	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
+	pItem->m_szExpr = szName;
+	pItem->m_type = LIST_ITEM_INFOS;
+	return pItem;
+}
+
 FileStructureItemSharedPtr FileStructureItem::createCOND(const QString& szExpr)
 {
 	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
@@ -107,6 +115,7 @@ QString FileStructureItem::getTypeString() const
 	case BYTES: return "bytes";
 	case STRING: return "string";
 	case LIST: return "list";
+	case LIST_ITEM_INFOS: return "list_item_infos";
 	case COND: return "cond";
 	case ROOT: return "root";
 	default:

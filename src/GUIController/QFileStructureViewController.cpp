@@ -430,6 +430,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				iOffsetEndItem = fileToRead.pos();
 				entryContextItem.listColumns[ColumnSize]->setText(QString::number(iOffsetEndItem-iOffsetStartItem));
 
+				if(!m_szListItemName.isNull()){
+					entryContextItem.listColumns[0]->setText(m_szListItemName);
+					m_szListItemName = QString();
+				}
+
 			}
 		}while(!bStop && bRes);
 
@@ -441,6 +446,16 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		}
 	}
 		break;
+	case FileStructureItem::LIST_ITEM_INFOS:
+	{
+		QString szExpr;
+		bRes = prepareExpr(pItem->m_szExpr, dict, szExpr);
+		m_szListItemName = szExpr;
+
+		qDebug("list item %s", qPrintable(m_szListItemName));
+
+		break;
+	}
 	case FileStructureItem::COND:
 	{
 		QString szExpr;
@@ -717,10 +732,6 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 
 				if(dict.contains(szVarName)){
 					szDictValue = dict.value(szVarName);
-					// String must have simple quote
-					if(!isNumber(szDictValue)){
-						szDictValue = "'" + szDictValue + "'";
-					}
 					szNewExpression = szNewExpression.replace("${" + szVarName + "}", szDictValue);
 				}
 			}

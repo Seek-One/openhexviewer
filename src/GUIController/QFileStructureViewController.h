@@ -68,6 +68,8 @@ private:
 	Endianness::Mode m_iDefaultEndianness;
 	QString m_szCurrentFilePath;
 
+	QString m_szListItemName;
+
 	QFileStructureModel* m_pModel;
 };
 

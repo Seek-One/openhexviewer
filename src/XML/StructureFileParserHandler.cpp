@@ -164,6 +164,12 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		appendFileStructureItem(pItem, true);
 	}
 
+	if(qName == "list_item_infos"){
+		QString szExpr = attributes.value("name");
+		pItem = FileStructureItem::createLIST_ITEM_INFOS(szExpr);
+		appendFileStructureItem(pItem, false);
+	}
+
 	if(qName == "condition"){
 		QString szExpr = attributes.value("expr");
 		pItem = FileStructureItem::createCOND(szExpr);
