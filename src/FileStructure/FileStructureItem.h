@@ -51,6 +51,7 @@ public:
     enum ItemFlag {
 		LittleEndian = 0x01,
 		BigEndian = 0x02,
+		FlatList = 0x04,
     };
 
 public:

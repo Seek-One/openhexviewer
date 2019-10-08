@@ -144,6 +144,7 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		QString szName = attributes.value("name");
 		QString szSizeMode = attributes.value("mode");
 		QString szSize = attributes.value("size");
+		QString szDisplay = attributes.value("display");
 		pItem = FileStructureItem::createLIST(szName);
 		if(!szSizeMode.isEmpty()){
 			if(szSizeMode == "bytes"){
@@ -155,6 +156,11 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 			pItem->m_iSizeMode = FileStructureItem::ModeCount;
 		}
 		pItem->m_szExpr = szSize;
+
+		if(szDisplay == "flat"){
+			pItem->m_iFlags |= FileStructureItem::FlatList;
+		}
+
 		appendFileStructureItem(pItem, true);
 	}
 

@@ -361,8 +361,12 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iOffsetEndItem;
 		qint64 iOffsetCurrent;
 
+		bool bIsFlat = (pItem->m_iFlags & FileStructureItem::FlatList);
+
 		entryParams.szSize = "0";
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(!bIsFlat){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 
 		FileStructureItem::SizeMode iSizeMode = pItem->m_iSizeMode;
 
@@ -408,7 +412,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				entryParamsItem.szOffsetStart = szOffsetStartItemText;
 
 				EntryContext entryContextItem;
-				appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+				if(bIsFlat){
+					appendEntry(entryParamsItem, pParentItem, entryContextItem);
+				}else{
+					appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+				}
 
 				pCurrentListItem = entryContextItem.listColumns[0];
 
@@ -427,7 +435,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		if(bRes){
 			iOffsetEnd = fileToRead.pos();
-			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+			if(!bIsFlat){
+				entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+			}
 		}
 	}
 		break;
@@ -440,7 +450,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		if(bRes){
 			bRes = evaluateBooleanExpr(szExpr, bExprResult);
 		}
-		qDebug() << pItem->m_szExpr << " = " << szExpr << " : " << bExprResult;
+		//qDebug() << pItem->m_szExpr << " = " << szExpr << " : " << bExprResult;
 
 		if(bRes && bExprResult){
 			for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
