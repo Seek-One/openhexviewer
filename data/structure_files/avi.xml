@@ -79,7 +79,7 @@
     <field name="FileType" type="string" size="4" />
     <!-- RIFF header -->
 
-    <list name="RIFFTags" size="${FileSize}-4" mode="bytes" >
+    <list name="RIFFTags" size="${FileSize}-4" mode="bytes" display="flat" >
       <field name="TagType" type="string" size="4" />
       <field name="TagSize" type="uint32" />
      
