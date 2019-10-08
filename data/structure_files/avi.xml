@@ -82,14 +82,14 @@
     <list name="RIFFTags" size="${FileSize}-4" mode="bytes" display="flat" >
       <field name="TagType" type="string" size="4" />
       <field name="TagSize" type="uint32" />
-     
+
       <!-- RIFF list -->
-      <condition expr="${TagType} == 'LIST'">
+      <condition expr="'${TagType}' == 'LIST'">
 
         <field name="TagName" type="string" size="4" />
 
         <!-- HDRL header -->
-        <condition expr="${TagName} == 'hdrl'">
+        <condition expr="'${TagName}' == 'hdrl'">
           <field name="AVIMAINHEADER" type="AVIMAINHEADER" />
           <list name="streams" size="${dwStreams}">
             <block name="STRL">
@@ -102,13 +102,13 @@
               <block name="STRF">
                 <field name="LIST" type="string" size="4" />
                 <field name="Size" type="uint32" />
-                <condition expr="${fccType} == 'vids'">
+                <condition expr="'${fccType}' == 'vids'">
                   <field name="BITMAPINFOHEADER" type="BITMAPINFOHEADER" />
                 </condition>
-                <condition expr="${fccType} == 'auds'">
+                <condition expr="'${fccType}' == 'auds'">
                   <field name="WAVEFORMATEX" type="WAVEFORMATEX" />
                 </condition>
-                <condition expr="${fccType} == 'dats'">
+                <condition expr="'${fccType}' == 'dats'">
                   <field name="DataSize" type="uint32" size="4" />
                   <field name="Data" type="bytes" size="${DataSize}-4" />
                 </condition>
@@ -118,7 +118,7 @@
         </condition>
 
         <!-- INFO List -->
-        <condition expr="${TagName} == 'INFO'">
+        <condition expr="'${TagName}' == 'INFO'">
           <list name="infos" size="${TagSize}-4" mode="bytes">
             <field name="Name" type="string" size="4" />
             <field name="Size" type="uint32" />
@@ -127,7 +127,7 @@
         </condition>
 
         <!-- MOVI List -->
-        <condition expr="${TagName} == 'movi'">
+        <condition expr="'${TagName}' == 'movi'">
           <list name="frames" size="${TagSize}-4" mode="bytes">
             <field name="ckid" type="string" size="4" />
             <field name="dwSize" type="uint32" />
@@ -136,18 +136,20 @@
         </condition>
 
         <!-- Unknown List -->
-        <condition expr="['hdrl', 'INFO', 'movi'].indexOf(${TagName}) == -1">
+        <condition expr="['hdrl', 'INFO', 'movi'].indexOf('${TagName}') == -1">
           <field name="Data" type="bytes" size="${TagSize}-4" />
         </condition>
+
+        <list_item_infos name="${TagName}" />
 
       </condition>
       <!-- RIFF list -->
 
       <!-- RIFF chunk -->
-      <condition expr="${TagType} != 'LIST'">
+      <condition expr="'${TagType}' != 'LIST'">
 
         <!-- IDX1 List -->
-        <condition expr="${TagType} == 'idx1'">
+        <condition expr="'${TagType}' == 'idx1'">
           <list name="idxs" size="${TagSize}" mode="bytes">
             <field name="ckid" type="string" size="4" />
             <field name="dwFlags" type="uint32" />
@@ -157,9 +159,11 @@
         </condition>
 
         <!-- Unknown data -->
-        <condition expr="['idx1'].indexOf(${TagType}) == -1">
+        <condition expr="['idx1'].indexOf('${TagType}') == -1">
           <field name="Data" type="bytes" size="${TagSize}" />
         </condition>
+
+        <list_item_infos name="${TagType}" />
 
       </condition>
       <!-- RIFF chunk -->
