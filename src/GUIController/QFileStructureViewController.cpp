@@ -451,9 +451,6 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		QString szExpr;
 		bRes = prepareExpr(pItem->m_szExpr, dict, szExpr);
 		m_szListItemName = szExpr;
-
-		qDebug("list item %s", qPrintable(m_szListItemName));
-
 		break;
 	}
 	case FileStructureItem::COND:
