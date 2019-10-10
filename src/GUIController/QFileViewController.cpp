@@ -135,6 +135,7 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 
 	qint64 offsetEnd = offset+size-1;
 	int iRowEnd = offsetEnd / m_iBytePerLine;
+	iRowEnd = qMin(iRowEnd, iRowStart+m_iVisibleRowCount);
 	//int iColEnd = offsetEnd % m_iBytePerLine;
 
 	int iFirstVisibleRow = std::min(iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
