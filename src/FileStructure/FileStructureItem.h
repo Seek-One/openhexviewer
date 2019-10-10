@@ -32,6 +32,7 @@ public:
 		BYTES,
 		STRING,
 		// Complex type
+		FIELDCOMPLEXTYPE,
 		COMPLEXTYPE,
 		// Block
 		BLOCK,
@@ -40,6 +41,8 @@ public:
 		LIST_ITEM_INFOS,
 		// Condition
 		COND,
+		// Offset,
+		SEEK,
 		// Root
 		ROOT
 	};
@@ -50,10 +53,21 @@ public:
 	};
 
     enum ItemFlag {
+    	// Endianess
 		LittleEndian = 0x01,
 		BigEndian = 0x02,
-		FlatList = 0x04,
+		// Display
+		DisplayNone = 0x04,
+		DisplayFlatList = 0x08,
     };
+
+	enum SeekMode {
+		SeekModeNone = 0,
+		SeekModeAbsolute = 1,
+		SeekModeBackward = 2,
+		SeekModeForward = 3
+	};
+
 
 public:
 	FileStructureItem();
@@ -62,11 +76,13 @@ public:
 	static qint64 getBasicItemTypeSize(FileStructureItem::ItemType type);
 
 	static FileStructureItemSharedPtr createFIELD(const QString& szName, ItemType type, qint64 iSize);
-	static FileStructureItemSharedPtr createFIELD_ComplexType(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType);
+	static FileStructureItemSharedPtr createFIELD_COMPLEXTYPE(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType);
+	static FileStructureItemSharedPtr createCOMPLEXTYPE(const QString& szName);
 	static FileStructureItemSharedPtr createBLOCK(const QString& szName);
 	static FileStructureItemSharedPtr createLIST(const QString& szName);
 	static FileStructureItemSharedPtr createLIST_ITEM_INFOS(const QString& szName);
 	static FileStructureItemSharedPtr createCOND(const QString& szExpr);
+	static FileStructureItemSharedPtr createSEEK(const QString& szMode, const QString& szSize);
 
 	void append(const FileStructureItemSharedPtr& pItem);
 
@@ -78,6 +94,8 @@ public:
 
 	SizeMode m_iSizeMode;
 	qint64 m_iSize; // Size in bytes
+
+	SeekMode m_iSeekMode;
 
 	FileStructureComplexTypeSharedPtr m_pComplexType;
 

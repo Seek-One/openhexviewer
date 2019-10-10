@@ -10,7 +10,8 @@
 FileStructureItem::FileStructureItem()
 {
 	m_type = FileStructureItem::UNKNOWN;
-	m_iSizeMode = ModeBytes,
+	m_iSizeMode = ModeBytes;
+	m_iSeekMode = SeekModeNone;
 	m_iSize = -1;
 	m_iFlags = 0;
 }
@@ -50,13 +51,22 @@ FileStructureItemSharedPtr FileStructureItem::createFIELD(const QString& szName,
 	return pItem;
 }
 
-FileStructureItemSharedPtr FileStructureItem::createFIELD_ComplexType(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType)
+FileStructureItemSharedPtr FileStructureItem::createFIELD_COMPLEXTYPE(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType)
+{
+	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
+	pItem->m_szName = szName;
+	pItem->m_type = FIELDCOMPLEXTYPE;
+	pItem->m_iSize = -1;
+	pItem->m_pComplexType = pComplexType;
+	return pItem;
+}
+
+FileStructureItemSharedPtr FileStructureItem::createCOMPLEXTYPE(const QString& szName)
 {
 	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
 	pItem->m_szName = szName;
 	pItem->m_type = COMPLEXTYPE;
 	pItem->m_iSize = -1;
-	pItem->m_pComplexType = pComplexType;
 	return pItem;
 }
 
@@ -92,6 +102,22 @@ FileStructureItemSharedPtr FileStructureItem::createCOND(const QString& szExpr)
 	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
 	pItem->m_szExpr = szExpr;
 	pItem->m_type = COND;
+	pItem->m_iSize = -1;
+	return pItem;
+}
+
+FileStructureItemSharedPtr FileStructureItem::createSEEK(const QString& szMode, const QString& szOffset)
+{
+	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
+	pItem->m_szExpr = szOffset;
+	pItem->m_type = SEEK;
+	pItem->m_iSeekMode = SeekModeAbsolute;
+	if(szMode == "backward"){
+		pItem->m_iSeekMode = SeekModeBackward;
+	}
+	if(szMode == "forward"){
+		pItem->m_iSeekMode = SeekModeForward;
+	}
 	pItem->m_iSize = -1;
 	return pItem;
 }

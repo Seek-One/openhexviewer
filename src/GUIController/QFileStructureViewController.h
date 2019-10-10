@@ -13,6 +13,7 @@
 #include <QFile>
 #include <QHash>
 #include <QModelIndex>
+#include <QStack>
 
 #include "FileStructure/FileStructureDefinitions.h"
 
@@ -51,7 +52,7 @@ private:
 
 	bool readFileWithStructure(const QString& szFilePath, const FileStructure& loadedFileStructure);
 
-	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem);
+	bool processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem, bool bParentVisible);
 
 	void appendEntry(const EntryParams& params, QStandardItem* pParentItem, EntryContext& context);
 	void appendDict(DictVariable& dict, const QString& szName, const QString& szValue);
@@ -68,9 +69,11 @@ private:
 	Endianness::Mode m_iDefaultEndianness;
 	QString m_szCurrentFilePath;
 
-	QString m_szListItemName;
+	QStack<QString> m_stackListItemInfos; // For now just the list name
 
 	QFileStructureModel* m_pModel;
+
+	void trace(const QString& szItem, const QString& szName, const QFile& file, const QString& szMessage);
 };
 
 #endif /* SRC_GUICONTROLLER_QFILESTRUCTUREVIEWCONTROLLER_H_ */

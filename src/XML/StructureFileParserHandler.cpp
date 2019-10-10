@@ -106,12 +106,14 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		QString szName = attributes.value("name");
 		QString szType = attributes.value("type");
 		QString szSize = attributes.value("size");
+		QString szDisplay = attributes.value("display");
 		QString szEndianness = attributes.value("endianness");
 		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
 		if(iType == FileStructureItem::COMPLEXTYPE){
 			pComplexType = m_pFileStructure->getComplexType(szType);
 			if(pComplexType){
-				pItem = FileStructureItem::createFIELD_ComplexType(szName, pComplexType);
+				pItem = FileStructureItem::createFIELD_COMPLEXTYPE(szName, pComplexType);
+				pItem->m_szExpr = szSize;
 			}else{
 				qCritical("[XML] Cannot find complex type: %s", qPrintable(szName));
 				bRes = false;
@@ -129,6 +131,14 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 			if(szEndianness == "little-endian"){
 				pItem->m_iFlags |= FileStructureItem::LittleEndian;
 			}
+		}
+
+		// Dispaly mode
+		if(szDisplay == "none"){
+			pItem->m_iFlags |= FileStructureItem::DisplayNone;
+		}
+		if(szDisplay == "flat"){
+			pItem->m_iFlags |= FileStructureItem::DisplayFlatList;
 		}
 
 		appendFileStructureItem(pItem, false);
@@ -157,8 +167,12 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		}
 		pItem->m_szExpr = szSize;
 
+		// Dispaly mode
+		if(szDisplay == "none"){
+			pItem->m_iFlags |= FileStructureItem::DisplayNone;
+		}
 		if(szDisplay == "flat"){
-			pItem->m_iFlags |= FileStructureItem::FlatList;
+			pItem->m_iFlags |= FileStructureItem::DisplayFlatList;
 		}
 
 		appendFileStructureItem(pItem, true);
@@ -181,6 +195,13 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 		m_pCurrentComplexType = FileStructureComplexType::create(szName);
 		m_pCurrentParentItem = m_pCurrentComplexType->getRootItem();
 		m_stackCurrentItem.append(m_pCurrentParentItem);
+	}
+
+	if(qName == "seek"){
+		QString szMode = attributes.value("mode");
+		QString szOffset = attributes.value("offset");
+		pItem = FileStructureItem::createSEEK(szMode, szOffset);
+		appendFileStructureItem(pItem, false);
 	}
 
 	return bRes;

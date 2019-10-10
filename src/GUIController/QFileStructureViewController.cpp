@@ -226,7 +226,7 @@ bool QFileStructureViewController::readFileWithStructure(const QString& szFilePa
 	bRes = fileToRead.open(QIODevice::ReadOnly);
 	if(bRes){
 		DictVariable dict;
-		bRes = processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, dict, NULL);
+		bRes = processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, dict, NULL, true);
 		fileToRead.close();
 	}
 
@@ -234,7 +234,7 @@ bool QFileStructureViewController::readFileWithStructure(const QString& szFilePa
 }
 
 
-bool QFileStructureViewController::processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem)
+bool QFileStructureViewController::processFileStructureItem(const FileStructureItemSharedPtr& pItem, QFile& fileToRead, DictVariable& dict, QStandardItem* pParentItem, bool bParentVisible)
 {
 	bool bRes = true;
 
@@ -284,13 +284,16 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 #endif
 	}
 
+	bool bIsVisible = bParentVisible &&  !(pItem->m_iFlags & FileStructureItem::DisplayNone);
+
 	EntryContext entryContext;
 
 	switch(pItem->m_type){
 	case FileStructureItem::ROOT:
 	{
+		trace("ROOT", pItem->m_szName, fileToRead, QString("%0 childrens").arg(pItem->m_listChildren.count()));
 		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-			bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem);
+			bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem, bIsVisible);
 			if(!bRes){
 				break;
 			}
@@ -298,45 +301,70 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	}
 		break;
 
-	case FileStructureItem::COMPLEXTYPE:
+	case FileStructureItem::FIELDCOMPLEXTYPE:
 	{
 		FileStructureComplexTypeSharedPtr pComplexType = pItem->m_pComplexType;
 
-		bRes = processFileStructureItem(pComplexType->getRootItem(), fileToRead, dict, pParentItem);
-
-
-		/*
-		QStandardItem* pBlockItem;
-
+		QStandardItem* pComplexTypeItem;
 		entryParams.szSize = "0";
-		appendEntry(entryParams, pParentItem, entryContext);
+		entryParams.szType = pComplexType->getName();
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 
-		pBlockItem = entryContext.listColumns[0];
+		pComplexTypeItem = entryContext.listColumns[0];
 
+		bRes = processFileStructureItem(pComplexType->getRootItem(), fileToRead, dict, pComplexTypeItem, bIsVisible);
+
+		if(bRes && bIsVisible){
+			iOffsetEnd = fileToRead.pos();
+			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+		}
+	}
+	break;
+
+	case FileStructureItem::COMPLEXTYPE:
+	{
+		trace("COMPLEXTYPE", pItem->m_szName, fileToRead, QString("%0 childrens").arg(pItem->m_listChildren.count()));
 		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-			bRes = processFileStructureItem((*iter), fileToRead, dict, pBlockItem);
+			bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem, bIsVisible);
 			if(!bRes){
 				break;
 			}
 		}
-
-		if(bRes){
-			iOffsetEnd = fileToRead.pos();
-			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
-		}*/
 	}
 	break;
+
+	case FileStructureItem::SEEK:
+	{
+		trace("SEEK", pItem->m_szName, fileToRead, QString("mode:%0, offset:%1").arg(pItem->m_iSeekMode).arg(iSizeExpr));
+		switch(pItem->m_iSeekMode){
+		case FileStructureItem::SeekModeAbsolute:
+			fileToRead.seek(iSizeExpr); break;
+		case FileStructureItem::SeekModeBackward:
+			fileToRead.seek(fileToRead.pos() - iSizeExpr); break;
+		case FileStructureItem::SeekModeForward:
+			fileToRead.seek(fileToRead.pos() + iSizeExpr); break;
+		default:
+			break;
+		}
+
+	}
+	break;
+
 	case FileStructureItem::BLOCK:
 	{
 		QStandardItem* pBlockItem;
 
 		entryParams.szSize = "0";
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 
 		pBlockItem = entryContext.listColumns[0];
 
 		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-			bRes = processFileStructureItem((*iter), fileToRead, dict, pBlockItem);
+			bRes = processFileStructureItem((*iter), fileToRead, dict, pBlockItem, bIsVisible);
 			if(!bRes){
 				break;
 			}
@@ -361,10 +389,12 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iOffsetEndItem;
 		qint64 iOffsetCurrent;
 
-		bool bIsFlat = (pItem->m_iFlags & FileStructureItem::FlatList);
+		trace("LIST", pItem->m_szName, fileToRead, QString("%0 childrens").arg(pItem->m_listChildren.count()));
+
+		bool bIsFlat = (pItem->m_iFlags & FileStructureItem::DisplayFlatList);
 
 		entryParams.szSize = "0";
-		if(!bIsFlat){
+		if(bIsVisible && !bIsFlat){
 			appendEntry(entryParams, pParentItem, entryContext);
 		}
 
@@ -412,16 +442,20 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				entryParamsItem.szOffsetStart = szOffsetStartItemText;
 
 				EntryContext entryContextItem;
-				if(bIsFlat){
-					appendEntry(entryParamsItem, pParentItem, entryContextItem);
-				}else{
-					appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+				if(bIsVisible){
+					if(bIsFlat){
+						appendEntry(entryParamsItem, pParentItem, entryContextItem);
+					}else{
+						appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+					}
 				}
 
 				pCurrentListItem = entryContextItem.listColumns[0];
 
+				m_stackListItemInfos.push(QString());
+
 				for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-					bRes = processFileStructureItem((*iter), fileToRead, dict, pCurrentListItem);
+					bRes = processFileStructureItem((*iter), fileToRead, dict, pCurrentListItem, bIsVisible);
 					if(!bRes){
 						break;
 					}
@@ -430,10 +464,13 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				iOffsetEndItem = fileToRead.pos();
 				entryContextItem.listColumns[ColumnSize]->setText(QString::number(iOffsetEndItem-iOffsetStartItem));
 
-				if(!m_szListItemName.isNull()){
-					entryContextItem.listColumns[0]->setText(m_szListItemName);
-					m_szListItemName = QString();
+				// Handle list infos
+				QString szListItemName;
+				szListItemName = m_stackListItemInfos.top();
+				if(!szListItemName.isNull()){
+					entryContextItem.listColumns[0]->setText(szListItemName);
 				}
+				m_stackListItemInfos.pop();
 
 			}
 		}while(!bStop && bRes);
@@ -450,7 +487,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		QString szExpr;
 		bRes = prepareExpr(pItem->m_szExpr, dict, szExpr);
-		m_szListItemName = szExpr;
+		m_stackListItemInfos.top() = szExpr;
 		break;
 	}
 	case FileStructureItem::COND:
@@ -463,10 +500,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			bRes = evaluateBooleanExpr(szExpr, bExprResult);
 		}
 		//qDebug() << pItem->m_szExpr << " = " << szExpr << " : " << bExprResult;
+		trace("COND", pItem->m_szName, fileToRead, QString("%0 = %1").arg(pItem->m_szExpr).arg(szExpr));
 
 		if(bRes && bExprResult){
 			for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-				bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem);
+				bRes = processFileStructureItem((*iter), fileToRead, dict, pParentItem, bIsVisible);
 				if(!bRes){
 					break;
 				}
@@ -490,7 +528,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::UINT8:
@@ -509,7 +549,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::INT16:
@@ -524,7 +566,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::UINT16:
@@ -543,7 +587,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::INT32:
@@ -558,13 +604,18 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::UINT32:
 	{
 		quint32 i;
 		bRes = fileToRead.read((char*)&i, sizeof(i));
+
+		trace("UNIT32", pItem->m_szName, fileToRead, QString("%0").arg(i));
+
 		switch(iEndiannessMode){
 		case Endianness::BigEndian:
 #if QT_VERSION_MAJOR >= 5
@@ -577,7 +628,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::INT64:
@@ -592,7 +645,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 	break;
 	case FileStructureItem::UINT64:
@@ -611,14 +666,18 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 			entryParams.szValue = QString::number(i); break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	case FileStructureItem::BYTES:
 	{
 		if(iSizeExpr > 0){
 			bRes = fileToRead.seek(iOffsetStart + iSizeExpr);
-			appendEntry(entryParams, pParentItem, entryContext);
+			if(bIsVisible){
+				appendEntry(entryParams, pParentItem, entryContext);
+			}
 		}
 	}
 		break;
@@ -629,11 +688,17 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		    bRes = fileToRead.read((char*)szString, iSizeExpr);
 		    szString[iSizeExpr] = '\0';
 		    entryParams.szValue = szString;
+		    delete szString;
         }else{
 		    entryParams.szValue = "";
         }
+
+		trace("STRING", pItem->m_szName, fileToRead, QString("%0 bytes").arg(iSizeExpr));
+
 		appendDict(dict, entryParams.szName, entryParams.szValue);
-		appendEntry(entryParams, pParentItem, entryContext);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
 	}
 		break;
 	default:
@@ -781,4 +846,11 @@ bool QFileStructureViewController::isNumber(const QString& szStr) const
 		}
 	}
 	return true;
+}
+
+void QFileStructureViewController::trace(const QString& szItem, const QString& szName, const QFile& file, const QString& szMessage)
+{
+	if(false){
+		qDebug("%s (%s) at offset %lld => %s", qPrintable(szItem), qPrintable(szName), (long long int)file.pos(), qPrintable(szMessage));
+	}
 }

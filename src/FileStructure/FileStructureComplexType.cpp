@@ -12,7 +12,7 @@
 FileStructureComplexType::FileStructureComplexType(const QString& szName)
 {
 	m_szName = szName;
-	m_pRootItem = FileStructureItem::createBLOCK(szName);
+	m_pRootItem = FileStructureItem::createCOMPLEXTYPE(szName);
 }
 
 FileStructureComplexType::~FileStructureComplexType()
