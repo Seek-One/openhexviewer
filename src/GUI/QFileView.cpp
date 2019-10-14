@@ -104,18 +104,22 @@ void QFileView::moveToRow(int iRow)
 	m_pScrollBar->setValue(iRow);
 }
 
-void QFileView::selectText(int iPosStart, int iPosEnd, int iStartNbRow, int iNbRow)
+void QFileView::selectText(int iPosStart, int iPosEnd, int iNbRowBefore, int iNbRowSelected)
 {
 	QTextCursor c;
 
+	// iNbRowBefore and iNbRowSelected represents \n to be added
+
+	int iNbSelectedLine = std::max(iNbRowBefore+iNbRowSelected-1, 0);
+
 	c = m_pHumanEditor->textCursor();
-	c.setPosition(iPosStart+iStartNbRow);
-	c.setPosition(iPosEnd+iStartNbRow+iNbRow, QTextCursor::KeepAnchor);
+	c.setPosition(iPosStart+iNbRowBefore);
+	c.setPosition(iPosEnd+iNbSelectedLine, QTextCursor::KeepAnchor);
 	m_pHumanEditor->setTextCursor(c);
 
 	c = m_pHexEditor->textCursor();
-	c.setPosition(iPosStart*3+iStartNbRow);
-	c.setPosition(iPosEnd*3+iStartNbRow+iNbRow-1, QTextCursor::KeepAnchor);
+	c.setPosition(iPosStart*3+iNbRowBefore);
+	c.setPosition(iPosEnd*3+iNbSelectedLine-1, QTextCursor::KeepAnchor);  // -1 removes last space
 	m_pHexEditor->setTextCursor(c);
 }
 
