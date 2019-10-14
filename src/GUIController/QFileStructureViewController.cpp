@@ -288,6 +288,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	}
 
 	bool bIsVisible = bParentVisible &&  !(pItem->m_iFlags & FileStructureItem::DisplayNone);
+	bool bIsFlat = (pItem->m_iFlags & FileStructureItem::DisplayFlat);
 
 	traceBegin(pItem->m_type, pItem->m_szName, fileToRead);
 
@@ -314,18 +315,24 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		entryParams.szSize = "0";
 		entryParams.szType = pComplexType->getName();
 		if(bIsVisible){
-			appendEntry(entryParams, pParentItem, entryContext);
+			if(bIsFlat){
+				pComplexTypeItem = pParentItem;
+			}else{
+				appendEntry(entryParams, pParentItem, entryContext);
+				pComplexTypeItem = entryContext.listColumns[0];
+			}
 		}
 
 		traceInfos(pItem->m_type, pItem->m_szName, QString("type:%0").arg(pComplexType->getName()));
 
-		pComplexTypeItem = entryContext.listColumns[0];
 
 		bRes = processFileStructureItem(pComplexType->getRootItem(), fileToRead, dict, pComplexTypeItem, bIsVisible);
 
 		if(bRes && bIsVisible){
 			iOffsetEnd = fileToRead.pos();
-			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+			if(!bIsFlat){
+				entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+			}
 		}
 	}
 	break;
@@ -397,8 +404,6 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iOffsetCurrent;
 
 		traceInfos(pItem->m_type, pItem->m_szName, QString("mode:%0, maxsize:%1, childrens:%2").arg(pItem->m_iSizeMode).arg(iMaxSize).arg(pItem->m_listChildren.count()));
-
-		bool bIsFlat = (pItem->m_iFlags & FileStructureItem::DisplayFlatList);
 
 		entryParams.szSize = "0";
 		if(bIsVisible && !bIsFlat){

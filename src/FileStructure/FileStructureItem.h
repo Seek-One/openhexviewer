@@ -57,8 +57,8 @@ public:
 		LittleEndian = 0x01,
 		BigEndian = 0x02,
 		// Display
-		DisplayNone = 0x04,
-		DisplayFlatList = 0x08,
+		DisplayNone = 0x04, // Item is not visible
+		DisplayFlat = 0x08,  // Item don't add new node
     };
 
 	enum SeekMode {

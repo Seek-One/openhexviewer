@@ -138,7 +138,7 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 			pItem->m_iFlags |= FileStructureItem::DisplayNone;
 		}
 		if(szDisplay == "flat"){
-			pItem->m_iFlags |= FileStructureItem::DisplayFlatList;
+			pItem->m_iFlags |= FileStructureItem::DisplayFlat;
 		}
 
 		appendFileStructureItem(pItem, false);
@@ -172,7 +172,7 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 			pItem->m_iFlags |= FileStructureItem::DisplayNone;
 		}
 		if(szDisplay == "flat"){
-			pItem->m_iFlags |= FileStructureItem::DisplayFlatList;
+			pItem->m_iFlags |= FileStructureItem::DisplayFlat;
 		}
 
 		appendFileStructureItem(pItem, true);
