@@ -119,8 +119,8 @@
     <condition expr="'${dwFourCC}' == 'idx1'">
       <field name="dwFourCC" type="string" size="4" />
       <field name="dwSize" type="uint32"/>
-      <list name="LIST" mode="bytes" size="${dwSize}" display="flat" >
-        <field name="idxs" type="AVIINDEXENTRY" size="${dwSize}" />
+      <list name="idxs" mode="bytes" size="${dwSize}" display="flat" >
+        <field name="idxs" type="AVIINDEXENTRY" />
       </list>
     </condition>
 
@@ -128,6 +128,9 @@
       <field name="dwFourCC" type="string" size="4" />
       <field name="dwSize" type="uint32"/>
       <field name="data" type="bytes" size="${dwSize}" />
+      <condition  expr="${dwSize}%2 == 1" >
+        <field name="pad" type="bytes" size="1" />
+      </condition>
     </condition>
   </complex_type>
 
