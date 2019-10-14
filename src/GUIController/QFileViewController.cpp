@@ -135,7 +135,7 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 
 	qint64 offsetEnd = offset+size-1;
 	int iRowEnd = offsetEnd / m_iBytePerLine;
-	iRowEnd = qMin(iRowEnd, iRowStart+m_iVisibleRowCount);
+	iRowEnd = qMin(iRowEnd, iRowStart+m_iVisibleRowCount-1);
 	//int iColEnd = offsetEnd % m_iBytePerLine;
 
 	int iFirstVisibleRow = std::min(iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
@@ -145,8 +145,11 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 		iPosStart += (iRowStart-iFirstVisibleRow) * m_iBytePerLine;
 	}
 
+	int iNbSelectedLine = (iRowEnd-iRowStart);
+	iNbSelectedLine++;
+
 	m_pFileView->moveToRow(iFirstVisibleRow);
-	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), (iRowEnd-iRowStart+1));
+	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), iNbSelectedLine);
 }
 
 void QFileViewController::updateDisplayData()
