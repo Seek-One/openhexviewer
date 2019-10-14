@@ -129,7 +129,12 @@ void FileStructureItem::append(const FileStructureItemSharedPtr& pItem)
 
 QString FileStructureItem::getTypeString() const
 {
-	switch(m_type){
+	return getTypeString(m_type);
+}
+
+QString FileStructureItem::getTypeString(FileStructureItem::ItemType type)
+{
+	switch(type){
 	case INT8: return "int8";
 	case UINT8: return "int8";
 	case INT16: return "int16";
@@ -140,9 +145,12 @@ QString FileStructureItem::getTypeString() const
 	case UINT64: return "uint64";
 	case BYTES: return "bytes";
 	case STRING: return "string";
+	case FIELDCOMPLEXTYPE: return "field_complex_type";
+	case COMPLEXTYPE: return "complex_type";
 	case LIST: return "list";
 	case LIST_ITEM_INFOS: return "list_item_infos";
 	case COND: return "cond";
+	case SEEK: return "seek";
 	case ROOT: return "root";
 	default:
 		break;

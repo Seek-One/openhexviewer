@@ -16,6 +16,7 @@
 #include <QStack>
 
 #include "FileStructure/FileStructureDefinitions.h"
+#include "FileStructure/FileStructureItem.h"
 
 class QFileStructureView;
 class QFileStructureModel;
@@ -73,7 +74,11 @@ private:
 
 	QFileStructureModel* m_pModel;
 
-	void trace(const QString& szItem, const QString& szName, const QFile& file, const QString& szMessage);
+	int m_iTraceLevel;
+
+	void traceBegin(FileStructureItem::ItemType iItemType, const QString& szName, const QFile& file);
+	void traceEnd(FileStructureItem::ItemType iItemType, const QString& szName, const QFile& file);
+	void traceInfos(FileStructureItem::ItemType iItemType, const QString& szName, const QString& szMessage);
 };
 
 #endif /* SRC_GUICONTROLLER_QFILESTRUCTUREVIEWCONTROLLER_H_ */
