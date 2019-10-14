@@ -407,6 +407,8 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		FileStructureItem::SizeMode iSizeMode = pItem->m_iSizeMode;
 
+		DictVariable dictItem = dict;
+
 		bool bStop = false;
 		do{
 			// Check stop condition
@@ -462,7 +464,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				m_stackListItemInfos.push(QString());
 
 				for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
-					bRes = processFileStructureItem((*iter), fileToRead, dict, pCurrentListItem, bIsVisible);
+					bRes = processFileStructureItem((*iter), fileToRead, dictItem, pCurrentListItem, bIsVisible);
 					if(!bRes){
 						break;
 					}
