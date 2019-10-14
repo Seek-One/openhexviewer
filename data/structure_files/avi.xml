@@ -71,106 +71,98 @@
     <field name="cbSize" type="uint16" />
   </complex_type>
 
-  <root>
+  <complex_type name="AVIINDEXENTRY">
+     <field name="ckid" type="string" size="4" />
+     <field name="dwFlags" type="uint32" />
+     <field name="dwChunkOffset" type="uint32" />
+     <field name="dwChunkLength" type="uint32" />
+  </complex_type>
 
-    <!-- RIFF header -->
-    <field name="RIFF" type="string" size="4" />
-    <field name="FileSize" type="uint32" />
-    <field name="FileType" type="string" size="4" />
-    <!-- RIFF header -->
+  <complex_type name="ATOM" display="flat" />
 
-    <list name="RIFFTags" size="${FileSize}-4" mode="bytes" display="flat" >
-      <field name="TagType" type="string" size="4" />
-      <field name="TagSize" type="uint32" />
+  <!-- DEFINE THE ATOMIC CHUNK TYPE -->
+  <complex_type name="CHUNK">
+    <field name="dwFourCC" type="string" size="4" display="none" />
+    <field name="dwSize" type="uint32" display="none" />
+    <seek mode="backward" offset="8" />
 
-      <!-- RIFF list -->
-      <condition expr="'${TagType}' == 'LIST'">
+    <list_item_infos name="${dwFourCC}" />
 
-        <field name="TagName" type="string" size="4" />
+    <!-- avih -->
+    <condition expr="'${dwFourCC}' == 'avih'">
+      <field name="avih" type="AVIMAINHEADER" size="${dwSize}" />
+    </condition>
 
-        <!-- HDRL header -->
-        <condition expr="'${TagName}' == 'hdrl'">
-          <field name="AVIMAINHEADER" type="AVIMAINHEADER" />
-          <list name="streams" size="${dwStreams}">
-            <block name="STRL">
-              <field name="LIST" type="string" size="4" />
-              <field name="Size" type="uint32" />
-              <field name="Type" type="string" size="4" />
-              <block name="STRH">
-                <field name="AVISTREAMHEADER" type="AVISTREAMHEADER" />
-              </block>
-              <block name="STRF">
-                <field name="LIST" type="string" size="4" />
-                <field name="Size" type="uint32" />
-                <condition expr="'${fccType}' == 'vids'">
-                  <field name="BITMAPINFOHEADER" type="BITMAPINFOHEADER" />
-                </condition>
-                <condition expr="'${fccType}' == 'auds'">
-                  <field name="WAVEFORMATEX" type="WAVEFORMATEX" />
-                </condition>
-                <condition expr="'${fccType}' == 'dats'">
-                  <field name="DataSize" type="uint32" size="4" />
-                  <field name="Data" type="bytes" size="${DataSize}-4" />
-                </condition>
-              </block>
-            </block>
-          </list>
-        </condition>
+    <!-- strh -->
+    <condition expr="'${dwFourCC}' == 'strh'">
+      <field name="strh" type="AVISTREAMHEADER" size="${dwSize}" />
+    </condition>
 
-        <!-- INFO List -->
-        <condition expr="'${TagName}' == 'INFO'">
-          <list name="infos" size="${TagSize}-4" mode="bytes">
-            <field name="Name" type="string" size="4" />
-            <field name="Size" type="uint32" />
-            <field name="Data" type="bytes" size="${Size}" />
-          </list>
-        </condition>
-
-        <!-- MOVI List -->
-        <condition expr="'${TagName}' == 'movi'">
-          <list name="frames" size="${TagSize}-4" mode="bytes">
-            <field name="ckid" type="string" size="4" />
-            <field name="dwSize" type="uint32" />
-            <field name="data" type="bytes" size="${dwSize}" />
-          </list>
-        </condition>
-
-        <!-- Unknown List -->
-        <condition expr="['hdrl', 'INFO', 'movi'].indexOf('${TagName}') == -1">
-          <field name="Data" type="bytes" size="${TagSize}-4" />
-        </condition>
-
-        <list_item_infos name="${TagName}" />
-
+    <!-- strf -->
+    <condition expr="'${dwFourCC}' == 'strf' ">
+      <condition expr="'${fccType}' == 'vids' ">
+        <seek mode="forward" offset="8" />
+        <field name="strf" type="BITMAPINFOHEADER" size="${dwSize}" />
       </condition>
-      <!-- RIFF list -->
-
-      <!-- RIFF chunk -->
-      <condition expr="'${TagType}' != 'LIST'">
-
-        <!-- IDX1 List -->
-        <condition expr="'${TagType}' == 'idx1'">
-          <list name="idxs" size="${TagSize}" mode="bytes">
-            <field name="ckid" type="string" size="4" />
-            <field name="dwFlags" type="uint32" />
-            <field name="dwChunkOffset" type="uint32" />
-            <field name="dwChunkLength" type="uint32" />
-          </list>
-        </condition>
-
-        <!-- Unknown data -->
-        <condition expr="['idx1'].indexOf('${TagType}') == -1">
-          <field name="Data" type="bytes" size="${TagSize}" />
-        </condition>
-
-        <list_item_infos name="${TagType}" />
-
+      <condition expr="'${fccType}' == 'auds' ">
+        <seek mode="forward" offset="8" />
+        <field name="strf" type="WAVEFORMATEX" size="${dwSize}" />
       </condition>
-      <!-- RIFF chunk -->
+      <condition expr="['vids'].indexOf('${fccType}') == -1">
+        <field name="dwFourCC" type="string" size="4" />
+        <field name="dwSize" type="uint32"/>
+        <field name="data" type="bytes" size="${dwSize}" />
+      </condition>
+    </condition>
 
+    <!-- idx1 -->
+    <condition expr="'${dwFourCC}' == 'idx1'">
+      <field name="dwFourCC" type="string" size="4" />
+      <field name="dwSize" type="uint32"/>
+      <list name="LIST" mode="bytes" size="${dwSize}" display="flat" >
+        <field name="idxs" type="AVIINDEXENTRY" size="${dwSize}" />
+      </list>
+    </condition>
+
+    <condition expr="['avih', 'strh', 'strf', 'idx1'].indexOf('${dwType}') == -1">
+      <field name="dwFourCC" type="string" size="4" />
+      <field name="dwSize" type="uint32"/>
+      <field name="data" type="bytes" size="${dwSize}" />
+    </condition>
+  </complex_type>
+
+  <!-- DEFINE THE ATOMIC LIST TYPE -->
+  <complex_type name="LIST" >
+    <field name="dwList" type="string" size="4" />
+    <field name="dwSize" type="uint32" />
+    <field name="dwFourCC" type="string" size="4" />
+
+    <list_item_infos name="${dwFourCC}" />
+
+    <list name="LIST" mode="bytes" size="${dwSize}-4" display="flat" >
+      <field name="data" type="ATOM" display="flat" />
     </list>
+  </complex_type>
 
-    
+  <!-- DEFINE THE ATOMIC LIST TYPE -->
+  <complex_type name="ATOM" >
+    <field name="dwType" type="string" size="4" display="none" />
+    <seek mode="backward" offset="4" />
+
+    <!-- List -->
+    <condition expr="['RIFF', 'LIST'].indexOf('${dwType}') != -1">
+      <field name="LIST" type="LIST" display="flat" />
+    </condition>
+
+    <!-- Chunk -->
+    <condition expr="['RIFF', 'LIST'].indexOf('${dwType}') == -1">
+      <field name="CHUNK" type="CHUNK" display="flat" />
+    </condition>
+
+  </complex_type>
+
+  <root>
+    <field name="RIFF-AVI" type="LIST" />
   </root>
 
 </structure_file>
