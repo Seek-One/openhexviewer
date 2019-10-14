@@ -6,6 +6,7 @@
  */
 
 #include <QDebug>
+#include <QCoreApplication>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -214,6 +215,7 @@ void QFileStructureViewController::loadStructure()
 		pTreeView->header()->resizeSection(0, 200);
 	}
 
+	m_pFileStructureView->setSearchRunning(false);
 
 	if(!bRes){
 		QMessageBox::critical(m_pFileStructureView, tr("Error"), tr("Error while creating the structure of the file"));
@@ -228,6 +230,10 @@ bool QFileStructureViewController::readFileWithStructure(const QString& szFilePa
 
 	bRes = fileToRead.open(QIODevice::ReadOnly);
 	if(bRes){
+		m_iFileSize = fileToRead.size();
+		m_pFileStructureView->setSearchRunning(true);
+		m_pFileStructureView->setProgressValue(0);
+
 		DictVariable dict;
 		bRes = processFileStructureItem(loadedFileStructure.getRootItem(), fileToRead, dict, NULL, true);
 		fileToRead.close();
@@ -722,6 +728,11 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	default:
 		break;
 	}
+
+	float fProgressValue = (fileToRead.pos() / (float)m_iFileSize);
+	m_pFileStructureView->setProgressValue((int)(fProgressValue*100.0));
+
+	QCoreApplication::processEvents();
 
 	traceEnd(pItem->m_type, pItem->m_szName, fileToRead);
 

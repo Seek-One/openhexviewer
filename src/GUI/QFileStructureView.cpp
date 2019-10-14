@@ -11,6 +11,7 @@
 #include <QHeaderView>
 #include <QComboBox>
 #include <QToolButton>
+#include <QProgressBar>
 
 #include "QFileStructureView.h"
 
@@ -47,6 +48,11 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 		pTreeHeader->setStretchLastSection(true);
 	}
 
+	m_pProgressBar = new QProgressBar(this);
+	m_pProgressBar->setMaximum(100);
+	m_pProgressBar->setVisible(false);
+	pMainLayout->addWidget(m_pProgressBar);
+
 	m_pLoadButton = new QPushButton(tr("Load"), this);
 	pMainLayout->addWidget(m_pLoadButton);
 }
@@ -79,4 +85,15 @@ QPushButton* QFileStructureView::getLoadButton() const
 void QFileStructureView::setModel(QAbstractItemModel* pItemModel)
 {
 	m_pTreeView->setModel(pItemModel);
+}
+
+void QFileStructureView::setProgressValue(int iValue)
+{
+	m_pProgressBar->setValue(iValue);
+}
+
+void QFileStructureView::setSearchRunning(bool bIsRunning)
+{
+	m_pProgressBar->setVisible(bIsRunning);
+	m_pLoadButton->setEnabled(!bIsRunning);
 }

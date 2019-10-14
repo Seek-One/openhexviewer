@@ -73,6 +73,7 @@ private:
 	QStack<QString> m_stackListItemInfos; // For now just the list name
 
 	QFileStructureModel* m_pModel;
+	qint64 m_iFileSize;
 
 	int m_iTraceLevel;
 

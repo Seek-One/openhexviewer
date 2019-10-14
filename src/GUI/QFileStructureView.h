@@ -14,6 +14,7 @@ class QComboBox;
 class QTreeView;
 class QPushButton;
 class QToolButton;
+class QProgressBar;
 class QAbstractItemModel;
 
 class QFileStructureView : public QWidget
@@ -31,12 +32,16 @@ public:
 
 	void setModel(QAbstractItemModel* pItemModel);
 
+	void setProgressValue(int iValue);
+	void setSearchRunning(bool bIsRunning);
+
 private:
 	QComboBox* m_pStructureFileComboBox;
 	QTreeView* m_pTreeView;
 
 	QToolButton* m_pRefreshFileButton;
 
+	QProgressBar* m_pProgressBar;
 	QPushButton* m_pLoadButton;
 };
 
