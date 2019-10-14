@@ -115,7 +115,7 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 				pItem = FileStructureItem::createFIELD_COMPLEXTYPE(szName, pComplexType);
 				pItem->m_szExpr = szSize;
 			}else{
-				qCritical("[XML] Cannot find complex type: %s", qPrintable(szName));
+				qCritical("[XML] Cannot find complex type '%s' for field '%s'", qPrintable(szType), qPrintable(szName));
 				bRes = false;
 			}
 		}else{
@@ -192,7 +192,14 @@ bool StructureFileParserHandler::startElement(const QString &namespaceURI,
 
 	if(qName == "complex_type"){
 		QString szName = attributes.value("name");
-		m_pCurrentComplexType = FileStructureComplexType::create(szName);
+		FileStructureComplexTypeSharedPtr pFileStructureComplexType;
+		pFileStructureComplexType = m_pFileStructure->getComplexType(szName);
+		if(pFileStructureComplexType.isNull()){
+			m_pCurrentComplexType = FileStructureComplexType::create(szName);
+			m_pFileStructure->addComplexType(m_pCurrentComplexType);
+		}else{
+			m_pCurrentComplexType = pFileStructureComplexType;
+		}
 		m_pCurrentParentItem = m_pCurrentComplexType->getRootItem();
 		m_stackCurrentItem.append(m_pCurrentParentItem);
 	}
@@ -219,7 +226,6 @@ bool StructureFileParserHandler::endElement(const QString &namespaceURI,
 	}
 
 	if(qName == "complex_type"){
-		m_pFileStructure->addComplexType(m_pCurrentComplexType);
 		m_pCurrentComplexType.clear();
 
 		m_pCurrentParentItem = m_pFileStructure->getRootItem();
