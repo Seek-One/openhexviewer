@@ -5,6 +5,8 @@
  *      Author: ebeuque
  */
 
+#include "FileStructureComplexType.h"
+
 #include "FileStructureItem.h"
 
 FileStructureItem::FileStructureItem()
