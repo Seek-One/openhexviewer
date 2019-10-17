@@ -317,7 +317,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	{
 		FileStructureComplexTypeSharedPtr pComplexType = pItem->m_pComplexType;
 
-		QStandardItem* pComplexTypeItem;
+		QStandardItem* pComplexTypeItem = NULL;
 		entryParams.szSize = "0";
 		entryParams.szType = pComplexType->getName();
 		if(bIsVisible){
@@ -327,7 +327,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				appendEntry(entryParams, pParentItem, entryContext);
 				pComplexTypeItem = entryContext.listColumns[0];
 			}
-		}
+		}else{
+			pComplexTypeItem = pParentItem;
+        }
 
 		traceInfos(pItem->m_type, pItem->m_szName, QString("type:%0").arg(pComplexType->getName()));
 
@@ -712,7 +714,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		    bRes = fileToRead.read((char*)szString, iSizeExpr);
 		    szString[iSizeExpr] = '\0';
 		    entryParams.szValue = szString;
-		    delete szString;
+		    delete[] szString;
         }else{
 		    entryParams.szValue = "";
         }
@@ -890,9 +892,9 @@ void QFileStructureViewController::traceBegin(FileStructureItem::ItemType iItemT
 
 	if(false){
 		if(szName.isEmpty()){
-			qDebug("%03d: %s %s [offset:%lld] {",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), (long long int)file.pos());
+			qDebug("%03d: %s %s [offset:%lu] {",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), (unsigned long)file.pos());
 		}else{
-			qDebug("%03d: %s %s [name:%s, offset:%lld] {",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), qPrintable(szName), (long long int)file.pos());
+			qDebug("%03d: %s %s [name:%s, offset:%lu] {",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), qPrintable(szName), (unsigned long)file.pos());
 		}
 	}
 
