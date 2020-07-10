@@ -219,7 +219,7 @@ if(WITH_QT)
 
         if (WIN32)
             # Find Qt dll directory
-            find_file(QT_DLL_DIR NAMES QtCore4.dll QtCored4.dll Qt5Core.dll Qt5Cored.dll PATHS ${QT_BINARY_DIR} {QT_LIBRARY_DIR})
+            find_path(QT_DLL_DIR NAMES QtCore4.dll QtCored4.dll Qt5Core.dll Qt5Cored.dll PATHS ${QT_BINARY_DIR} {QT_LIBRARY_DIR})
             if(NOT QT_DLL_DIR)
                 message(FATAL "Qt dll directory not found")
             endif()
