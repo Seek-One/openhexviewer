@@ -122,6 +122,12 @@ set(WITH_QT ON CACHE BOOL "Enable build with qt library")
 set(QT4_COMPONENTS QtCore QtGui QtXml QtScript QtTest)
 set(QT5_COMPONENTS Core Gui Widgets Xml Qml Network Test)
 set(QT_IMAGEFORMATS_COMPONENTS qjpeg)
+if(APPLE)
+    set(QT_PLATFORMS_COMPONENTS qcocoa)
+endif()
+if(WIN32)
+    set(QT_PLATFORMS_COMPONENTS windows)
+endif()
 
 # Define output variable
 set (PACKAGE_DEPS)
