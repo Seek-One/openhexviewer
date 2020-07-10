@@ -120,7 +120,7 @@ set(WITH_PTHREAD ON CACHE BOOL "Enable build with pthread library")
 set(WITH_QT ON CACHE BOOL "Enable build with qt library")
 #set(QT_USE_VERSION 5)
 set(QT4_COMPONENTS QtCore QtGui QtXml QtScript QtTest)
-set(QT5_COMPONENTS Core Gui Widgets Xml Qml Test)
+set(QT5_COMPONENTS Core Gui Widgets Xml Qml Network Test)
 set(QT_IMAGEFORMATS_COMPONENTS qjpeg)
 
 # Define output variable
