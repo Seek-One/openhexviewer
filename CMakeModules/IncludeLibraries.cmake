@@ -28,7 +28,13 @@ if(WITH_COMPILER_LIBRARIES)
             endif()
             if(NOT HOST_WIN32)
                 execute_process(COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcc_s_sjlj-1.dll OUTPUT_VARIABLE TMP_DLL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-                install(FILES ${TMP_DLL_PATH} DESTINATION ${INSTALL_PATH_BIN})
+                if(NOT TMP_DLL_PATH STREQUAL "" AND NOT TMP_DLL_PATH STREQUAL "libgcc_s_sjlj-1.dll")
+                    install(FILES ${TMP_DLL_PATH} DESTINATION ${INSTALL_PATH_BIN})
+                endif()
+                execute_process(COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libgcc_s_seh-1.dll OUTPUT_VARIABLE TMP_DLL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+                if(NOT TMP_DLL_PATH STREQUAL "" AND NOT TMP_DLL_PATH STREQUAL "libgcc_s_seh-1.dll")
+                    install(FILES ${TMP_DLL_PATH} DESTINATION ${INSTALL_PATH_BIN})
+                endif()
             endif(NOT HOST_WIN32)
         endif(CMAKE_COMPILER_IS_GNUCXX)
     
@@ -202,33 +208,39 @@ if(WITH_QT)
                 set(QT_LIBRARY_DIR ${QT_INCLUDE_DIR}/../../lib)
             endif()
         endif()
+        if(NOT QT_TRANSLATIONS_DIR)
+            # If Qt5, we get QT_TRANSLATIONS_DIR from the executable path
+            get_target_property(QT5_QMAKE_EXECUTABLE Qt5::qmake IMPORTED_LOCATION)
+            execute_process( COMMAND ${QT5_QMAKE_EXECUTABLE} -query QT_INSTALL_TRANSLATIONS
+            OUTPUT_VARIABLE qt_translations_dir OUTPUT_STRIP_TRAILING_WHITESPACE )
+            file( TO_CMAKE_PATH "${qt_translations_dir}" qt_translations_dir)
+            set(QT_TRANSLATIONS_DIR ${qt_translations_dir} CACHE PATH "The location of the Qt translations" FORCE)
+        endif()
 
         if (WIN32)
-            if(HOST_WIN32)
-                set(QT_DLL_DIR ${QT_BINARY_DIR})
-            else()
-                set(QT_DLL_DIR ${QT_LIBRARY_DIR}) # When cross compiling DLL are here
-            endif()
+            set(QT_DLL_DIR ${QT_BINARY_DIR})
 
             # Common library
             if(CMAKE_COMPILER_IS_GNUCXX)
-                INSTALL(FILES
-                    "${QT_DLL_DIR}/libgcc_s_dw2-1.dll"
-                    DESTINATION ${INSTALL_PATH_BIN}
-                )
+                if(EXISTS "${QT_DLL_DIR}/libgcc_s_dw2-1.dll")
+                    INSTALL(FILES
+                        "${QT_DLL_DIR}/libgcc_s_dw2-1.dll"
+                        DESTINATION ${INSTALL_PATH_BIN}
+                    )
+                endif()
                 # Since 4.8.6 use libwinpthread
                 if(EXISTS "${QT_DLL_DIR}/libwinpthread-1.dll")
                     INSTALL(FILES
                         "${QT_DLL_DIR}/libwinpthread-1.dll"
                         DESTINATION ${INSTALL_PATH_BIN}
                     )
-                else()
+                endif()
+                if(EXISTS "${QT_DLL_DIR}/mingwm10.dll")
                     INSTALL(FILES
                         "${QT_DLL_DIR}/mingwm10.dll"
                         DESTINATION ${INSTALL_PATH_BIN}
                     )
                 endif()
-
             endif(CMAKE_COMPILER_IS_GNUCXX)
         endif(WIN32)
 
