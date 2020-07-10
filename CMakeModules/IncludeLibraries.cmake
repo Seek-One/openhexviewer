@@ -218,7 +218,11 @@ if(WITH_QT)
         endif()
 
         if (WIN32)
-            set(QT_DLL_DIR ${QT_BINARY_DIR})
+            # Find Qt dll directory
+            find_file(QT_DLL_DIR NAMES QtCore4.dll QtCore4d.dll QtCore5.dll QtCore5d.dll PATHS ${QT_BINARY_DIR} {QT_LIBRARY_DIR})
+            if(NOT QT_DLL_DIR)
+                message(FATAL "Qt dll directory not found")
+            endif()
 
             # Common library
             if(CMAKE_COMPILER_IS_GNUCXX)
