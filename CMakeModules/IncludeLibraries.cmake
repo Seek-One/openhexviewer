@@ -320,14 +320,8 @@ if(WITH_QT)
             string(TOLOWER ${TMP_MODULE} TMP_MODULE)
             
             if (WIN32)
-                if(QT_USE_VERSION LESS 5)
-                    INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/${TMP_COMPONENT}${QT_VERSION_MAJOR}.dll"
-                        DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms CONFIGURATIONS Release
-                    )
-                    INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/${TMP_COMPONENT}d${QT_VERSION_MAJOR}.dll"
-                        DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms CONFIGURATIONS Debug
-                    )
-                else()
+                # Qt5 only
+                if(QT_USE_VERSION GREATER_EQUAL 5)
                     INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/${TMP_COMPONENT}.dll"
                         DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms CONFIGURATIONS Release
                     )

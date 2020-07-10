@@ -126,7 +126,7 @@ if(APPLE)
     set(QT_PLATFORMS_COMPONENTS qcocoa)
 endif()
 if(WIN32)
-    set(QT_PLATFORMS_COMPONENTS windows)
+    set(QT_PLATFORMS_COMPONENTS qwindows)
 endif()
 
 # Define output variable
