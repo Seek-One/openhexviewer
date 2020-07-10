@@ -321,7 +321,9 @@ if(WITH_QT)
             
             if (WIN32)
                 # Qt5 only
-                if(QT_USE_VERSION GREATER_EQUAL 5)
+                if(QT_USE_VERSION LESS 5)
+                    
+                else()
                     INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/${TMP_COMPONENT}.dll"
                         DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms CONFIGURATIONS Release
                     )
