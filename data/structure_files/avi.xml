@@ -38,7 +38,7 @@
     <field name="dwLength" type="uint32" />
     <field name="dwSuggestedBufferSize" type="uint32" />
     <field name="dwQuality" type="uint32" />
-    <field name="dwLength" type="uint32" />
+    <field name="dwSampleSize" type="uint32" />
     <block name="rcFrame">
       <field name="left" type="uint16" />
       <field name="top" type="uint16" />
@@ -59,6 +59,9 @@
     <field name="biYPelsPerMeter" type="int32" />
     <field name="biClrUsed" type="uint32" />
     <field name="biClrImportant" type="uint32" />
+    <condition expr="${biSize} > 40 ">
+      <field name="biData" type="bytes" size="${biSize}-40+1" />
+    </condition>
   </complex_type>
 
   <complex_type name="WAVEFORMATEX">
@@ -67,8 +70,11 @@
     <field name="nSamplesPerSec" type="uint32" />
     <field name="nAvgBytesPerSec" type="uint32" />
     <field name="nBlockAlign" type="uint16" />
-    <field name="nBlockAlign" type="uint16" />
+    <field name="wBitsPerSample" type="uint16" />
     <field name="cbSize" type="uint16" />
+    <condition expr="${cbSize} > 0 ">
+      <field name="cbData" type="bytes" size="${cbSize}" />
+    </condition>
   </complex_type>
 
   <complex_type name="AVIINDEXENTRY">
@@ -108,7 +114,7 @@
         <seek mode="forward" offset="8" />
         <field name="strf" type="WAVEFORMATEX" size="${dwSize}" />
       </condition>
-      <condition expr="['vids'].indexOf('${fccType}') == -1">
+      <condition expr="['vids', 'auds'].indexOf('${fccType}') == -1">
         <field name="dwFourCC" type="string" size="4" />
         <field name="dwSize" type="uint32"/>
         <field name="data" type="bytes" size="${dwSize}" />
