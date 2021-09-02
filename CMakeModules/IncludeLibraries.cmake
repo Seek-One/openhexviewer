@@ -336,9 +336,11 @@ if(WITH_QT)
                     INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/lib${TMP_COMPONENT}.dylib"
                         DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms
                     )
-                    INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/lib${TMP_COMPONENT}_debug.dylib"
-                        DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms CONFIGURATIONS Debug
-                    )
+                    if(EXISTS "${QT_PLUGINS_DIR}/platforms/lib${TMP_COMPONENT}_debug.dylib")
+                        INSTALL(FILES "${QT_PLUGINS_DIR}/platforms/lib${TMP_COMPONENT}_debug.dylib"
+                            DESTINATION ${INSTALL_PATH_QTPLUGINS}/platforms CONFIGURATIONS Debug
+                        )
+                    endif()
             endif()
         endforeach(TMP_COMPONENT)
 
@@ -368,9 +370,11 @@ if(WITH_QT)
                     INSTALL(FILES "${QT_PLUGINS_DIR}/imageformats/lib${TMP_COMPONENT}.dylib"
                         DESTINATION ${INSTALL_PATH_QTPLUGINS}/imageformats
                     )
-                    INSTALL(FILES "${QT_PLUGINS_DIR}/imageformats/lib${TMP_COMPONENT}_debug.dylib"
-                        DESTINATION ${INSTALL_PATH_QTPLUGINS}/imageformats CONFIGURATIONS Debug
-                    )
+                    if(EXISTS "${QT_PLUGINS_DIR}/imageformats/lib${TMP_COMPONENT}_debug.dylib")
+                        INSTALL(FILES "${QT_PLUGINS_DIR}/imageformats/lib${TMP_COMPONENT}_debug.dylib"
+                            DESTINATION ${INSTALL_PATH_QTPLUGINS}/imageformats CONFIGURATIONS Debug
+                        )
+                    endif()
             endif()
         endforeach(TMP_COMPONENT)
 
