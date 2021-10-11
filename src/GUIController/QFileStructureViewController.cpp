@@ -104,12 +104,12 @@ void QFileStructureViewController::reloadStructureFiles()
 	// Load from user config dir
 	QDir dir = QDir::home();
 #ifdef UNIX
-	dir = dir.filePath(".config");
-	dir = dir.filePath(APPLICATION_PACKAGE_NAME);
-	dir = dir.filePath("structure_files");
+	dir.setPath(dir.filePath(".config"));
+	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
+	dir.setPath(dir.filePath("structure_files"));
 #else
-	dir = dir.filePath(APPLICATION_PACKAGE_NAME);
-	dir = dir.filePath("structure_files");
+	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
+	dir.setPath(dir.filePath("structure_files"));
 #endif
 	loadStructureFileList(dir.path());
 }

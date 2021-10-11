@@ -12,6 +12,17 @@
 
 #include "QFileViewController.h"
 
+// Added in Qt 5.5.0
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0)
+#define USE_QTASPRINTF
+#endif
+
+#ifdef USE_QTASPRINTF
+#define QStringASPrintf(str, format, ...) str = QString::asprintf(format, __VA_ARGS__)
+#else
+#define QStringASPrintf(str, format, ...) str.sprintf(format, __VA_ARGS__)
+#endif
+
 QFileViewController::QFileViewController(QFileView* pFileView)
 {
 	m_pFileView = pFileView;
@@ -87,14 +98,14 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 				}
 
 				iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
-				szTmp.sprintf("0x%08X", iOffset);
+				QStringASPrintf(szTmp, "0x%08X", iOffset);
 				szOffsetText += szTmp;
 
 				for(int j=0; j<iNbRead; j++)
 				{
 					// Set hex text
 					c = pBuffer[j];
-					szTmp.sprintf("%02X", (unsigned char)c);
+					QStringASPrintf(szTmp, "%02X", (unsigned char)c);
 					szHexText += szTmp+" ";
 
 					// Set human text
