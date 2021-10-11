@@ -409,7 +409,7 @@ if(WITH_QT)
                             DESTINATION ${INSTALL_PATH_QTPLUGINS}/sqldrivers CONFIGURATIONS Release
                         )
                     endif()
-                    SET(TMPDLL "${QT_PLUGINS_DIR}/sqldrivers/${TMP_COMPONENT}d}.dll")
+                    SET(TMPDLL "${QT_PLUGINS_DIR}/sqldrivers/${TMP_COMPONENT}d.dll")
                     if(EXISTS ${TMPDLL})
                         INSTALL(FILES "${TMPDLL}"
                             DESTINATION ${INSTALL_PATH_QTPLUGINS}/sqldrivers CONFIGURATIONS Debug
