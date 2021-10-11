@@ -9,24 +9,16 @@
 #define SRC_XML_STRUCTUREFILEPARSERHANDLER_H_
 
 #include <QFile>
-#include <QXmlDefaultHandler>
+#include <QXmlStreamReader>
 
 #include "FileStructure/FileStructure.h"
 
-class StructureFileParserHandler : public QXmlDefaultHandler {
+class StructureFileParserHandler {
 public:
 	StructureFileParserHandler(FileStructure* pFileStructure);
 	virtual ~StructureFileParserHandler();
 
-	virtual bool startElement(const QString &namespaceURI,
-			const QString &localName,
-			const QString &qName,
-			const QXmlAttributes &attributes);
-	virtual bool endElement(const QString &namespaceURI,
-			const QString &localName,
-			const QString &qName);
-	virtual bool characters(const QString &str);
-	virtual bool fatalError(const QXmlParseException &exception);
+	bool parse(QXmlStreamReader& xmlReader);
 
 private:
 	FileStructure* m_pFileStructure;

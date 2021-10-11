@@ -75,172 +75,169 @@ void StructureFileParserHandler::appendFileStructureItem(const FileStructureItem
 	}
 }
 
-bool StructureFileParserHandler::startElement(const QString &namespaceURI,
-		const QString &localName,
-		const QString &qName,
-		const QXmlAttributes &attributes)
+
+
+bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 {
 	bool bRes = true;
 
-	FileStructureItemSharedPtr pItem;
-	FileStructureComplexTypeSharedPtr pComplexType;
+	while (!xmlReader.atEnd()) {
+		xmlReader.readNext();
 
-	if(qName == "structure_file"){
-		// Set version
-		QString szVersion = attributes.value("version");
-		m_pFileStructure->setVersion(szVersion.toInt());
+		QXmlStreamAttributes attributes = xmlReader.attributes();
+		QString qName = xmlReader.name().toString();
+		if(xmlReader.isStartElement())
+		{
+			FileStructureItemSharedPtr pItem;
+			FileStructureComplexTypeSharedPtr pComplexType;
 
-        // Set endianess
-		QString szEndianness = attributes.value("endianness");
-		if(!szEndianness.isEmpty()){
-			if(szEndianness == "big-endian"){
-				m_pFileStructure->setDefaultEndianness(Endianness::BigEndian);
+			if(qName == "structure_file"){
+				// Set version
+				QString szVersion = attributes.value("version").toString();
+				m_pFileStructure->setVersion(szVersion.toInt());
+
+				// Set endianess
+				QString szEndianness = attributes.value("endianness").toString();
+				if(!szEndianness.isEmpty()){
+					if(szEndianness == "big-endian"){
+						m_pFileStructure->setDefaultEndianness(Endianness::BigEndian);
+					}
+					if(szEndianness == "little-endian"){
+						m_pFileStructure->setDefaultEndianness(Endianness::LittleEndian);
+					}
+				}
 			}
-			if(szEndianness == "little-endian"){
-				m_pFileStructure->setDefaultEndianness(Endianness::LittleEndian);
-			}
-		}
-	}
 
-	if(qName == "field"){
-		QString szName = attributes.value("name");
-		QString szType = attributes.value("type");
-		QString szSize = attributes.value("size");
-		QString szDisplay = attributes.value("display");
-		QString szEndianness = attributes.value("endianness");
-		FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
-		if(iType == FileStructureItem::COMPLEXTYPE){
-			pComplexType = m_pFileStructure->getComplexType(szType);
-			if(pComplexType){
-				pItem = FileStructureItem::createFIELD_COMPLEXTYPE(szName, pComplexType);
+			if(qName == "field"){
+				QString szName = attributes.value("name").toString();
+				QString szType = attributes.value("type").toString();
+				QString szSize = attributes.value("size").toString();
+				QString szDisplay = attributes.value("display").toString();
+				QString szEndianness = attributes.value("endianness").toString();
+				FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
+				if(iType == FileStructureItem::COMPLEXTYPE){
+					pComplexType = m_pFileStructure->getComplexType(szType);
+					if(pComplexType){
+						pItem = FileStructureItem::createFIELD_COMPLEXTYPE(szName, pComplexType);
+						pItem->m_szExpr = szSize;
+					}else{
+						qCritical("[XML] Cannot find complex type '%s' for field '%s'", qPrintable(szType), qPrintable(szName));
+						bRes = false;
+					}
+				}else{
+					qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
+					pItem = FileStructureItem::createFIELD(szName, iType, iSize);
+					pItem->m_szExpr = szSize;
+				}
+				// Define endianess
+				if(!szEndianness.isEmpty()){
+					if(szEndianness == "big-endian"){
+						pItem->m_iFlags |= FileStructureItem::BigEndian;
+					}
+					if(szEndianness == "little-endian"){
+						pItem->m_iFlags |= FileStructureItem::LittleEndian;
+					}
+				}
+
+				// Dispaly mode
+				if(szDisplay == "none"){
+					pItem->m_iFlags |= FileStructureItem::DisplayNone;
+				}
+				if(szDisplay == "flat"){
+					pItem->m_iFlags |= FileStructureItem::DisplayFlat;
+				}
+
+				appendFileStructureItem(pItem, false);
+			}
+
+			if(qName == "block"){
+				QString szName = attributes.value("name").toString();
+				pItem = FileStructureItem::createBLOCK(szName);
+				appendFileStructureItem(pItem, true);
+			}
+
+			if(qName == "list"){
+				QString szName = attributes.value("name").toString();
+				QString szSizeMode = attributes.value("mode").toString();
+				QString szSize = attributes.value("size").toString();
+				QString szDisplay = attributes.value("display").toString();
+				pItem = FileStructureItem::createLIST(szName);
+				if(!szSizeMode.isEmpty()){
+					if(szSizeMode == "bytes"){
+						pItem->m_iSizeMode = FileStructureItem::ModeBytes;
+					}else{
+						pItem->m_iSizeMode = FileStructureItem::ModeCount;
+					}
+				}else{
+					pItem->m_iSizeMode = FileStructureItem::ModeCount;
+				}
 				pItem->m_szExpr = szSize;
-			}else{
-				qCritical("[XML] Cannot find complex type '%s' for field '%s'", qPrintable(szType), qPrintable(szName));
-				bRes = false;
+
+				// Dispaly mode
+				if(szDisplay == "none"){
+					pItem->m_iFlags |= FileStructureItem::DisplayNone;
+				}
+				if(szDisplay == "flat"){
+					pItem->m_iFlags |= FileStructureItem::DisplayFlat;
+				}
+
+				appendFileStructureItem(pItem, true);
 			}
-		}else{
-			qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
-			pItem = FileStructureItem::createFIELD(szName, iType, iSize);
-			pItem->m_szExpr = szSize;
-		}
-        // Define endianess
-		if(!szEndianness.isEmpty()){
-			if(szEndianness == "big-endian"){
-				pItem->m_iFlags |= FileStructureItem::BigEndian;
+
+			if(qName == "list_item_infos"){
+				QString szExpr = attributes.value("name").toString();
+				pItem = FileStructureItem::createLIST_ITEM_INFOS(szExpr);
+				appendFileStructureItem(pItem, false);
 			}
-			if(szEndianness == "little-endian"){
-				pItem->m_iFlags |= FileStructureItem::LittleEndian;
+
+			if(qName == "condition"){
+				QString szExpr = attributes.value("expr").toString();
+				pItem = FileStructureItem::createCOND(szExpr);
+				appendFileStructureItem(pItem, true);
+			}
+
+			if(qName == "complex_type"){
+				QString szName = attributes.value("name").toString();
+				FileStructureComplexTypeSharedPtr pFileStructureComplexType;
+				pFileStructureComplexType = m_pFileStructure->getComplexType(szName);
+				if(pFileStructureComplexType.isNull()){
+					m_pCurrentComplexType = FileStructureComplexType::create(szName);
+					m_pFileStructure->addComplexType(m_pCurrentComplexType);
+				}else{
+					m_pCurrentComplexType = pFileStructureComplexType;
+				}
+				m_pCurrentParentItem = m_pCurrentComplexType->getRootItem();
+				m_stackCurrentItem.append(m_pCurrentParentItem);
+			}
+
+			if(qName == "seek"){
+				QString szMode = attributes.value("mode").toString();
+				QString szOffset = attributes.value("offset").toString();
+				pItem = FileStructureItem::createSEEK(szMode, szOffset);
+				appendFileStructureItem(pItem, false);
 			}
 		}
 
-		// Dispaly mode
-		if(szDisplay == "none"){
-			pItem->m_iFlags |= FileStructureItem::DisplayNone;
-		}
-		if(szDisplay == "flat"){
-			pItem->m_iFlags |= FileStructureItem::DisplayFlat;
-		}
+		if (xmlReader.isEndElement()) {
 
-		appendFileStructureItem(pItem, false);
-	}
-
-	if(qName == "block"){
-		QString szName = attributes.value("name");
-		pItem = FileStructureItem::createBLOCK(szName);
-		appendFileStructureItem(pItem, true);
-	}
-
-	if(qName == "list"){
-		QString szName = attributes.value("name");
-		QString szSizeMode = attributes.value("mode");
-		QString szSize = attributes.value("size");
-		QString szDisplay = attributes.value("display");
-		pItem = FileStructureItem::createLIST(szName);
-		if(!szSizeMode.isEmpty()){
-			if(szSizeMode == "bytes"){
-				pItem->m_iSizeMode = FileStructureItem::ModeBytes;
-			}else{
-				pItem->m_iSizeMode = FileStructureItem::ModeCount;
+			if(qName == "list" || qName == "condition" || qName == "block"){
+				m_stackCurrentItem.removeLast();
+				m_pCurrentParentItem = m_stackCurrentItem.last();
 			}
-		}else{
-			pItem->m_iSizeMode = FileStructureItem::ModeCount;
-		}
-		pItem->m_szExpr = szSize;
 
-		// Dispaly mode
-		if(szDisplay == "none"){
-			pItem->m_iFlags |= FileStructureItem::DisplayNone;
-		}
-		if(szDisplay == "flat"){
-			pItem->m_iFlags |= FileStructureItem::DisplayFlat;
-		}
+			if(qName == "complex_type"){
+				m_pCurrentComplexType.clear();
 
-		appendFileStructureItem(pItem, true);
+				m_pCurrentParentItem = m_pFileStructure->getRootItem();
+				m_stackCurrentItem.append(m_pCurrentParentItem);
+			}
+		}
 	}
 
-	if(qName == "list_item_infos"){
-		QString szExpr = attributes.value("name");
-		pItem = FileStructureItem::createLIST_ITEM_INFOS(szExpr);
-		appendFileStructureItem(pItem, false);
-	}
-
-	if(qName == "condition"){
-		QString szExpr = attributes.value("expr");
-		pItem = FileStructureItem::createCOND(szExpr);
-		appendFileStructureItem(pItem, true);
-	}
-
-	if(qName == "complex_type"){
-		QString szName = attributes.value("name");
-		FileStructureComplexTypeSharedPtr pFileStructureComplexType;
-		pFileStructureComplexType = m_pFileStructure->getComplexType(szName);
-		if(pFileStructureComplexType.isNull()){
-			m_pCurrentComplexType = FileStructureComplexType::create(szName);
-			m_pFileStructure->addComplexType(m_pCurrentComplexType);
-		}else{
-			m_pCurrentComplexType = pFileStructureComplexType;
-		}
-		m_pCurrentParentItem = m_pCurrentComplexType->getRootItem();
-		m_stackCurrentItem.append(m_pCurrentParentItem);
-	}
-
-	if(qName == "seek"){
-		QString szMode = attributes.value("mode");
-		QString szOffset = attributes.value("offset");
-		pItem = FileStructureItem::createSEEK(szMode, szOffset);
-		appendFileStructureItem(pItem, false);
+	if (xmlReader.hasError()) {
+		qCritical("[XML] Event list parse error: %s", qPrintable(xmlReader.errorString()));
+		return false;
 	}
 
 	return bRes;
-}
-
-bool StructureFileParserHandler::endElement(const QString &namespaceURI,
-		const QString &localName,
-		const QString &qName)
-{
-	bool bRes = true;
-
-	if(qName == "list" || qName == "condition" || qName == "block"){
-		m_stackCurrentItem.removeLast();
-		m_pCurrentParentItem = m_stackCurrentItem.last();
-	}
-
-	if(qName == "complex_type"){
-		m_pCurrentComplexType.clear();
-
-		m_pCurrentParentItem = m_pFileStructure->getRootItem();
-		m_stackCurrentItem.append(m_pCurrentParentItem);
-	}
-
-	return bRes;
-}
-
-bool StructureFileParserHandler::characters(const QString &str)
-{
-	return true;
-}
-
-bool StructureFileParserHandler::fatalError(const QXmlParseException &exception)
-{
-	return false;
 }

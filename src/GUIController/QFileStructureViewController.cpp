@@ -21,7 +21,7 @@
 #include <QtEndian>
 #include <QToolButton>
 #include <QPushButton>
-#include <QXmlInputSource>
+#include <QXmlStreamReader>
 #include <QTreeView>
 #include <QComboBox>
 #include <QHeaderView>
@@ -170,14 +170,12 @@ void QFileStructureViewController::loadStructure()
 		fileStructure.setFileName(szStructureFilePath);
 		bRes = fileStructure.open(QIODevice::ReadOnly);
 		if(bRes){
-			QXmlInputSource source(&fileStructure);
+			QXmlStreamReader source(&fileStructure);
 
-			QXmlSimpleReader reader;
+			QXmlStreamReader reader;
+			reader.addData(fileStructure.readAll());
 			StructureFileParserHandler handler(&loadedFileStructure);
-			reader.setContentHandler(&handler);
-			reader.setErrorHandler(&handler);
-
-			bRes = reader.parse(source);
+			bRes = handler.parse(reader);
 			if(!bRes){
 				qCritical("[XML] Error to parse the content of file: %s", qPrintable(szStructureFilePath));
 			}
