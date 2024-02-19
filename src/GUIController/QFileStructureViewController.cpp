@@ -30,8 +30,16 @@
 #else
 #include <QScriptEngine>
 #endif
-#include <QRegExp>
+
 #include <QMessageBox>
+
+#include "Global/QtCompat.h"
+
+#ifdef USE_NO_QREGEXP
+#include <QRegularExpression>
+#else
+#include <QRegExp>
+#endif
 
 #include "GUI/QFileStructureView.h"
 #include "GUIModel/QFileStructureModel.h"
@@ -809,8 +817,30 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 
 	szNewExpression = szExpression;
 
-	QRegExp rx("\\$\\{([A-Za-z0-9]+)\\}*");
+#ifdef USE_NO_QREGEXP
+	QRegularExpression re("\\$\\{([A-Za-z0-9]+)\\}*");
+	QRegularExpressionMatch match;
+	qsizetype iCurrentPos = 0;
 
+	QString szVarName;
+	QString szDictValue;
+
+	while ((match = re.match(szExpression, iCurrentPos)).hasMatch()) {
+		iCurrentPos = match.capturedStart(1);
+
+		if (!match.captured(1).isEmpty()) {
+			szVarName = match.captured(1);
+			iCurrentPos += (szVarName.size() + 3); // Mise à jour de la position actuelle
+
+			if (dict.contains(szVarName)) {
+				szDictValue = dict.value(szVarName);
+				szNewExpression = szNewExpression.replace("${" + szVarName + "}", szDictValue);
+			}
+		}
+	}
+
+#else
+	QRegExp rx("\\$\\{([A-Za-z0-9]+)\\}*");
 	int iCurrentPos = 0;
 	int iFoundPos;
 
@@ -834,6 +864,7 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 			}
 		}
 	}while(iFoundPos != -1);
+#endif
 
 	szNewExpression = szNewExpression.replace("AND", "&&");
 	szNewExpression = szNewExpression.replace("OR", "||");
