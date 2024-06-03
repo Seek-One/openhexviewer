@@ -26,6 +26,10 @@ Compiling from source
 
 Install dependencies:
 
+    apt-get install git cmake gcc g++ imagemagick
+
+Install Qt dependencies:
+
     apt-get install libqt4-dev
 
 Or:
