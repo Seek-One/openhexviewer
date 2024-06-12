@@ -17,4 +17,15 @@
 #define USE_QLIBRARYINFO_PATH
 #endif
 
+// Added in Qt 5.5.0
+#if QT_VERSION >= QT_VERSION_CHECK(5,5,0)
+#define USE_QTASPRINTF
+#endif
+
+#ifdef USE_QTASPRINTF
+#define QStringASPrintf(str, format, ...) str = QString::asprintf(format, __VA_ARGS__)
+#else
+#define QStringASPrintf(str, format, ...) str.sprintf(format, __VA_ARGS__)
+#endif
+
 #endif //OPENDBVIEWER_QTCOMPAT_H

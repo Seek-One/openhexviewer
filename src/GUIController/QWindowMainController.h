@@ -29,6 +29,8 @@ public slots:
 
 	void selectFileData(qint64 offset, qint64 size);
 
+	void onBytesSelectionChanged(qint64 start, qint64 end);
+
 public:
 	void openFile(const QString& szFilePath);
 

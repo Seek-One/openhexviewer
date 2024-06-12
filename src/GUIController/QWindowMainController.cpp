@@ -9,6 +9,8 @@
 #include <QAction>
 #include <QFileDialog>
 
+#include "Global/QtCompat.h"
+
 #include "GUI/QAboutDialog.h"
 #include "GUI/QWindowMain.h"
 #include "GUIController/QFileViewController.h"
@@ -39,15 +41,17 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 {
 	m_pMainWindow = pMainWindow;
 
-    connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
-    connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
-    connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
+	connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
 
-    m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
+	m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
-    m_pFileStructureViewController = new QFileStructureViewController(m_pMainWindow->getFileStructureView());
+	m_pFileStructureViewController = new QFileStructureViewController(m_pMainWindow->getFileStructureView());
 
-    connect(m_pFileStructureViewController, SIGNAL(fileStructureItemSelected(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
+	connect(m_pFileStructureViewController, SIGNAL(fileStructureItemSelected(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
+
+	connect(m_pFileViewController, SIGNAL(onBytesSelectionChanged(qint64, qint64)), this, SLOT(onBytesSelectionChanged(qint64, qint64)));
 }
 
 void QWindowMainController::openFile()
@@ -83,4 +87,16 @@ void QWindowMainController::about()
 {
 	QAboutDialog aboutDialog(m_pMainWindow);
 	aboutDialog.exec();
+}
+
+void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
+{
+	QString szTmp;
+	if (size > 1) {
+		qint64 iOffsetEnd = offset + size - 1;
+		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld), %0llX bytes from 0x%0llX to 0x%0llX (%lld-%lld) selected", iOffsetEnd, iOffsetEnd, size, offset, iOffsetEnd, offset, iOffsetEnd);
+	} else {
+		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld)", offset, offset);
+	}
+	m_pMainWindow->setStatusBarText(szTmp);
 }

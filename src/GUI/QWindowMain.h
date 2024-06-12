@@ -29,6 +29,8 @@ public:
 	QFileView* getFileView() const;
 	QFileStructureView* getFileStructureView() const;
 
+	void setStatusBarText(const QString& szText);
+
 private:
 	void createMenu(); // Creates a menu bar
 
@@ -39,6 +41,7 @@ private:
 
 	QFileView* m_pFileView;
 	QFileStructureView* m_pFileStructureView;
+	QStatusBar* m_pStatusBar;
 };
 
 #endif /* SRC_MAINWINDOW_H_ */

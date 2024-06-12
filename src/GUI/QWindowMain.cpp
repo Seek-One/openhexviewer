@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSplitter>
+#include <QStatusBar>
 
 #include "GUI/QFileView.h"
 #include "GUI/QFileStructureView.h"
@@ -33,6 +34,10 @@ QWindowMain::QWindowMain(QWidget* parent)
     m_pFileStructureView = new QFileStructureView(pSplitter);
     pSplitter->addWidget(m_pFileStructureView);
 
+    m_pStatusBar = new QStatusBar(this);
+    m_pStatusBar->showMessage("");
+    this->setStatusBar(m_pStatusBar);
+    
     //QList<int> listSizes;
     //listSizes << 1 << 0;
     //pSplitter->setSizes(listSizes);
@@ -80,4 +85,9 @@ QFileView* QWindowMain::getFileView() const
 QFileStructureView* QWindowMain::getFileStructureView() const
 {
 	return m_pFileStructureView;
+}
+
+void QWindowMain::setStatusBarText(const QString& szText)
+{
+	m_pStatusBar->showMessage(szText);
 }

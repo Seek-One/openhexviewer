@@ -12,6 +12,8 @@
 #include <QFile>
 
 class QFileView;
+class QPlainTextEdit;
+class QKeyEvent;
 
 class QFileViewController : public QObject
 {
@@ -25,10 +27,20 @@ public:
 
 	void selectFileData(qint64 offset, qint64 size);
 
+signals:
+	void onBytesSelectionChanged(qint64 offset, qint64 size); 
+
 public slots:
 	void updateView();
 	void moveToRow(int iRow);
 
+	void handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
+	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+	void handleSelectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
+	void handleSelectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+	void handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor); 
+	void handleCursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor); 
+	
 private:
 	QFileView* m_pFileView;
 
@@ -45,6 +57,12 @@ private:
 
 	void updateDisplayData();
 	bool readFile(qint64 iStartOffset);
+
+	bool keyPressHumanEditor(QKeyEvent* keyEvent);
+	bool keyPressHexEditor(QKeyEvent* keyEvent);
+	bool eventHexEditor(QObject *obj, QEvent *event); 
+	bool eventHumanEditor(QObject *obj, QEvent *event); 
+
 };
 
 #endif /* SRC_GUICONTROLLER_QFILEVIEWCONTROLLER_H_ */

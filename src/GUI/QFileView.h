@@ -38,14 +38,28 @@ signals:
 	void sizeChanged();
 	void rowChanged(int iRow);
 
+	void textChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
+	void textChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+	void selectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
+	void selectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+	void cursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
+	void cursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+
 protected:
 	void resizeEvent(QResizeEvent *event);
+
+	bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
 	QPlainTextEdit* m_pOffsetEditor;
 	QPlainTextEdit* m_pHexEditor;
 	QPlainTextEdit* m_pHumanEditor;
 	QScrollBar* m_pScrollBar;
+	
+	bool keyPressHumanEditor(QKeyEvent* keyEvent);
+	bool keyPressHexEditor(QKeyEvent* keyEvent);
+	bool eventHexEditor(QObject *obj, QEvent *event); 
+	bool eventHumanEditor(QObject *obj, QEvent *event); 
 };
 
 #endif /* SRC_GUI_QFILEVIEW_H_ */
