@@ -222,7 +222,7 @@ void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlai
 		cRes = static_cast<char>(iText);
 	}
 	if (cRes >= 0x20 && cRes <= 0x7E) {
-		tHumanCursor.insertText(cRes);
+		tHumanCursor.insertText(QChar(cRes));
 	} else {
 		tHumanCursor.insertText(".");
 	}
