@@ -26,6 +26,7 @@ public:
 
 	QComboBox* getStructureFileComboBox() const;
 	QToolButton* getRefreshFileButton() const;
+	QToolButton* getOpenButton() const;
 	QTreeView* getTreeview() const;
 
 	QPushButton* getLoadButton() const;
@@ -40,6 +41,7 @@ private:
 	QTreeView* m_pTreeView;
 
 	QToolButton* m_pRefreshFileButton;
+	QToolButton* m_pOpenFileButton;
 
 	QProgressBar* m_pProgressBar;
 	QPushButton* m_pLoadButton;

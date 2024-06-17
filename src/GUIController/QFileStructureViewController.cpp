@@ -32,6 +32,7 @@
 #endif
 
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "Global/QtCompat.h"
 
@@ -88,6 +89,8 @@ QFileStructureViewController::QFileStructureViewController(QFileStructureView* p
 
 	connect(m_pFileStructureView->getLoadButton(), SIGNAL(clicked()), this, SLOT(loadStructure()));
 
+	connect(m_pFileStructureView->getOpenButton(), SIGNAL(clicked()), this, SLOT(openStructureFile()));
+
 	m_pModel = new QFileStructureModel();
 	m_pFileStructureView->setModel(m_pModel);
 	connect(m_pFileStructureView->getTreeview()->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)), this, SLOT(entrySelected(const QModelIndex&, const QModelIndex &)));
@@ -139,6 +142,27 @@ void QFileStructureViewController::loadStructureFileList(const QString& szDirPat
 	{
 		QString szFilePath = dir.filePath(*iter);
 		pComboBox->addItem(*iter, szFilePath);
+	}
+}
+
+void QFileStructureViewController::openStructureFile()
+{
+	QFileDialog dialog(m_pFileStructureView);
+	dialog.setFileMode(QFileDialog::AnyFile);
+	dialog.setViewMode(QFileDialog::Detail);
+	dialog.setNameFilter(tr("XML files (*.xml)"));
+
+	if (dialog.exec()){
+		QStringList listSelectedFiles;
+		listSelectedFiles = dialog.selectedFiles();
+		
+		QComboBox* pComboBox = m_pFileStructureView->getStructureFileComboBox();
+	    
+		QFileInfo tFileInfo(listSelectedFiles[0]);
+		pComboBox->addItem(tFileInfo.fileName() + " (Open by user)", listSelectedFiles[0]);
+
+		pComboBox->setCurrentIndex(pComboBox->count() - listSelectedFiles.size());
+		loadStructure();
 	}
 }
 

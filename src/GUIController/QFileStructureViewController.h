@@ -38,7 +38,11 @@ public:
 
 	void setCurrentFile(const QString& szFilePath);
 
+	void openStructureFile(const QString& szFilePath);
+
 public slots:
+	void openStructureFile();
+	
 	void loadStructure();
 	void entrySelected(const QModelIndex &current, const QModelIndex &previous);
 

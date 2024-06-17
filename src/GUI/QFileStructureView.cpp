@@ -37,6 +37,12 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 		m_pRefreshFileButton->setText(tr("Refresh"));
 		m_pRefreshFileButton->setWindowIcon(QIcon::fromTheme("refresh"));
 		pTmpLayout->addWidget(m_pRefreshFileButton);
+
+		m_pOpenFileButton = new QToolButton(this);
+		m_pOpenFileButton->setText(tr("Open"));
+		m_pOpenFileButton->setWindowIcon(QIcon::fromTheme("open"));
+		pTmpLayout->addWidget(m_pOpenFileButton);
+
 	}
 
 	m_pTreeView = new QTreeView(this);
@@ -81,6 +87,12 @@ QPushButton* QFileStructureView::getLoadButton() const
 {
 	return m_pLoadButton;
 }
+
+QToolButton* QFileStructureView::getOpenButton() const
+{
+	return m_pOpenFileButton;
+}
+
 
 void QFileStructureView::setModel(QAbstractItemModel* pItemModel)
 {
