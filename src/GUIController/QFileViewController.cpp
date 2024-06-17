@@ -284,6 +284,8 @@ void QFileViewController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor, 
 	tHumanCursor = pHumanEditor->textCursor();
 
 	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore, tHumanCursor.selectionEnd() - tHumanCursor.selectionStart() - iEnterCountSelection);
+	
+	emit onBytesChanged(szHexText.mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)));
 }
 
 void QFileViewController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor) 
@@ -320,6 +322,8 @@ void QFileViewController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEdit
 	pHexEditor->setTextCursor(tHexCursor);
 	
 	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore, tHumanCursor.selectionEnd() - iEnterCountSelection - iEnterCountBefore - tHumanCursor.selectionStart());
+	
+	emit onBytesChanged(pHexEditor->toPlainText().mid(tHexCursor.selectionStart(), abs(tHexCursor.selectionEnd() - tHexCursor.selectionStart())));
 }
 
 void QFileViewController::handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 

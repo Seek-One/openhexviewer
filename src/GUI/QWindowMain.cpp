@@ -13,6 +13,7 @@
 
 #include "GUI/QFileView.h"
 #include "GUI/QFileStructureView.h"
+#include "GUI/QBytesView.h"
 
 #include "QWindowMain.h"
 
@@ -31,8 +32,19 @@ QWindowMain::QWindowMain(QWidget* parent)
     m_pFileView = new QFileView(pSplitter);
     pSplitter->addWidget(m_pFileView);
 
-    m_pFileStructureView = new QFileStructureView(pSplitter);
-    pSplitter->addWidget(m_pFileStructureView);
+    QWidget* pWidget = new QWidget(pSplitter);
+    pSplitter->addWidget(pWidget);
+
+    QVBoxLayout* pVBoxLayout = new QVBoxLayout(pWidget);
+    pVBoxLayout->setContentsMargins(0, 0, 0, 0);
+    pWidget->setLayout(pVBoxLayout);
+    {
+        m_pFileStructureView = new QFileStructureView(pWidget);
+        pVBoxLayout->addWidget(m_pFileStructureView, 4);
+    
+        m_pBytesView = new QBytesView(pWidget);
+        pVBoxLayout->addWidget(m_pBytesView, 1);
+    }
 
     m_pStatusBar = new QStatusBar(this);
     m_pStatusBar->showMessage("");
@@ -85,6 +97,11 @@ QFileView* QWindowMain::getFileView() const
 QFileStructureView* QWindowMain::getFileStructureView() const
 {
 	return m_pFileStructureView;
+}
+
+QBytesView* QWindowMain::getBytesView() const
+{
+    return m_pBytesView;
 }
 
 void QWindowMain::setStatusBarText(const QString& szText)

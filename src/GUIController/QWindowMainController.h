@@ -13,6 +13,7 @@
 class QWindowMain;
 class QFileViewController;
 class QFileStructureViewController;
+class QBytesViewController;
 
 class QWindowMainController : public QObject
 {
@@ -39,6 +40,7 @@ private:
 
 	QFileViewController* m_pFileViewController;
 	QFileStructureViewController* m_pFileStructureViewController;
+	QBytesViewController* m_pBytesViewController;
 };
 
 #endif /* SRC_GUICONTROLLER_QWINDOWMAINCONTROLLER_H_ */

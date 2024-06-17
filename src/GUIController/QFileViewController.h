@@ -29,6 +29,7 @@ public:
 
 signals:
 	void onBytesSelectionChanged(qint64 offset, qint64 size); 
+	void onBytesChanged(QString szHex);
 
 public slots:
 	void updateView();

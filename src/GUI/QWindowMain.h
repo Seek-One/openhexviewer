@@ -14,6 +14,7 @@
 class QAction;
 class QFileView;
 class QFileStructureView;
+class QBytesView;
 
 class QWindowMain : public QMainWindow
 {
@@ -28,6 +29,7 @@ public:
 
 	QFileView* getFileView() const;
 	QFileStructureView* getFileStructureView() const;
+	QBytesView* getBytesView() const;
 
 	void setStatusBarText(const QString& szText);
 
@@ -41,6 +43,7 @@ private:
 
 	QFileView* m_pFileView;
 	QFileStructureView* m_pFileStructureView;
+	QBytesView* m_pBytesView;
 	QStatusBar* m_pStatusBar;
 };
 

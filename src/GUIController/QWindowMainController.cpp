@@ -15,6 +15,7 @@
 #include "GUI/QWindowMain.h"
 #include "GUIController/QFileViewController.h"
 #include "GUIController/QFileStructureViewController.h"
+#include "GUIController/QBytesViewController.h"
 
 #include "QWindowMainController.h"
 
@@ -35,6 +36,11 @@ QWindowMainController::~QWindowMainController()
 		delete m_pFileViewController;
 		m_pFileViewController = NULL;
 	}
+
+	if(m_pBytesViewController) {
+		delete m_pBytesViewController;
+		m_pBytesViewController = NULL;
+	}
 }
 
 void QWindowMainController::init(QWindowMain* pMainWindow)
@@ -49,9 +55,13 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 
 	m_pFileStructureViewController = new QFileStructureViewController(m_pMainWindow->getFileStructureView());
 
+	m_pBytesViewController = new QBytesViewController(m_pMainWindow->getBytesView());
+
 	connect(m_pFileStructureViewController, SIGNAL(fileStructureItemSelected(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
 
 	connect(m_pFileViewController, SIGNAL(onBytesSelectionChanged(qint64, qint64)), this, SLOT(onBytesSelectionChanged(qint64, qint64)));
+
+	connect(m_pFileViewController, SIGNAL(onBytesChanged(QString)), m_pBytesViewController, SLOT(handleBytesChanged(QString)));
 }
 
 void QWindowMainController::openFile()
@@ -94,7 +104,7 @@ void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
 	QString szTmp;
 	if (size > 1) {
 		qint64 iOffsetEnd = offset + size - 1;
-		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld), %0llX bytes from 0x%0llX to 0x%0llX (%lld-%lld) selected", iOffsetEnd, iOffsetEnd, size, offset, iOffsetEnd, offset, iOffsetEnd);
+		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld), %lld bytes from 0x%0llX to 0x%0llX (%lld-%lld) selected", iOffsetEnd, iOffsetEnd, size, offset, iOffsetEnd, offset, iOffsetEnd);
 	} else {
 		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld)", offset, offset);
 	}
