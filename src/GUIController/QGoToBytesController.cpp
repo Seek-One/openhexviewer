@@ -37,7 +37,7 @@ void QGoToBytesController::researchOffSet()
     bool bOk;
     
     if (szText.isEmpty()) {
-        return messageBox("No Offset has been specified");
+        return messageBox(tr("No Offset has been specified"));
     }
 
     if (iRadio == 1) { //HEX
@@ -46,16 +46,16 @@ void QGoToBytesController::researchOffSet()
             emit changeOffset(iText, 1);
             return;
         }
-        return messageBox("You may only give the offset as : \n\t a hex number");
+        return messageBox(tr("You may only give the offset as : \n\t a hex number"));
     } else if (iRadio == 2) { //DEC
         int iText = szText.toInt(&bOk, 10);
         if (bOk) {
             emit changeOffset(iText, 1);
             return;
         }
-        return messageBox("You may only give the offset as : \n\t a positive decimal number");
+        return messageBox(tr("You may only give the offset as : \n\t a positive decimal number"));
     }
-    return messageBox("Radio button problem");
+    return messageBox(tr("Radio button problem"));
 }
 
 void QGoToBytesController::messageBox(QString szText)

@@ -116,8 +116,10 @@ void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
 	QString szTmp;
 	if (size > 1) {
 		qint64 iOffsetEnd = offset + size - 1;
+		//TODO tr
 		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld), %lld bytes from 0x%0llX to 0x%0llX (%lld-%lld) selected", iOffsetEnd, iOffsetEnd, size, offset, iOffsetEnd, offset, iOffsetEnd);
 	} else {
+		//TODO tr
 		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld)", offset, offset);
 	}
 	m_pMainWindow->setStatusBarText(szTmp);

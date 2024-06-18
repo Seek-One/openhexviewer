@@ -29,22 +29,22 @@ void QBytesViewController::handleBytesChanged(QString szHex)
         m_pBytesView->showTable();
 
         //BE
-        m_pBytesView->renameRowHeaders(0, QString("Signed Integer (%1 bits)").arg(iBits));
+        m_pBytesView->renameRowHeaders(0, QString(tr("Signed Integer (%1 bits)")).arg(iBits));
         m_pBytesView->setItem(0, BeSignedInt(iNb, iBits));
-        m_pBytesView->renameRowHeaders(1, QString("Unsigned Integer (%1 bits)").arg(iBits));
+        m_pBytesView->renameRowHeaders(1, QString(tr("Unsigned Integer (%1 bits)")).arg(iBits));
         m_pBytesView->setItem(1, BeUnsignedInt(iNb, iBits));
-        m_pBytesView->renameRowHeaders(2, QString("Float (%1 bits)").arg(iBits));
+        m_pBytesView->renameRowHeaders(2, QString(tr("Float (%1 bits)")).arg(iBits));
         m_pBytesView->setItem(2, BeFloat(iNb, iBits));
         m_pBytesView->setItem(3, BeHex(iNb, iBits));
         m_pBytesView->setItem(4, BeOct(iNb, iBits));
         m_pBytesView->setItem(5, BeBin(iNb, iBits));
 
         //LE
-        m_pBytesView->renameRowHeaders(6, QString("Signed Integer (%1 bits)").arg(iBits));
+        m_pBytesView->renameRowHeaders(6, QString(tr("Signed Integer (%1 bits)")).arg(iBits));
         m_pBytesView->setItem(6, LeSignedInt(iNb, iBits));
-        m_pBytesView->renameRowHeaders(7, QString("Unsigned Integer (%1 bits)").arg(iBits));
+        m_pBytesView->renameRowHeaders(7, QString(tr("Unsigned Integer (%1 bits)")).arg(iBits));
         m_pBytesView->setItem(7, LeUnsignedInt(iNb, iBits));
-        m_pBytesView->renameRowHeaders(8, QString("Float (%1 bits)").arg(iBits));
+        m_pBytesView->renameRowHeaders(8, QString(tr("Float (%1 bits)")).arg(iBits));
         m_pBytesView->setItem(8, LeFloat(iNb, iBits));
         m_pBytesView->setItem(9, LeHex(iNb, iBits));
         m_pBytesView->setItem(10, LeOct(iNb, iBits));

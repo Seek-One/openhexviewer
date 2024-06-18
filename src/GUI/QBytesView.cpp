@@ -22,23 +22,23 @@ QBytesView::QBytesView(QWidget* pParent)
 
     for (int iRow = 0; iRow < 12; ++iRow) {
         if (iRow < 6) {
-            setItem(iRow, 0, "BigEndian");
+            setItem(iRow, 0, tr("BigEndian"));
         } else {
-            setItem(iRow, 0, "LittleEndian");
+            setItem(iRow, 0, tr("LittleEndian"));
         }
     }
-    setItem(0, 1, "Signed Integer");
-    setItem(1, 1, "Unsigned Integer");
-    setItem(2, 1, "Float");
-    setItem(3, 1, "Hexadecimal");
-    setItem(4, 1, "Octal");
-    setItem(5, 1, "Binary");
-    setItem(6, 1, "Signed Integer");
-    setItem(7, 1, "Unsigned Integer");
-    setItem(8, 1, "Float");
-    setItem(9, 1, "Hexadecimal");
-    setItem(10, 1, "Octal");
-    setItem(11, 1, "Binary");
+    setItem(0, 1, tr("Signed Integer"));
+    setItem(1, 1, tr("Unsigned Integer"));
+    setItem(2, 1, tr("Float"));
+    setItem(3, 1, tr("Hexadecimal"));
+    setItem(4, 1, tr("Octal"));
+    setItem(5, 1, tr("Binary"));
+    setItem(6, 1, tr("Signed Integer"));
+    setItem(7, 1, tr("Unsigned Integer"));
+    setItem(8, 1, tr("Float"));
+    setItem(9, 1, tr("Hexadecimal"));
+    setItem(10, 1, tr("Octal"));
+    setItem(11, 1, tr("Binary"));
 
     // > 64 bits Not possible to display le contenu de la selection
 

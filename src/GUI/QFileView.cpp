@@ -142,7 +142,6 @@ void QFileView::selectText(int iPosStart, int iPosEnd, int iNbRowBefore, int iNb
 	QTextCursor c;
 
 	// iNbRowBefore and iNbRowSelected represents \n to be added
-	qDebug("%d,%d,%d,%d", iPosStart, iPosEnd, iNbRowBefore, iNbRowSelected);
 	int iNbSelectedLine = std::max(iNbRowBefore+iNbRowSelected-1, 0);
 
 	c = m_pHumanEditor->textCursor();

@@ -158,7 +158,6 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	int iFirstVisibleRow = std::min(iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
 	qint64 iPosMax = m_iVisibleRowCount*m_iBytePerLine - iPosStart;
 	qint64 iSize = std::min(size, iPosMax);
-	qDebug("%lld,%lld", iSize, iPosMax);
 	if(iFirstVisibleRow < iRowStart){
 		iPosStart += (iRowStart-iFirstVisibleRow) * m_iBytePerLine;
 	}

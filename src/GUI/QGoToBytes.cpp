@@ -25,19 +25,19 @@ QGoToBytes::QGoToBytes(QWidget * parent)
         QHBoxLayout* pHRadioLayout = new QHBoxLayout();
         pMainLayout->addLayout(pHRadioLayout);
 
-        m_pLabelType = new QLabel("Offset type :");
+        m_pLabelType = new QLabel(tr("Offset type :"));
         pHRadioLayout->addWidget(m_pLabelType);
-        m_pRadioButtonHex = new QRadioButton("Hex", this);
+        m_pRadioButtonHex = new QRadioButton(tr("Hex"), this);
         m_pRadioButtonHex->setChecked(true);
         pHRadioLayout->addWidget(m_pRadioButtonHex);
-        m_pRadioButtonDec = new QRadioButton("Dec", this);
+        m_pRadioButtonDec = new QRadioButton(tr("Dec"), this);
         pHRadioLayout->addWidget(m_pRadioButtonDec);
     }
     {
         QHBoxLayout* pHEditLayout = new QHBoxLayout();
         pMainLayout->addLayout(pHEditLayout);
 
-        m_pLabelOffset = new QLabel("Offset :");
+        m_pLabelOffset = new QLabel(tr("Offset :"));
         pHEditLayout->addWidget(m_pLabelOffset);
         m_pLineOffset = new QLineEdit(this);
         pHEditLayout->addWidget(m_pLineOffset);
