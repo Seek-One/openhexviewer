@@ -69,6 +69,10 @@ void QWindowMain::createMenu()
     m_pQuitAction = new QAction(tr("&Quit"), this);
     pFileMenu->addAction(m_pQuitAction);
 
+    QMenu *pViewMenu = menuBar()->addMenu(tr("&View"));
+    m_pViewAction = new QAction(tr("&Go to Bytes"), this);
+    pViewMenu->addAction(m_pViewAction);
+
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
     m_pAboutAction = new QAction(tr("&About"), this);
     pHelpMenu->addAction(m_pAboutAction);
@@ -87,6 +91,11 @@ QAction* QWindowMain::getQuitAction() const
 QAction* QWindowMain::getAboutAction() const
 {
 	return m_pAboutAction;
+}
+
+QAction* QWindowMain::getViewAction() const
+{
+    return m_pViewAction;
 }
 
 QFileView* QWindowMain::getFileView() const

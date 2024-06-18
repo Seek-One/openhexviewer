@@ -12,10 +12,12 @@
 #include "Global/QtCompat.h"
 
 #include "GUI/QAboutDialog.h"
+#include "GUI/QGoToBytes.h"
 #include "GUI/QWindowMain.h"
 #include "GUIController/QFileViewController.h"
 #include "GUIController/QFileStructureViewController.h"
 #include "GUIController/QBytesViewController.h"
+#include "GUIController/QGoToBytesController.h"
 
 #include "QWindowMainController.h"
 
@@ -50,6 +52,7 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
+	connect(m_pMainWindow->getViewAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
 
 	m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
@@ -62,6 +65,7 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pFileViewController, SIGNAL(onBytesSelectionChanged(qint64, qint64)), this, SLOT(onBytesSelectionChanged(qint64, qint64)));
 
 	connect(m_pFileViewController, SIGNAL(onBytesChanged(QString)), m_pBytesViewController, SLOT(handleBytesChanged(QString)));
+
 }
 
 void QWindowMainController::openFile()
@@ -97,6 +101,14 @@ void QWindowMainController::about()
 {
 	QAboutDialog aboutDialog(m_pMainWindow);
 	aboutDialog.exec();
+}
+
+void QWindowMainController::goToBytes()
+{
+	QGoToBytes goTo(m_pMainWindow);
+	m_pGoToBytesController = new QGoToBytesController(&goTo);
+	connect(m_pGoToBytesController, SIGNAL(changeOffset(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
+	goTo.exec();
 }
 
 void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
