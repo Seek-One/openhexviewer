@@ -215,16 +215,15 @@ void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlai
 	tHumanCursor.setPosition(tHexCursor.position() / 3 + iNbEnter - iGap);
 	tHumanCursor.setPosition(tHexCursor.position() / 3 + 1 + iNbEnter - iGap, QTextCursor::KeepAnchor);
 	
-	char cRes;
 	bool bOk;
 	int iText = szTmp.toInt(&bOk, 16);
 	if (bOk) {
-		cRes = static_cast<char>(iText);
-	}
-	if (cRes >= 0x20 && cRes <= 0x7E) {
-		tHumanCursor.insertText(QChar(cRes));
-	} else {
-		tHumanCursor.insertText(".");
+		char cRes = static_cast<char>(iText);
+		if (cRes >= 0x20 && cRes <= 0x7E) {
+			tHumanCursor.insertText(QChar(cRes));
+		} else {
+			tHumanCursor.insertText(".");
+		}
 	}
 	handleCursorChangedHuman(pHumanEditor, pHexEditor);
 
