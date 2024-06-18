@@ -194,12 +194,21 @@ qint64 QBytesViewController::hexStringtoQInt64(QString szHex)
 		return 0;
 	}
 
-	QRegExp hexMatcher("^[0-9A-Fa-f]+$");
-	if (!hexMatcher.exactMatch(szHex)) {
-		qDebug("[QBytesViewController] Invalid characters in hex string");
+#ifdef USE_NO_QREGEXP
+    QRegularExpression re("^[0-9A-Fa-f]+$");
+    QRegularExpressionMatch match;
+    match = re.match(szHex);
+    if (!match.hasMatch()) {
+	    qDebug("[QBytesViewController] Invalid characters in hex string");
 		return 0;
 	}
-	
+#else
+    QRegExp re("^[0-9A-Fa-f]+$");
+    if (!re.exactMatch(szHex)){
+	    qDebug("[QBytesViewController] Invalid characters in hex string");
+		return 0;
+	}
+#endif
 	bool ok;
     if (szHex.length() > 16) {
         return 0;
