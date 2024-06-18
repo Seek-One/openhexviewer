@@ -249,108 +249,53 @@ void QFileViewController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor, 
 {
 	QSignalBlocker blocker(pHumanEditor);
 
-	if (!pHexEditor->textCursor().hasSelection()) {
-		QTextCursor tHumanCursor = pHumanEditor->textCursor();
-		tHumanCursor.clearSelection();
-		pHumanEditor->setTextCursor(tHumanCursor);
-		return;
-	}
-
 	QTextCursor tHexCursor = pHexEditor->textCursor();
-	QTextCursor tHumanCursor = pHumanEditor->textCursor();
-	int iSelectionStart;
-	int iSelectionEnd;
-	QString szHexText = pHexEditor->toPlainText();
 
+	int iSelectionStart = tHexCursor.selectionStart();
+	int iSelectionEnd = tHexCursor.selectionEnd();
 
-	if (tHexCursor.selectionStart() < tHexCursor.selectionEnd()) {
-		iSelectionStart = tHexCursor.selectionStart();
-		iSelectionEnd = tHexCursor.selectionEnd();
-	} else {
-		iSelectionStart = tHexCursor.selectionEnd();
-		iSelectionEnd = tHexCursor.selectionStart();
-	}
+	int iNbEnterStart = pHexEditor->toPlainText().mid(0, iSelectionStart).count("\n");
+	int iNbEnterEnd = pHexEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
-	int iEnterCountBefore = szHexText.mid(0, iSelectionStart).count("\n");
-	int iEnterCountSelection = szHexText.mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
+	QTextCursor c = pHumanEditor->textCursor();
+	c.setPosition(iSelectionStart / 3 + iNbEnterStart);
+	c.setPosition(iSelectionEnd / 3 + iNbEnterEnd + iNbEnterStart + 1, QTextCursor::KeepAnchor);
+	pHumanEditor->setTextCursor(c);
 
-	tHumanCursor.setPosition((iSelectionStart) / 3 + iEnterCountBefore);
-	if ((iSelectionEnd - iSelectionStart) % 3 != 0) {
-		tHumanCursor.setPosition((iSelectionEnd) / 3 + 1 + iEnterCountBefore + iEnterCountSelection, QTextCursor::KeepAnchor);
-	} else {
-		tHumanCursor.setPosition((iSelectionEnd) / 3 + iEnterCountBefore + iEnterCountSelection, QTextCursor::KeepAnchor);
-	}
-	pHumanEditor->setTextCursor(tHumanCursor);
-	tHumanCursor = pHumanEditor->textCursor();
+	emit onBytesSelectionChanged(c.selectionStart() - iNbEnterStart + m_iFilePos, c.selectionEnd() - c.selectionStart() - iNbEnterEnd);
 
-	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore + m_iFilePos, tHumanCursor.selectionEnd() - tHumanCursor.selectionStart() - iEnterCountSelection);
-	
-	emit onBytesChanged(szHexText.mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)));
+	emit onBytesChanged(pHexEditor->toPlainText().mid(tHexCursor.selectionStart(), abs(tHexCursor.selectionEnd() - tHexCursor.selectionStart())));
 }
 
 void QFileViewController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor) 
 {
 	QSignalBlocker blocker(pHexEditor);
-	
-	if (!pHumanEditor->textCursor().hasSelection()) {
-		QTextCursor tHexCursor = pHexEditor->textCursor();
-		tHexCursor.clearSelection();
-		pHexEditor->setTextCursor(tHexCursor);
-		return;
-	}
-	
+
 	QTextCursor tHumanCursor = pHumanEditor->textCursor();
 	QTextCursor tHexCursor = pHexEditor->textCursor();
-	int iSelectionStart;
-	int iSelectionEnd;
-	
-	if (tHumanCursor.selectionStart() < tHumanCursor.selectionEnd()) {
-		iSelectionStart = tHumanCursor.selectionStart();
-		iSelectionEnd = tHumanCursor.selectionEnd();
-	} else {
-		iSelectionStart = tHumanCursor.selectionEnd();
-		iSelectionEnd = tHumanCursor.selectionStart();
-	}
 
-	QString szHumanText = pHumanEditor->toPlainText();
+	int iSelectionStart = tHumanCursor.selectionStart();
+	int iSelectionEnd = tHumanCursor.selectionEnd();
 
-	int iEnterCountBefore = szHumanText.mid(0, iSelectionStart).count("\n");
-	int iEnterCountSelection = szHumanText.mid(iSelectionStart, iSelectionEnd - iSelectionStart).count("\n");
+	int iNbEnterStart = pHumanEditor->toPlainText().mid(0, iSelectionStart).count("\n");
+	int iNbEnterEnd = pHumanEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
-	tHexCursor.setPosition((iSelectionStart - iEnterCountBefore) * 3);
-	tHexCursor.setPosition(3 * (iSelectionEnd - iEnterCountSelection - iEnterCountBefore) - 1, QTextCursor::KeepAnchor);
-	pHexEditor->setTextCursor(tHexCursor);
+	QTextCursor c = pHexEditor->textCursor();
+	c.setPosition((iSelectionStart - iNbEnterStart) * 3);
+	c.setPosition((iSelectionEnd - iNbEnterEnd - iNbEnterStart) * 3 - 1 * (iSelectionStart - iSelectionEnd == 0 ? -2 : 1), QTextCursor::KeepAnchor);  // -1 removes last space
+	pHexEditor->setTextCursor(c);
 	
-	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore + m_iFilePos, tHumanCursor.selectionEnd() - iEnterCountSelection - iEnterCountBefore - tHumanCursor.selectionStart());
-	
+	emit onBytesSelectionChanged(iSelectionStart - iNbEnterStart + m_iFilePos, iSelectionEnd - iSelectionStart - iNbEnterEnd);
+
 	emit onBytesChanged(pHexEditor->toPlainText().mid(tHexCursor.selectionStart(), abs(tHexCursor.selectionEnd() - tHexCursor.selectionStart())));
 }
 
 void QFileViewController::handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 
 {
 	QSignalBlocker blocker(pHumanEditor);
-
-	QTextCursor cursor = pHexEditor->textCursor();
-	if (!cursor.hasSelection()) {
-		cursor.movePosition(QTextCursor::Right);
-		cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
-		if (cursor.selectedText() == " ") {
-			cursor.movePosition(QTextCursor::Right);
-			cursor.movePosition(QTextCursor::Right);
-			cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
-		}
-		pHexEditor->setTextCursor(cursor);
-	}
 }
 
 void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor) 
 {
 	QSignalBlocker blocker(pHexEditor);
-
-	QTextCursor cursor = pHumanEditor->textCursor();
-	if (!cursor.hasSelection()) {
-		cursor.movePosition(QTextCursor::Right);
-		cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
-		pHumanEditor->setTextCursor(cursor);
-	}
 }

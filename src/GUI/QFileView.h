@@ -34,6 +34,7 @@ public:
 	void moveToRow(int iRow);
 	void selectText(int iPosStart, int iPosEnd, int iStartNbRow, int iNbRow);
 
+	void selectTextRow(int iPosStart, int iPosEnd, int iRowStart, int iRowEnd, int iNbBytePerLine);
 signals:
 	void sizeChanged();
 	void rowChanged(int iRow);
@@ -56,8 +57,6 @@ private:
 	QPlainTextEdit* m_pHumanEditor;
 	QScrollBar* m_pScrollBar;
 	
-	bool keyPressHumanEditor(QKeyEvent* keyEvent);
-	bool keyPressHexEditor(QKeyEvent* keyEvent);
 	bool eventHexEditor(QObject *obj, QEvent *event); 
 	bool eventHumanEditor(QObject *obj, QEvent *event); 
 };
