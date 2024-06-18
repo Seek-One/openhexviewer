@@ -158,6 +158,7 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	int iFirstVisibleRow = std::min(iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
 	qint64 iPosMax = m_iVisibleRowCount*m_iBytePerLine - iPosStart;
 	qint64 iSize = std::min(size, iPosMax);
+	qDebug("%lld,%lld", iSize, iPosMax);
 	if(iFirstVisibleRow < iRowStart){
 		iPosStart += (iRowStart-iFirstVisibleRow) * m_iBytePerLine;
 	}
@@ -282,7 +283,7 @@ void QFileViewController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor, 
 	pHumanEditor->setTextCursor(tHumanCursor);
 	tHumanCursor = pHumanEditor->textCursor();
 
-	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore, tHumanCursor.selectionEnd() - tHumanCursor.selectionStart() - iEnterCountSelection);
+	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore + m_iFilePos, tHumanCursor.selectionEnd() - tHumanCursor.selectionStart() - iEnterCountSelection);
 	
 	emit onBytesChanged(szHexText.mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)));
 }
@@ -320,7 +321,7 @@ void QFileViewController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEdit
 	tHexCursor.setPosition(3 * (iSelectionEnd - iEnterCountSelection - iEnterCountBefore) - 1, QTextCursor::KeepAnchor);
 	pHexEditor->setTextCursor(tHexCursor);
 	
-	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore, tHumanCursor.selectionEnd() - iEnterCountSelection - iEnterCountBefore - tHumanCursor.selectionStart());
+	emit onBytesSelectionChanged(tHumanCursor.selectionStart() - iEnterCountBefore + m_iFilePos, tHumanCursor.selectionEnd() - iEnterCountSelection - iEnterCountBefore - tHumanCursor.selectionStart());
 	
 	emit onBytesChanged(pHexEditor->toPlainText().mid(tHexCursor.selectionStart(), abs(tHexCursor.selectionEnd() - tHexCursor.selectionStart())));
 }
