@@ -125,7 +125,7 @@ void QWindowMainController::find()
 {
 	QFindDialog findDialog(m_pMainWindow);
 	m_pFindDialogController = new QFindDialogController(&findDialog);
-	// connect(m_pGoToBytesController, SIGNAL(changeOffset(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
+	connect(m_pFindDialogController, SIGNAL(findAllOccurrencesRegex(QString, QList<qint64>*)), m_pFileViewController, SLOT(findAllOccurrencesRegex(QString, QList<qint64>*)));
 	findDialog.exec();
 }
 

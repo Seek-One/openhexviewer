@@ -40,17 +40,31 @@ QFindDialogController::~QFindDialogController()
 
 void QFindDialogController::findNext()
 {
-	qDebug("findNext");
-
+	if (m_iListIndex < m_lstPositions.size() - 1) {
+		m_iListIndex++;
+	}
+	// emit
 }
 
 void QFindDialogController::findPrevious()
 {
-	qDebug("findPrevious");
-	
+	if (m_iListIndex > 0){
+		m_iListIndex--;
+	}
+	// emit 
 }
 
 void QFindDialogController::find()
 {
-	qDebug("find");
+	m_lstPositions.empty();
+	QString szData = m_pFileViewController->getStringData();
+	m_iFindSize = szData.length();
+
+	emit findAllOccurrencesRegex(szData, &m_lstPositions);
+	m_iListIndex = 0;
+
+	for(qint64 iTemp : m_lstPositions) {
+		qDebug("\t%lld", iTemp);
+	}
+	qDebug("\n");
 }

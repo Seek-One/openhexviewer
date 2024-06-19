@@ -29,6 +29,10 @@ public:
 
 	void selectFileData(qint64 offset, qint64 size);
 
+	QString getStringData();
+
+
+
 signals:
 	void onBytesSelectionChanged(qint64 offset, qint64 size); 
 	void onBytesChanged(QString szHex);
@@ -49,6 +53,7 @@ public slots:
 	void addNewByteHuman(QPlainTextEdit* m_pHumanEditor, QString szText);
 	void removeByteHuman(QPlainTextEdit* m_pHumanEditor);
 
+	void findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions);
 private:
 	QFileView* m_pFileView;
 

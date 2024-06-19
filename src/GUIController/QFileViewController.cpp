@@ -10,6 +10,8 @@
 
 #include <QTextCursor>
 #include <QPlainTextEdit>
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
 #include <QKeyEvent>
 
 #include "Global/QtCompat.h"
@@ -37,7 +39,7 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	connect(m_pFileView, SIGNAL(cursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(addNewByteHex(QPlainTextEdit*)), this, SLOT(addNewByteHex(QPlainTextEdit*)));
-	connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(remoteByteHex(QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(removeByteHex(QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(addNewByteHuman(QPlainTextEdit*, QString)), this, SLOT(addNewByteHuman(QPlainTextEdit*, QString)));
 	connect(m_pFileView, SIGNAL(removeByteHuman(QPlainTextEdit*)), this, SLOT(removeByteHuman(QPlainTextEdit*)));
 }
@@ -212,6 +214,12 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	m_pFileView->moveToRow(iFirstVisibleRow);
 	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), iNbSelectedLine);
 }
+
+QString QFileViewController::getStringData()
+{
+	return m_szData;
+}
+
 
 void QFileViewController::updateDisplayData()
 {
@@ -415,14 +423,18 @@ void QFileViewController::removeByteHuman(QPlainTextEdit* pHumanEditor)
 	pHumanEditor->setTextCursor(tHumanCursor);
 }
 
+void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions)
+{
+	QRegularExpression re(szSubString);
+	QRegularExpressionMatchIterator i = re.globalMatch(m_szData);
 
+	while (i.hasNext()) {
+		QRegularExpressionMatch match = i.next();
+		plstPositions->append(match.capturedStart());
+	}
+}
+
+// - menu find
 // - fenetre de gestion des structures, pour importer des fichiers de structure dans le dossier de l'utilisateur
-// - pouvoir inserer/supprimer des octets
 // - ajouter un gestionnaire des fichiers de structure
 // - ajouter la coloration (cf proposition de mathieu), activable et desactivable avec une option
-
-
-
-				//AA A|A AA -> //AA A|0 0A AA
-				//AA| AA AA -> //AA |00 AA AA
-				//AA |AA AA -> //AA |00 AA AA

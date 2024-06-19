@@ -17,6 +17,9 @@ public:
     QFindDialogController(QFindDialog* pFindDialog);
     virtual ~QFindDialogController();
 
+signals:
+	void findAllOccurrencesRegex(QString szData, QList<qint64>* plstPosition);
+
 public slots:
     void find();
 	void findNext();
@@ -27,10 +30,9 @@ private:
 
 	QFileViewController* m_pFileViewController;
 
-	// qint64 m_iFindSize;
-	// qint64 m_iArrayIndex;
-	// qint64* m_piArray;
-	// qint64 m_iArraySize;
+	QList<qint64> m_lstPositions;
+	qint64 m_iFindSize;
+	qint64 m_iListIndex;
 };
 
 #endif /* QFINDDIALOGCONTROLLER_H_ */
