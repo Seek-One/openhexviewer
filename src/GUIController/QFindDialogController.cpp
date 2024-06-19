@@ -4,7 +4,9 @@
 
 #include "Global/QtCompat.h"
 #include "QFindDialogController.h"
-#include "GUI/QFindDialog.h"
+#include "../GUI/QFileView.h"
+#include "QFileViewController.h" // Include the full definition
+
 
 #include <QApplication>
 #include <QVBoxLayout>
@@ -23,7 +25,7 @@
 QFindDialogController::QFindDialogController(QFindDialog* pFindDialog)
 {
 	m_pFindDialog = pFindDialog;
-	// m_pFileViewController = new QFileViewController(m_pFindDialog->getFileView());
+	m_pFileViewController = new QFileViewController(m_pFindDialog->getFileView());
 	
 
 	connect(m_pFindDialog, SIGNAL(accepted()), this, SLOT(find()));

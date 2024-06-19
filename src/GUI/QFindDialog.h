@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 
-#include "../GUI/QFileView.h"
+#include "QFileView.h"
 
 class QAbstractButton;
 class QPlainTextEdit;
@@ -20,7 +20,7 @@ public:
     QFindDialog(QWidget * parent = 0);
     virtual ~QFindDialog();
 
-    QFileView* getFileView();
+    QFileView* getFileView() const;
 
 signals:
     void findNext();

@@ -3,7 +3,6 @@
 #endif
 
 #include "QFindDialog.h"
-#include "QFileView.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -57,7 +56,7 @@ QFindDialog::~QFindDialog()
 
 }
 
-QFileView* getFileView()
+QFileView* QFindDialog::getFileView() const
 {
-    // return m_pFileView;
+    return m_pFileView;
 }
