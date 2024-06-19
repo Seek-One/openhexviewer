@@ -275,10 +275,13 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 		} else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier)) {
 			if (cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1) {
 				cursor.insertText(keyText);
+			} else {
+				//AA A|A AA -> //AA A|0 0A AA
+				//AA| AA AA -> //AA |00 AA AA
+				//AA |AA AA -> //AA |00 AA AA
 			}
 		}
 		return true;
-
 	}
 	return QWidget::eventFilter(obj, event);
 }

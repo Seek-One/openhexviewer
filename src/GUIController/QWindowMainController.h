@@ -28,6 +28,7 @@ public:
 
 public slots:
 	void openFile();
+	void saveFile();
 	void about();
 	void find();
 	void goToBytes();

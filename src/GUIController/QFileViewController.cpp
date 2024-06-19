@@ -67,6 +67,31 @@ bool QFileViewController::openFile(const QString& szFilePath)
 	return bRes;
 }
 
+bool QFileViewController::saveFile()
+{
+	bool bRes = true;
+
+	if(!m_bIsFileOpen) {
+		qWarning("[File] No file open");
+		return bRes;
+	} 
+	QFile file(m_file.fileName());
+	bRes = file.open(QIODevice::WriteOnly);
+	if (bRes) {
+		qint64 iBytesWritten = file.write(m_szData.toUtf8());
+
+		if (iBytesWritten == -1) {
+			qWarning("[File] Writing error");
+		}
+		file.close();
+		qWarning("[File] Saved");
+		return bRes;
+	} else {
+		qWarning("[File] Unable to save file: %s" , qPrintable(m_file.fileName()));
+	}
+	return bRes;
+}
+
 bool QFileViewController::readFile(qint64 iStartOffset)
 {
 	QSignalBlocker blocker(m_pFileView);

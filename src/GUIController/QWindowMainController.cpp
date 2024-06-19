@@ -52,6 +52,7 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	m_pMainWindow = pMainWindow;
 
 	connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(m_pMainWindow->getSaveAction(), SIGNAL(triggered()), this, SLOT(saveFile()));
 	connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
 	connect(m_pMainWindow->getGoToAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
@@ -93,6 +94,12 @@ void QWindowMainController::openFile(const QString& szFilePath)
 	qDebug("[Main] Opening file %s", qPrintable(szFilePath));
 	m_pFileViewController->openFile(szFilePath);
 	m_pFileStructureViewController->setCurrentFile(szFilePath);
+}
+
+void QWindowMainController::saveFile()
+{
+	qDebug("[Main] Saving file");
+	m_pFileViewController->saveFile();
 }
 
 void QWindowMainController::selectFileData(qint64 offset, qint64 size)

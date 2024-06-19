@@ -23,6 +23,8 @@ public:
 	virtual ~QFileViewController();
 
 	bool openFile(const QString& szFilePath);
+	bool saveFile();
+
 	void closeFile();
 
 	void selectFileData(qint64 offset, qint64 size);

@@ -66,6 +66,9 @@ void QWindowMain::createMenu()
     m_pOpenAction = new QAction(tr("&Open..."), this);
     pFileMenu->addAction(m_pOpenAction);
     pFileMenu->addSeparator();
+    m_pSaveAction = new QAction(tr("&Save"), this);
+    pFileMenu->addAction(m_pSaveAction);
+    pFileMenu->addSeparator();
     m_pQuitAction = new QAction(tr("&Quit"), this);
     pFileMenu->addAction(m_pQuitAction);
 
@@ -83,6 +86,11 @@ void QWindowMain::createMenu()
 QAction* QWindowMain::getOpenAction() const
 {
 	return m_pOpenAction;
+}
+
+QAction* QWindowMain::getSaveAction() const
+{
+    return m_pSaveAction;
 }
 
 QAction* QWindowMain::getQuitAction() const
