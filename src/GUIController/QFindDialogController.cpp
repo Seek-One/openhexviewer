@@ -23,7 +23,7 @@
 QFindDialogController::QFindDialogController(QFindDialog* pFindDialog)
 {
 	m_pFindDialog = pFindDialog;
-	m_pFileViewController = new QFileViewController(m_pFindDialog->getFileView());
+	// m_pFileViewController = new QFileViewController(m_pFindDialog->getFileView());
 	
 
 	connect(m_pFindDialog, SIGNAL(accepted()), this, SLOT(find()));

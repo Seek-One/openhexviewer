@@ -59,5 +59,5 @@ QFindDialog::~QFindDialog()
 
 QFileView* getFileView()
 {
-    return m_pFileView;
+    // return m_pFileView;
 }

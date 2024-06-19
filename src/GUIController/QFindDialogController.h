@@ -3,6 +3,9 @@
 
 #include <QDialog>
 #include <QString>
+
+// #include "QFileViewController.h"
+
 class QFindDialog;
 class QAbstractButton;
 class QPlainTextEdit; // Add this line for forward declaration
@@ -21,6 +24,8 @@ public slots:
 
 private:
     QFindDialog* m_pFindDialog;
+
+	// QFileViewController m_pFileViewController;
 
 	// qint64 m_iFindSize;
 	// qint64 m_iArrayIndex;
