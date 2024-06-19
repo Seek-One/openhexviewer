@@ -44,6 +44,9 @@ public slots:
 	void handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor); 
 	void handleCursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor); 
 	
+	void addNewByteHex(QPlainTextEdit* pHexEditor);
+	void removeByteHex(QPlainTextEdit* m_pHexEditor);
+
 private:
 	QFileView* m_pFileView;
 

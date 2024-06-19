@@ -190,12 +190,6 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 							keyEvent->key() == Qt::Key_Down);
 		
 		bool isTextKey = allowedChars.contains(keyText);
-
-
-		if (!isMovingKey && !isTextKey) {
-			return true;
-		}
-
 		int iSelectionStart;
 		int iSelectionEnd;
 		iSelectionStart = cursor.selectionStart();
@@ -275,11 +269,11 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 		} else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier)) {
 			if (cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1) {
 				cursor.insertText(keyText);
-			} else {
-				//AA A|A AA -> //AA A|0 0A AA
-				//AA| AA AA -> //AA |00 AA AA
-				//AA |AA AA -> //AA |00 AA AA
-			}
+			} 
+		} else if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {	
+			emit addNewByteHex(m_pHexEditor);
+		} else if (keyEvent->key() == Qt::Key_Backspace) {
+			emit removeByteHex(m_pHexEditor);
 		}
 		return true;
 	}

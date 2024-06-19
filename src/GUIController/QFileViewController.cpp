@@ -36,6 +36,8 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	connect(m_pFileView, SIGNAL(selectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleSelectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(addNewByteHex(QPlainTextEdit*)), this, SLOT(addNewByteHex(QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(removeByteHex(QPlainTextEdit*)));
 }
 
 QFileViewController::~QFileViewController()
@@ -146,7 +148,7 @@ void QFileViewController::updateText(QString szText, qint64 iStartOffset)
 		iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
 		QStringASPrintf(szTmp, "0x%08X", iOffset);
 		szOffsetText += szTmp;
-		iNbRead = std::min(m_szData.length() - i * m_iBytePerLine, m_iBytePerLine);
+		iNbRead = std::min(m_szData.length() - i * m_iBytePerLine - m_iFilePos, (qint64)m_iBytePerLine);
 		for(int j=0; j<iNbRead; j++)
 		{
 			// Set hex text
@@ -168,6 +170,9 @@ void QFileViewController::updateText(QString szText, qint64 iStartOffset)
 	m_pFileView->setOffsetText(szOffsetText);
 	m_pFileView->setHexText(szHexText);
 	m_pFileView->setHumanText(szHumanText);
+
+	m_iFileSize = m_szData.length();
+	m_iTotalRowCount = ceil(m_iFileSize / float(m_iBytePerLine));
 }
 
 void QFileViewController::closeFile()
@@ -331,3 +336,55 @@ void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor,
 {
 	QSignalBlocker blocker(pHexEditor);
 }
+
+void QFileViewController::addNewByteHex(QPlainTextEdit* pHexEditor)
+{
+	QSignalBlocker block(m_pFileView);
+	
+	QTextCursor tHexCursor = pHexEditor->textCursor();
+	int iSelectionStart = tHexCursor.selectionStart();
+	QString szHexText = pHexEditor->toPlainText();
+
+	QString szTmp = "00";
+
+	bool bOk;
+	int iText = szTmp.toInt(&bOk, 16);
+	if (bOk) {
+		char cRes = static_cast<char>(iText);
+		m_szData.insert(tHexCursor.position() / 3 + m_iFilePos, cRes);
+	}
+	updateText(m_szData, m_iFilePos);
+
+	tHexCursor.setPosition(iSelectionStart);
+	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
+	pHexEditor->setTextCursor(tHexCursor);
+}
+
+void QFileViewController::removeByteHex(QPlainTextEdit* pHexEditor)
+{
+	QSignalBlocker block(m_pFileView);
+	
+	QTextCursor tHexCursor = pHexEditor->textCursor();
+	int iSelectionStart = tHexCursor.selectionStart();
+	QString szHexText = pHexEditor->toPlainText();
+
+	m_szData.remove(tHexCursor.position() / 3 + m_iFilePos, 1);
+
+	updateText(m_szData, m_iFilePos);
+
+	tHexCursor.setPosition(iSelectionStart);
+	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
+	pHexEditor->setTextCursor(tHexCursor);
+}
+
+
+// - fenetre de gestion des structures, pour importer des fichiers de structure dans le dossier de l'utilisateur
+// - pouvoir inserer/supprimer des octets
+// - ajouter un gestionnaire des fichiers de structure
+// - ajouter la coloration (cf proposition de mathieu), activable et desactivable avec une option
+
+
+
+				//AA A|A AA -> //AA A|0 0A AA
+				//AA| AA AA -> //AA |00 AA AA
+				//AA |AA AA -> //AA |00 AA AA
