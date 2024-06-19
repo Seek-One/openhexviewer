@@ -297,6 +297,11 @@ bool QFileView::eventHumanEditor(QObject *obj, QEvent *event)
 		if (!keyText.isEmpty() && cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1){
 			return QWidget::eventFilter(obj, event);	
 		}
+		if (!keyText.isEmpty() && !cursor.hasSelection() && !(keyEvent->key() == Qt::Key_Backspace)) {
+			emit addNewByteHuman(m_pHumanEditor, keyText);
+		} else if (keyEvent->key() == Qt::Key_Backspace) {
+			emit removeByteHuman(m_pHumanEditor);
+		}
 		return true;
 	}
 	return QWidget::eventFilter(obj, event);

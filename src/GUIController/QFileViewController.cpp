@@ -37,7 +37,9 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	connect(m_pFileView, SIGNAL(cursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(addNewByteHex(QPlainTextEdit*)), this, SLOT(addNewByteHex(QPlainTextEdit*)));
-	connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(removeByteHex(QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(remoteByteHex(QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(addNewByteHuman(QPlainTextEdit*, QString)), this, SLOT(addNewByteHuman(QPlainTextEdit*, QString)));
+	connect(m_pFileView, SIGNAL(removeByteHuman(QPlainTextEdit*)), this, SLOT(removeByteHuman(QPlainTextEdit*)));
 }
 
 QFileViewController::~QFileViewController()
@@ -141,8 +143,12 @@ void QFileViewController::updateText(QString szText, qint64 iStartOffset)
 		// Prepend a line break if not first row
 		if(i>0){
 			szOffsetText += "\n";
-			szHexText += "\n";
-			szHumanText += "\n";
+			if (szHexText.at(szHexText.length() - 1) != "\n") {
+				szHexText += "\n";
+			}
+			if (szHumanText.at(szHumanText.length() - 1) != "\n") {
+				szHumanText += "\n";
+			}
 		}
 
 		iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
@@ -375,6 +381,38 @@ void QFileViewController::removeByteHex(QPlainTextEdit* pHexEditor)
 	tHexCursor.setPosition(iSelectionStart);
 	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
 	pHexEditor->setTextCursor(tHexCursor);
+}
+
+void QFileViewController::addNewByteHuman(QPlainTextEdit* pHumanEditor, QString szText)
+{
+	QSignalBlocker blocker(m_pFileView);
+
+	QTextCursor tHumanCursor = pHumanEditor->textCursor();
+	int iSelectionStart = tHumanCursor.selectionStart();
+	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
+	
+	m_szData.insert(tHumanCursor.selectionStart() - iNbEnter + m_iFilePos, szText);
+
+	updateText(m_szData, m_iFilePos);
+
+	tHumanCursor.setPosition(iSelectionStart + 1);
+	pHumanEditor->setTextCursor(tHumanCursor);
+}
+
+void QFileViewController::removeByteHuman(QPlainTextEdit* pHumanEditor)
+{
+	QSignalBlocker blocker(m_pFileView);
+
+	QTextCursor tHumanCursor = pHumanEditor->textCursor();
+	int iSelectionStart = tHumanCursor.selectionStart();
+	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
+	
+	m_szData.remove(tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, 1);
+	
+	updateText(m_szData, m_iFilePos);
+
+	tHumanCursor.setPosition(iSelectionStart + 1);
+	pHumanEditor->setTextCursor(tHumanCursor);
 }
 
 

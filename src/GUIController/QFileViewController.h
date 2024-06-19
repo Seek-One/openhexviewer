@@ -46,6 +46,8 @@ public slots:
 	
 	void addNewByteHex(QPlainTextEdit* pHexEditor);
 	void removeByteHex(QPlainTextEdit* m_pHexEditor);
+	void addNewByteHuman(QPlainTextEdit* m_pHumanEditor, QString szText);
+	void removeByteHuman(QPlainTextEdit* m_pHumanEditor);
 
 private:
 	QFileView* m_pFileView;

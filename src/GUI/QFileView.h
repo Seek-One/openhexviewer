@@ -47,6 +47,8 @@ signals:
 	void cursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
 	void addNewByteHex(QPlainTextEdit* m_pHexEditor);
 	void removeByteHex(QPlainTextEdit* m_pHexEditor);
+	void addNewByteHuman(QPlainTextEdit* m_pHumanEditor, QString szText);
+	void removeByteHuman(QPlainTextEdit* m_pHumanEditor);
 
 
 protected:
