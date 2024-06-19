@@ -432,6 +432,9 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 		QRegularExpressionMatch match = i.next();
 		plstPositions->append(match.capturedStart());
 	}
+	if (plstPositions->size() > 0) {
+		selectFileData(plstPositions->at(0), szSubString.length()); //enter problem
+	}
 }
 
 // - menu find

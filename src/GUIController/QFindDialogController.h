@@ -19,6 +19,7 @@ public:
 
 signals:
 	void findAllOccurrencesRegex(QString szData, QList<qint64>* plstPosition);
+	void selectData(qint64 offset, qint64 size);
 
 public slots:
     void find();
@@ -31,6 +32,7 @@ private:
 	QFileViewController* m_pFileViewController;
 
 	QList<qint64> m_lstPositions;
+	int m_iPositionsSize;
 	qint64 m_iFindSize;
 	qint64 m_iListIndex;
 };

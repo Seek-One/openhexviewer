@@ -40,31 +40,42 @@ QFindDialogController::~QFindDialogController()
 
 void QFindDialogController::findNext()
 {
-	if (m_iListIndex < m_lstPositions.size() - 1) {
-		m_iListIndex++;
+	if (m_lstPositions.isEmpty() || m_iPositionsSize <= 0) {
+		m_pFindDialog->setLabelNbOcc(-1, -1);
+		return;
 	}
-	// emit
+	(++m_iListIndex) %= m_iPositionsSize;
+	m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
+	
+	emit selectData(m_lstPositions.at(m_iListIndex), m_pFileViewController->getStringData().length());
 }
 
 void QFindDialogController::findPrevious()
 {
-	if (m_iListIndex > 0){
-		m_iListIndex--;
+	if (m_lstPositions.isEmpty() || m_iPositionsSize <= 0) {
+		m_pFindDialog->setLabelNbOcc(-1, -1);
+		return;
 	}
-	// emit 
+	if (--m_iListIndex < 0) {
+		m_iListIndex = m_iPositionsSize - 1;
+	}
+	m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
+
+	emit selectData(m_lstPositions.at(m_iListIndex), m_pFileViewController->getStringData().length());
 }
 
 void QFindDialogController::find()
 {
-	m_lstPositions.empty();
+	m_lstPositions.clear();
 	QString szData = m_pFileViewController->getStringData();
 	m_iFindSize = szData.length();
 
 	emit findAllOccurrencesRegex(szData, &m_lstPositions);
 	m_iListIndex = 0;
-
-	for(qint64 iTemp : m_lstPositions) {
-		qDebug("\t%lld", iTemp);
+	m_iPositionsSize = m_lstPositions.size(); 
+	if (m_iPositionsSize > 0) {
+		m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
+	} else {
+		m_pFindDialog->setLabelNbOcc(-1, -1);
 	}
-	qDebug("\n");
 }

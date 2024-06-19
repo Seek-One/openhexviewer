@@ -31,6 +31,10 @@ QFindDialog::QFindDialog(QWidget * parent)
         
         m_pButtonFindPrevious = new QPushButton(tr("Find Previous"));
         pButtonLayout->addWidget(m_pButtonFindPrevious);
+
+        m_pLabelNbOcc = new QLabel("");
+        pButtonLayout->addWidget(m_pLabelNbOcc);
+
         m_pButtonFindNext = new QPushButton(tr("Find Next"));
         pButtonLayout->addWidget(m_pButtonFindNext);
         m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -59,4 +63,12 @@ QFindDialog::~QFindDialog()
 QFileView* QFindDialog::getFileView() const
 {
     return m_pFileView;
+}
+
+void QFindDialog::setLabelNbOcc(qint64 iIndexOcc, qint64 iNbOcc) {
+    if (iIndexOcc < 0 && iNbOcc < 0) {
+        m_pLabelNbOcc->setText("");
+    } else {
+        m_pLabelNbOcc->setText(QString("%0/%1").arg(iIndexOcc).arg(iNbOcc));
+    }
 }

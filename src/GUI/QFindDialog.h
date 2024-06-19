@@ -21,6 +21,8 @@ public:
     virtual ~QFindDialog();
 
     QFileView* getFileView() const;
+    
+    void setLabelNbOcc(qint64 iIndexOcc, qint64 iNbOcc);
 
 signals:
     void findNext();
@@ -33,6 +35,7 @@ private:
     QFileView* m_pFileView;
     QDialogButtonBox* m_pButtonBox;
     QPushButton* m_pButtonFindNext;
+    QLabel* m_pLabelNbOcc;
     QPushButton* m_pButtonFindPrevious;
 };
 
