@@ -70,8 +70,10 @@ void QWindowMain::createMenu()
     pFileMenu->addAction(m_pQuitAction);
 
     QMenu *pViewMenu = menuBar()->addMenu(tr("&View"));
-    m_pViewAction = new QAction(tr("&Go to Bytes"), this);
-    pViewMenu->addAction(m_pViewAction);
+    m_pGoToAction = new QAction(tr("&Go to Bytes"), this);
+    pViewMenu->addAction(m_pGoToAction);
+    m_pFindAction = new QAction(tr("&Find"), this);
+    pViewMenu->addAction(m_pFindAction);
 
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
     m_pAboutAction = new QAction(tr("&About"), this);
@@ -93,9 +95,14 @@ QAction* QWindowMain::getAboutAction() const
 	return m_pAboutAction;
 }
 
-QAction* QWindowMain::getViewAction() const
+QAction* QWindowMain::getGoToAction() const
 {
-    return m_pViewAction;
+    return m_pGoToAction;
+}
+
+QAction* QWindowMain::getFindAction() const
+{
+    return m_pFindAction;
 }
 
 QFileView* QWindowMain::getFileView() const

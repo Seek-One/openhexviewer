@@ -13,11 +13,13 @@
 
 #include "GUI/QAboutDialog.h"
 #include "GUI/QGoToBytes.h"
+#include "GUI/QFindDialog.h"
 #include "GUI/QWindowMain.h"
 #include "GUIController/QFileViewController.h"
 #include "GUIController/QFileStructureViewController.h"
 #include "GUIController/QBytesViewController.h"
 #include "GUIController/QGoToBytesController.h"
+#include "GUIController/QFindDialogController.h"
 
 #include "QWindowMainController.h"
 
@@ -52,7 +54,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
-	connect(m_pMainWindow->getViewAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
+	connect(m_pMainWindow->getGoToAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
+	connect(m_pMainWindow->getFindAction(), SIGNAL(triggered()), this, SLOT(find()));
 
 	m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
@@ -110,6 +113,15 @@ void QWindowMainController::goToBytes()
 	connect(m_pGoToBytesController, SIGNAL(changeOffset(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
 	goTo.exec();
 }
+
+void QWindowMainController::find()
+{
+	QFindDialog findDialog(m_pMainWindow);
+	m_pFindDialogController = new QFindDialogController(&findDialog);
+	// connect(m_pGoToBytesController, SIGNAL(changeOffset(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
+	findDialog.exec();
+}
+
 
 void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
 {

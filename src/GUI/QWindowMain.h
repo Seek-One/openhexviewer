@@ -26,7 +26,8 @@ public:
 	QAction* getOpenAction() const;
 	QAction* getQuitAction() const;
 	QAction* getAboutAction() const;
-	QAction* getViewAction() const;
+	QAction* getGoToAction() const;
+	QAction* getFindAction() const;
 
 	QFileView* getFileView() const;
 	QFileStructureView* getFileStructureView() const;
@@ -40,7 +41,8 @@ private:
 	// List of actions
 	QAction* m_pOpenAction;
 	QAction* m_pQuitAction;
-	QAction* m_pViewAction;
+	QAction* m_pGoToAction;
+	QAction* m_pFindAction;
 	QAction* m_pAboutAction;
 
 	QFileView* m_pFileView;

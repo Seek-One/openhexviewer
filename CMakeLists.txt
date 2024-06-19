@@ -119,6 +119,8 @@ set(APPLICATION_SOURCES
 	src/GUI/QAboutDialog.h
 	src/GUI/QGoToBytes.cpp
 	src/GUI/QGoToBytes.h
+	src/GUI/QFindDialog.cpp
+	src/GUI/QFindDialog.h
 	src/GUI/QFileView.cpp
 	src/GUI/QFileView.h
 	src/GUI/QBytesView.cpp
@@ -135,6 +137,8 @@ set(APPLICATION_SOURCES
 	src/GUIController/QBytesViewController.h
 	src/GUIController/QGoToBytesController.cpp
 	src/GUIController/QGoToBytesController.h
+	src/GUIController/QFindDialogController.cpp
+	src/GUIController/QFindDialogController.h
 	src/GUIController/QGUIEventFilter.cpp
 	src/GUIController/QGUIEventFilter.h
 	src/GUIController/QWindowMainController.cpp
@@ -150,6 +154,7 @@ set(APPLICATION_MOC_HEADERS
 	src/GUI/QAboutDialog.h
 	src/GUI/QFileView.h
 	src/GUI/QGoToBytes.h
+	src/GUI/QFindDialog.h
 	src/GUI/QBytesView.h
 	src/GUI/QFileStructureView.h
 	src/GUI/QWindowMain.h
@@ -157,6 +162,7 @@ set(APPLICATION_MOC_HEADERS
 	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QBytesViewController.h
 	src/GUIController/QGoToBytesController.h
+	src/GUIController/QFindDialogController.h
 	src/GUIController/QWindowMainController.h
 )
 qtx_wrap_cpp(
@@ -175,11 +181,13 @@ set (I18N_FILES
 	src/GUI/QFileStructureView.cpp
 	src/GUI/QBytesView.cpp
 	src/GUI/QGoToBytes.cpp
+	src/GUI/QFindDialog.cpp
 	src/GUI/QWindowMain.cpp
 	src/GUIController/QFileViewController.cpp
 	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QBytesViewController.cpp
 	src/GUIController/QGoToBytesController.cpp
+	src/GUIController/QFindDialogController.cpp
 	src/GUIController/QWindowMainController.cpp
 )
 
@@ -405,7 +413,7 @@ SET(CPACK_PACKAGE_NAME ${APPLICATION_PACKAGE_NAME})
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${APPLICATION_DESCRIPTION_SUMMARY})
 SET(CPACK_PACKAGE_VENDOR ${APPLICATION_VENDOR_NAME})
 SET(CPACK_PACKAGE_CONTACT ${APPLICATION_CONTACT})
-#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_BINARY_DIR}/README${DOCFILES_EXT}")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_BINARY_DIR}/README${DOCFILES_EXT}")
 SET(CPACK_PACKAGE_VERSION_MAJOR ${APPLICATION_VERSION_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${APPLICATION_VERSION_MINOR})
 SET(CPACK_PACKAGE_VERSION_PATCH ${APPLICATION_VERSION_PATCH}${APPLICATION_VERSION_BUILD})

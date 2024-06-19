@@ -15,6 +15,7 @@ class QFileViewController;
 class QFileStructureViewController;
 class QBytesViewController;
 class QGoToBytesController;
+class QFindDialogController;
 
 class QWindowMainController : public QObject
 {
@@ -28,6 +29,7 @@ public:
 public slots:
 	void openFile();
 	void about();
+	void find();
 	void goToBytes();
 
 	void selectFileData(qint64 offset, qint64 size);
@@ -44,6 +46,7 @@ private:
 	QFileStructureViewController* m_pFileStructureViewController;
 	QBytesViewController* m_pBytesViewController;
 	QGoToBytesController* m_pGoToBytesController;
+	QFindDialogController* m_pFindDialogController;
 };
 
 #endif /* SRC_GUICONTROLLER_QWINDOWMAINCONTROLLER_H_ */
