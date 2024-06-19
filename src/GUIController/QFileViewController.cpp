@@ -74,59 +74,16 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	bool bRes;
 	m_iFilePos = iStartOffset;
 	bRes = m_file.seek(m_iFilePos);
-
-	int iBufferSize = m_iBytePerLine;
 	char* pBuffer = new char[m_iBytePerLine];
-
-	quint32 iOffset;
-	qint64 iNbRead;
-	QString szOffsetText;
-	QString szHexText;
-	QString szHumanText;
-	char c;
-
 	QString szTmp;
+	int iNbRead;
 
 	if(bRes){
-		for(int i=0; i<m_iVisibleRowCount; i++){
-			iNbRead = m_file.read(pBuffer, iBufferSize);
-			if(iNbRead > 0){
-
-				// Prepend a line break if not first row
-				if(i>0){
-					szOffsetText += "\n";
-					szHexText += "\n";
-					szHumanText += "\n";
-				}
-
-				iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
-				QStringASPrintf(szTmp, "0x%08X", iOffset);
-				szOffsetText += szTmp;
-
-				for(int j=0; j<iNbRead; j++)
-				{
-					// Set hex text
-					c = pBuffer[j];
-					QStringASPrintf(szTmp, "%02X", (unsigned char)c);
-					szHexText += szTmp;
-					if (j < iNbRead - 1) {
-						szHexText +=" ";
-						
-					}
-
-					// Set human text
-					if(c >= 0x20 && c <= 0x7E){
-						szHumanText += c;
-					}else{
-						szHumanText += ".";
-					}
-				}
-			}
-		}
-
-		m_pFileView->setOffsetText(szOffsetText);
-		m_pFileView->setHexText(szHexText);
-		m_pFileView->setHumanText(szHumanText);
+		do {
+			iNbRead = m_file.read(pBuffer, m_iBytePerLine);
+			szTmp = QString("%0%1").arg(szTmp).arg(pBuffer);
+		} while (iNbRead > 0);
+		updateText(szTmp, iStartOffset);
 	}
 
 	if(pBuffer){
@@ -135,6 +92,57 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	}
 
 	return bRes;
+}
+
+void QFileViewController::updateText(QString szText, qint64 iStartOffset)
+{
+	m_iFilePos = iStartOffset;
+	m_szData = szText;
+
+	quint32 iOffset;
+	qint64 iNbRead;
+	QString szOffsetText;
+	QString szHexText;
+	QString szHumanText;
+	QChar c;
+
+	QString szTmp;
+	if (szText.isEmpty()) {
+		return;
+	}
+	for(int i=0; i<m_iVisibleRowCount; i++){
+		// Prepend a line break if not first row
+		if(i>0){
+			szOffsetText += "\n";
+			szHexText += "\n";
+			szHumanText += "\n";
+		}
+
+		iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
+		QStringASPrintf(szTmp, "0x%08X", iOffset);
+		szOffsetText += szTmp;
+		iNbRead = std::min(m_szData.length() - i * m_iBytePerLine, m_iBytePerLine);
+		for(int j=0; j<iNbRead; j++)
+		{
+			// Set hex text
+			c = m_szData.at(i * m_iBytePerLine + j + m_iFilePos);
+			QStringASPrintf(szTmp, "%02X", (unsigned char)(static_cast<char>(c.unicode())));
+			szHexText += szTmp;
+			if (j < iNbRead - 1) {
+				szHexText += " ";
+			}
+
+			// Set human text
+			if(c >= 0x20 && c <= 0x7E){
+				szHumanText += c;
+			}else{
+				szHumanText += ".";
+			}
+		}
+	}
+	m_pFileView->setOffsetText(szOffsetText);
+	m_pFileView->setHexText(szHexText);
+	m_pFileView->setHumanText(szHumanText);
 }
 
 void QFileViewController::closeFile()
@@ -178,70 +186,70 @@ void QFileViewController::updateDisplayData()
 }
 
 void QFileViewController::updateView()
-{
-	if(m_bIsFileOpen){
-		updateDisplayData();
-		readFile(m_iFilePos);
-	}
+{	
+	QSignalBlocker block(m_pFileView);
+
+	updateDisplayData();
+	updateText(m_szData, m_iFilePos);
 }
 
 void QFileViewController::moveToRow(int iRow)
 {
+	QSignalBlocker block(m_pFileView);
+
 	iRow = qMin(iRow, m_iTotalRowCount - m_iVisibleRowCount);
 
 	qint64 iOffset = (((qint64)iRow) * m_iBytePerLine);
-	readFile(iOffset);
+	updateText(m_szData, iOffset);
 }
 
 void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 
 {
-	QSignalBlocker blocker(pHumanEditor);
+	QSignalBlocker block(m_pFileView);
 	
 	QTextCursor tHexCursor = pHexEditor->textCursor();
-	QTextCursor tHumanCursor = pHumanEditor->textCursor();
+	int iSelectionStart = tHexCursor.selectionStart();
 	QString szHexText = pHexEditor->toPlainText();
 
-	int iNbEnter = szHexText.mid(0, tHexCursor.selectionStart()).count("\n");
-
 	QString szTmp;
-	int iGap = 0;
-	if (szHexText.mid(tHexCursor.selectionStart() - 1, 1) == " " || szHexText.mid(tHexCursor.selectionStart() - 1, 1) == "\n") { // AA |A|A
-		szTmp = szHexText.mid(tHexCursor.selectionStart() - 3, 2);
-		iGap = 1;
+	if (szHexText.mid(tHexCursor.selectionStart() - 1, 2).contains(" ") || szHexText.mid(tHexCursor.selectionStart() - 1, 2).contains("\n")) { // AA |A|A
+		szTmp = szHexText.mid(tHexCursor.selectionStart() - 2, 2);
 
 	} else { // A|A| AA
 		szTmp = szHexText.mid(tHexCursor.selectionStart() - 1, 2);
 	}
-	tHumanCursor.setPosition(tHexCursor.position() / 3 + iNbEnter - iGap);
-	tHumanCursor.setPosition(tHexCursor.position() / 3 + 1 + iNbEnter - iGap, QTextCursor::KeepAnchor);
-	
+
 	bool bOk;
 	int iText = szTmp.toInt(&bOk, 16);
 	if (bOk) {
 		char cRes = static_cast<char>(iText);
-		if (cRes >= 0x20 && cRes <= 0x7E) {
-			tHumanCursor.insertText(QChar(cRes));
-		} else {
-			tHumanCursor.insertText(".");
-		}
+		m_szData.remove(tHexCursor.position() / 3 + m_iFilePos, 1);
+		m_szData.insert(tHexCursor.position() / 3 + m_iFilePos, cRes);
 	}
-	handleCursorChangedHuman(pHumanEditor, pHexEditor);
+	updateText(m_szData, m_iFilePos);
 
+	tHexCursor.setPosition(iSelectionStart);
+	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
+	pHexEditor->setTextCursor(tHexCursor);
 }	
 
 void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor) 
 {
-	QSignalBlocker blocker(pHexEditor);
+	QSignalBlocker blocker(m_pFileView);
 
-	QTextCursor humanCursor = pHumanEditor->textCursor();
-	int iEnter = pHumanEditor->toPlainText().mid(0, humanCursor.selectionStart()).count("\n");
+	QTextCursor tHumanCursor = pHumanEditor->textCursor();
+	int iSelectionStart = tHumanCursor.selectionStart();
+	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
+	
+	char cRes = pHumanEditor->toPlainText().mid(tHumanCursor.position() - 1, 1).at(0).toLatin1();
+	m_szData.remove(tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, 1);
+	m_szData.insert(tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, cRes);
 
-	QTextCursor cursorEditor = pHexEditor->textCursor();
-	cursorEditor.setPosition((humanCursor.position() - 1 - iEnter) * 3);
-	cursorEditor.setPosition((humanCursor.position() - 1 - iEnter) * 3 + 2, QTextCursor::KeepAnchor);
-	QString szTmp;
-	QStringASPrintf(szTmp, "%02X", (unsigned char)pHumanEditor->toPlainText().mid(humanCursor.position() - 1, 1).at(0).toLatin1());
-	cursorEditor.insertText(szTmp);
+	updateText(m_szData, m_iFilePos);
+
+	tHumanCursor.setPosition(iSelectionStart);
+	tHumanCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
+	pHumanEditor->setTextCursor(tHumanCursor);
 }
 
 void QFileViewController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 

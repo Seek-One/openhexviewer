@@ -45,6 +45,11 @@ public slots:
 private:
 	QFileView* m_pFileView;
 
+	//Store data
+	QString m_szData;
+	void updateText(QString szText, qint64 iStartOffset);
+
+
 	// Current file
 	bool m_bIsFileOpen;
 	QFile m_file;
