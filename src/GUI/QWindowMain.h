@@ -24,6 +24,7 @@ public:
 	virtual ~QWindowMain();
 
 	QAction* getOpenAction() const;
+	QAction* getPreferencesAction() const;
 	QAction* getSaveAction() const;
 	QAction* getQuitAction() const;
 	QAction* getAboutAction() const;
@@ -41,6 +42,7 @@ private:
 
 	// List of actions
 	QAction* m_pOpenAction;
+	QAction* m_pPreferencesAction;
 	QAction* m_pSaveAction;
 	QAction* m_pQuitAction;
 	QAction* m_pGoToAction;

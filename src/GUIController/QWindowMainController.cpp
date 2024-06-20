@@ -15,11 +15,13 @@
 #include "GUI/QGoToBytes.h"
 #include "GUI/QFindDialog.h"
 #include "GUI/QWindowMain.h"
+#include "GUI/QWindowPreferences.h"
 #include "GUIController/QFileViewController.h"
 #include "GUIController/QFileStructureViewController.h"
 #include "GUIController/QBytesViewController.h"
 #include "GUIController/QGoToBytesController.h"
 #include "GUIController/QFindDialogController.h"
+#include "GUIController/QWindowPreferencesController.h"
 
 #include "QWindowMainController.h"
 
@@ -52,6 +54,7 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	m_pMainWindow = pMainWindow;
 
 	connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(m_pMainWindow->getPreferencesAction(), SIGNAL(triggered()), this, SLOT(preferences()));
 	connect(m_pMainWindow->getSaveAction(), SIGNAL(triggered()), this, SLOT(saveFile()));
 	connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
 	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
@@ -144,3 +147,11 @@ void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
 	}
 	m_pMainWindow->setStatusBarText(szTmp);
 }
+
+void QWindowMainController::preferences()
+{
+	QWindowPreferences* windowPreferences = new QWindowPreferences(NULL);
+	m_pWindowPreferencesController = new QWindowPreferencesController(windowPreferences);
+	windowPreferences->setAttribute(Qt::WA_DeleteOnClose);
+	windowPreferences->show();
+	}

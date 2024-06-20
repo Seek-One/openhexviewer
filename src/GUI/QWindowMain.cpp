@@ -14,6 +14,7 @@
 #include "GUI/QFileView.h"
 #include "GUI/QFileStructureView.h"
 #include "GUI/QBytesView.h"
+#include "GUI/QWindowPreferences.h"
 
 #include "QWindowMain.h"
 
@@ -63,24 +64,34 @@ QWindowMain::~QWindowMain()
 void QWindowMain::createMenu()
 {
     QMenu *pFileMenu = menuBar()->addMenu(tr("&File"));
-    m_pOpenAction = new QAction(tr("&Open..."), this);
-    pFileMenu->addAction(m_pOpenAction);
-    pFileMenu->addSeparator();
-    m_pSaveAction = new QAction(tr("&Save"), this);
-    pFileMenu->addAction(m_pSaveAction);
-    pFileMenu->addSeparator();
-    m_pQuitAction = new QAction(tr("&Quit"), this);
-    pFileMenu->addAction(m_pQuitAction);
-
+    {
+        m_pOpenAction = new QAction(tr("&Open..."), this);
+        pFileMenu->addAction(m_pOpenAction);
+        pFileMenu->addSeparator();
+        m_pPreferencesAction = new QAction(tr("&Preferences"), this);
+        pFileMenu->addAction(m_pPreferencesAction);
+        pFileMenu->addSeparator();
+        m_pSaveAction = new QAction(tr("&Save"), this);
+        pFileMenu->addAction(m_pSaveAction);
+        pFileMenu->addSeparator();
+        m_pQuitAction = new QAction(tr("&Quit"), this);
+        pFileMenu->addAction(m_pQuitAction);
+    }
+    
     QMenu *pViewMenu = menuBar()->addMenu(tr("&View"));
-    m_pGoToAction = new QAction(tr("&Go to Bytes"), this);
-    pViewMenu->addAction(m_pGoToAction);
-    m_pFindAction = new QAction(tr("&Find"), this);
-    pViewMenu->addAction(m_pFindAction);
-
+    {
+        m_pGoToAction = new QAction(tr("&Go to Bytes"), this);
+        pViewMenu->addAction(m_pGoToAction);
+        m_pFindAction = new QAction(tr("&Find"), this);
+        pViewMenu->addAction(m_pFindAction);
+    }
+    
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
-    m_pAboutAction = new QAction(tr("&About"), this);
-    pHelpMenu->addAction(m_pAboutAction);
+    {
+        m_pAboutAction = new QAction(tr("&About"), this);
+        pHelpMenu->addAction(m_pAboutAction);
+    }
+
 }
 
 QAction* QWindowMain::getOpenAction() const
@@ -91,6 +102,11 @@ QAction* QWindowMain::getOpenAction() const
 QAction* QWindowMain::getSaveAction() const
 {
     return m_pSaveAction;
+}
+
+QAction* QWindowMain::getPreferencesAction() const
+{
+    return m_pPreferencesAction;
 }
 
 QAction* QWindowMain::getQuitAction() const

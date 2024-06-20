@@ -129,6 +129,10 @@ set(APPLICATION_SOURCES
 	src/GUI/QFileStructureView.h
 	src/GUI/QWindowMain.cpp
 	src/GUI/QWindowMain.h
+	src/GUI/QWindowPreferences.cpp
+	src/GUI/QWindowPreferences.h
+	src/GUI/QPreferencesFilesStructuresView.cpp
+	src/GUI/QPreferencesFilesStructuresView.h
 	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QFileViewController.cpp
@@ -143,6 +147,10 @@ set(APPLICATION_SOURCES
 	src/GUIController/QGUIEventFilter.h
 	src/GUIController/QWindowMainController.cpp
 	src/GUIController/QWindowMainController.h
+	src/GUIController/QWindowPreferencesController.cpp
+	src/GUIController/QWindowPreferencesController.h
+	src/GUIController/QPreferencesFilesStructuresViewController.cpp
+	src/GUIController/QPreferencesFilesStructuresViewController.h
 	src/GUIModel/QFileStructureModel.cpp
 	src/GUIModel/QFileStructureModel.h
 	src/XML/StructureFileParserHandler.cpp
@@ -158,12 +166,16 @@ set(APPLICATION_MOC_HEADERS
 	src/GUI/QBytesView.h
 	src/GUI/QFileStructureView.h
 	src/GUI/QWindowMain.h
+	src/GUI/QWindowPreferences.h
+	src/GUI/QPreferencesFilesStructuresView.h
 	src/GUIController/QFileViewController.h
 	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QBytesViewController.h
 	src/GUIController/QGoToBytesController.h
 	src/GUIController/QFindDialogController.h
 	src/GUIController/QWindowMainController.h
+	src/GUIController/QWindowPreferencesController.h
+	src/GUIController/QPreferencesFilesStructuresViewController.h
 )
 qtx_wrap_cpp(
 	APPLICATION_MOC_OUTFILES
@@ -183,12 +195,16 @@ set (I18N_FILES
 	src/GUI/QGoToBytes.cpp
 	src/GUI/QFindDialog.cpp
 	src/GUI/QWindowMain.cpp
+	src/GUI/QWindowPreferences.cpp
+	src/GUI/QPreferencesFilesStructuresView.cpp
 	src/GUIController/QFileViewController.cpp
 	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QBytesViewController.cpp
 	src/GUIController/QGoToBytesController.cpp
 	src/GUIController/QFindDialogController.cpp
 	src/GUIController/QWindowMainController.cpp
+	src/GUIController/QWindowPreferencesController.cpp
+	src/GUIController/QPreferencesFilesStructuresViewController.cpp
 )
 
 set (TS_FILES
