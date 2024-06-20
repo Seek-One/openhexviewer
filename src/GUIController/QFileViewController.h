@@ -41,8 +41,8 @@ public slots:
 	void updateView();
 	void moveToRow(int iRow);
 
-	void handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
-	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+	void handleTextChangedHex(QPlainTextEdit* pHexEditor);
+	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor);
 	void handleSelectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
 	void handleSelectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
 	void handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor); 

@@ -190,7 +190,7 @@ QString QBytesViewController::LeBin(qint64 iValue, int iBits)
 qint64 QBytesViewController::hexStringtoQInt64(QString szHex) 
 {
 	if (szHex.isEmpty()) {
-		qDebug("[QBytesViewController] Empty string cannot be converted to qint64");
+		// qDebug("[QBytesViewController] Empty string cannot be converted to qint64");
 		return 0;
 	}
 

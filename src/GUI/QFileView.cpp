@@ -35,6 +35,7 @@ QFileView::QFileView(QWidget* pParent)
     m_pOffsetEditor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pOffsetEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_pOffsetEditor->setLineWrapMode(QPlainTextEdit::NoWrap);
+	m_pOffsetEditor->setReadOnly(true);
     pMainLayout->addWidget(m_pOffsetEditor);
 
     m_pHexEditor = new QPlainTextEdit(pParent);
@@ -64,7 +65,7 @@ QFileView::QFileView(QWidget* pParent)
 
 	// HEX TEXT CHANGED
 	connect(m_pHexEditor, &QPlainTextEdit::textChanged, [this]() {
-		emit textChangedHex(m_pHexEditor, m_pHumanEditor);
+		emit textChangedHex(m_pHexEditor);
 	});
 	// HEX SELECTION CHANGED
 	connect(m_pHexEditor, &QPlainTextEdit::selectionChanged, [this]() {
@@ -77,7 +78,7 @@ QFileView::QFileView(QWidget* pParent)
 
 	//HUMAN TEXT CHANGED 
 	connect(m_pHumanEditor, &QPlainTextEdit::textChanged, [this]() {
-		emit textChangedHuman(m_pHumanEditor, m_pHexEditor);
+		emit textChangedHuman(m_pHumanEditor);
 	});
 	//HUMAN SELECTION CHANGED
 	connect(m_pHumanEditor, &QPlainTextEdit::selectionChanged, [this]() {
@@ -149,10 +150,11 @@ void QFileView::selectText(int iPosStart, int iPosEnd, int iNbRowBefore, int iNb
 	c.setPosition(iPosEnd+iNbSelectedLine, QTextCursor::KeepAnchor);
 	m_pHumanEditor->setTextCursor(c);
 
-	c = m_pHexEditor->textCursor();
-	c.setPosition(iPosStart*3+iNbRowBefore);
-	c.setPosition(iPosEnd*3+iNbSelectedLine-1, QTextCursor::KeepAnchor);  // -1 removes last space
-	m_pHexEditor->setTextCursor(c);
+	// Because have signal when selection changed
+	// c = m_pHexEditor->textCursor();
+	// c.setPosition(iPosStart*3+iNbRowBefore);
+	// c.setPosition(iPosEnd*3+iNbSelectedLine-1, QTextCursor::KeepAnchor);  // -1 removes last space
+	// m_pHexEditor->setTextCursor(c);
 }
 
 void QFileView::setOffsetText(const QString& szText)

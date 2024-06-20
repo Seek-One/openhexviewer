@@ -39,8 +39,8 @@ signals:
 	void sizeChanged();
 	void rowChanged(int iRow);
 
-	void textChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
-	void textChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
+	void textChangedHex(QPlainTextEdit* pHexEditor);
+	void textChangedHuman(QPlainTextEdit* pHumanEditor);
 	void selectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
 	void selectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
 	void cursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);

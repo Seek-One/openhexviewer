@@ -32,8 +32,8 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 
 	connect(m_pFileView, SIGNAL(sizeChanged()), this, SLOT(updateView()));
 	connect(m_pFileView, SIGNAL(rowChanged(int)), this, SLOT(moveToRow(int)));
-	connect(m_pFileView, SIGNAL(textChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleTextChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
-	connect(m_pFileView, SIGNAL(textChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleTextChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(textChangedHex(QPlainTextEdit*)), this, SLOT(handleTextChangedHex(QPlainTextEdit*)));
+	connect(m_pFileView, SIGNAL(textChangedHuman(QPlainTextEdit*)), this, SLOT(handleTextChangedHuman(QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(selectionChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleSelectionChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(selectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleSelectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
@@ -145,10 +145,8 @@ void QFileViewController::updateText(QString szText, qint64 iStartOffset)
 		// Prepend a line break if not first row
 		if(i>0){
 			szOffsetText += "\n";
-			if (szHexText.at(szHexText.length() - 1) != "\n") {
+			if (m_szData.length() - m_iFilePos >= i * m_iBytePerLine) {
 				szHexText += "\n";
-			}
-			if (szHumanText.at(szHumanText.length() - 1) != "\n") {
 				szHumanText += "\n";
 			}
 		}
@@ -168,7 +166,7 @@ void QFileViewController::updateText(QString szText, qint64 iStartOffset)
 			}
 
 			// Set human text
-			if(c >= 0x20 && c <= 0x7E){
+			if(c.unicode() >= 0x20 && c.unicode() <= 0x7E){
 				szHumanText += c;
 			}else{
 				szHumanText += ".";
@@ -212,6 +210,7 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	iNbSelectedLine++;
 
 	m_pFileView->moveToRow(iFirstVisibleRow);
+	qDebug("%d", (iPosStart - iRowStart + iFirstVisibleRow));
 	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), iNbSelectedLine);
 }
 
@@ -247,7 +246,7 @@ void QFileViewController::moveToRow(int iRow)
 	updateText(m_szData, iOffset);
 }
 
-void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 
+void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor) 
 {
 	QSignalBlocker block(m_pFileView);
 	
@@ -277,7 +276,7 @@ void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor, QPlai
 	pHexEditor->setTextCursor(tHexCursor);
 }	
 
-void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor) 
+void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor) 
 {
 	QSignalBlocker blocker(m_pFileView);
 
