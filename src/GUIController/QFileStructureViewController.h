@@ -40,6 +40,9 @@ public:
 
 	void openStructureFile(const QString& szFilePath);
 
+	void reload();
+
+
 public slots:
 	void openStructureFile();
 	

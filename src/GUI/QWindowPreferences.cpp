@@ -12,6 +12,7 @@
 QWindowPreferences::QWindowPreferences(QWidget* parent)
 	: QMainWindow(parent)
 {
+    setMinimumSize(400, 300);
     QSplitter* pSplitter = new QSplitter(parent);
     pSplitter->setContentsMargins(0, 0, 0, 0);
     setCentralWidget(pSplitter);
@@ -19,36 +20,11 @@ QWindowPreferences::QWindowPreferences(QWidget* parent)
     QTabWidget* pTabWidget = new QTabWidget(pSplitter);
     pSplitter->addWidget(pTabWidget);
     {
-        QSplitter* pSplitter2 = new QSplitter(parent);
-        pTabWidget->addTab(pSplitter2, tr("&Structure Files"));
-        {
-            m_pPreferencesFilesStructuresView = new QPreferencesFilesStructuresView();
-            pSplitter2->addWidget(m_pPreferencesFilesStructuresView);
-
-
-            QWidget* pWidget = new QWidget(pSplitter2);
-            pSplitter2->addWidget(pWidget);
-
-            QVBoxLayout* pVBoxLayout = new QVBoxLayout();
-            pWidget->setLayout(pVBoxLayout);
-            {
-                pVBoxLayout->addWidget(new QWidget(), 6);
-                m_pAddButton = new QPushButton("add");
-                pVBoxLayout->addWidget(m_pAddButton, 1);
-                m_pRemoveButton = new QPushButton("add");
-                pVBoxLayout->addWidget(m_pRemoveButton, 1);
-            }
-            
-        }
-        pTabWidget->addTab(new QWidget(), "test");
-        pTabWidget->addTab(new QWidget(), "test2");
+        m_pPreferencesFilesStructuresView = new QPreferencesFilesStructuresView(this);
+        pTabWidget->addTab(m_pPreferencesFilesStructuresView, tr("&Structure Files"));
+        pTabWidget->addTab(new QWidget(), tr("&Other"));
     }
-        // pMainLayout->addWidget(pTabWidget);
-            // pButtonLayout->addWidget(m_pRemoveButton);
-        // }
-    // }
-
-    // createStatusBar();
+    createStatusBar();
 }
 
 QWindowPreferences::~QWindowPreferences()
@@ -67,5 +43,4 @@ void QWindowPreferences::createStatusBar()
 QPreferencesFilesStructuresView* QWindowPreferences::getFileStructureView() const
 {
     return m_pPreferencesFilesStructuresView;
-    // return NULL;
 }

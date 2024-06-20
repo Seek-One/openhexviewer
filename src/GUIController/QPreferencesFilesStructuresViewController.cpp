@@ -11,9 +11,8 @@
 
 #include <QFile>
 #include <QDir>
-#include <QtEndian>
-#include <QTableWidget>
-#include <QAbstractItemView>
+#include <QVBoxLayout>
+#include <QFileDialog>
 
 #include "Global/QtCompat.h"
 
@@ -24,76 +23,118 @@
 QPreferencesFilesStructuresViewController::QPreferencesFilesStructuresViewController(QPreferencesFilesStructuresView* pPreferencesFilesStructuresView)
 {
 	m_pPreferencesFilesStructuresView = pPreferencesFilesStructuresView;
-
-    QTableWidget* pTable = m_pPreferencesFilesStructuresView->getTableWidget();
-
-    pTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    pTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    pTable->setColumnCount(1);
-
-    QDir dir = QDir::home();
-#ifdef UNIX
-	dir.setPath(dir.filePath(".config"));
-	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
-	dir.setPath(dir.filePath("structure_files"));
+ 
+    m_dataDir = QDir::home();
+    #ifdef UNIX
+	m_dataDir.setPath(m_dataDir.filePath(".config"));
+	m_dataDir.setPath(m_dataDir.filePath(APPLICATION_PACKAGE_NAME));
+	m_dataDir.setPath(m_dataDir.filePath("structure_files"));
 #else
-	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
-	dir.setPath(dir.filePath("structure_files"));
+	m_dataDir.setPath(m_dataDir.filePath(APPLICATION_PACKAGE_NAME));
+	m_dataDir.setPath(m_dataDir.filePath("structure_files"));
 #endif
+
+    reloadStructureFileList();
+ 
+    connect(m_pPreferencesFilesStructuresView->getTableWidget(), &QListWidget::itemClicked, this, &QPreferencesFilesStructuresViewController::handleItemClicked);
+    connect(m_pPreferencesFilesStructuresView->getAddButton(), &QAbstractButton::clicked, this, &QPreferencesFilesStructuresViewController::handleAddFile);
+    connect(m_pPreferencesFilesStructuresView->getRemoveButton(), &QAbstractButton::clicked, this, &QPreferencesFilesStructuresViewController::handleRemoveFile);
+}
+
+QPreferencesFilesStructuresViewController::~QPreferencesFilesStructuresViewController()
+{
+    
+}
+
+int QPreferencesFilesStructuresViewController::getRow()
+{
+    return m_iRow;
+}
+
+void QPreferencesFilesStructuresViewController::loadStructureFileList(const QString& szDirPath)
+{
+    QListWidget* pTable = m_pPreferencesFilesStructuresView->getTableWidget();
+    QDir dir(szDirPath);
 
     QStringList listFilters;
     listFilters << "*.xml";
     QStringList entryList = dir.entryList(listFilters, QDir::Files, QDir::Name);
 
-    pTable->setRowCount(entryList.size());
-
 	QStringList::const_iterator iter;
-    int i = 0;
     for (iter = entryList.constBegin(); iter != entryList.constEnd(); ++iter) {
-        QTableWidgetItem *fileNameItem = new QTableWidgetItem(dir.filePath(*iter));
-        pTable->setItem(i++, 0, fileNameItem);
+        QFileInfo tFileInfo(dir.filePath(*iter));
+        new QListWidgetItem(tFileInfo.fileName(), pTable);
+    }
+}
+
+void QPreferencesFilesStructuresViewController::reloadStructureFileList()
+{
+    m_pPreferencesFilesStructuresView->getTableWidget()->clear();
+
+	QString szFilePath = "./data/structure_files";
+    loadStructureFileList(szFilePath);
+    loadStructureFileList(m_dataDir.path());
+}
+
+void QPreferencesFilesStructuresViewController::handleItemClicked(QListWidgetItem *pItem)
+{
+    m_iRow = m_pPreferencesFilesStructuresView->getTableWidget()->row(pItem);
+}
+
+void QPreferencesFilesStructuresViewController::handleAddFile()
+{
+    QFileDialog dialog(m_pPreferencesFilesStructuresView);
+	dialog.setFileMode(QFileDialog::AnyFile);
+	dialog.setViewMode(QFileDialog::Detail);
+	dialog.setNameFilter(tr("XML files (*.xml)"));
+
+	if (dialog.exec()){
+		QStringList listSelectedFiles;
+		listSelectedFiles = dialog.selectedFiles();
+        for (QString fileName : listSelectedFiles) {
+            // copyFile(fileName, m_dataDir.path());
+            copyFile(fileName, "./data/structure_files");
+        }
+	}
+    reloadStructureFileList();
+    emit updateFile();
+}
+
+void QPreferencesFilesStructuresViewController::handleRemoveFile()
+{
+    QString fileName = m_pPreferencesFilesStructuresView->getTableWidget()->item(m_iRow)->text();
+    
+    bool bConfigPath = QFile::exists(m_dataDir.path() + fileName);
+    bool bDataPath = QFile::exists("./data/structure_files/" + fileName);
+    
+    if (bConfigPath || bDataPath) {
+        if (QFile::remove(m_dataDir.path() + fileName) || QFile::remove("./data/structure_files/" + fileName)) {
+            qDebug() << "[Preferences] File removed successfully";
+        } else {
+            qWarning() << "[Preferences] Failed to remove file"; 
+        }
+    } else {
+        qWarning() << "[Preferences] File does not exits";
+    }
+    reloadStructureFileList();
+    emit updateFile();
+}
+
+void QPreferencesFilesStructuresViewController::copyFile(const QString& szSourcePath, const QString& szDestPath)
+{
+    if (!QFile::exists(szSourcePath)) {
+        qWarning() << "[Preferences] Source file does not exist";
+        return;
     }
 
-    pTable->resizeColumnsToContents();
+    if (!QFile::exists(szDestPath)) {
+        qWarning() << "[Preferences] Destination file does not exist";
+        return;
+    }
+
+    if (QFile::copy(szSourcePath, szDestPath)) {
+        qDebug() << "[Preferences] File copied successfully";
+    } else {
+        qWarning() << "[Preferences] Failed to copy file";
+    }
 }
-
-QPreferencesFilesStructuresViewController::~QPreferencesFilesStructuresViewController()
-{
-
-}
-
-
-// QString szFilePath = "./data/structure_files";
-// 	loadStructureFileList(szFilePath);
-
-// 	// Load from user config dir
-// 	QDir dir = QDir::home();
-// #ifdef UNIX
-// 	dir.setPath(dir.filePath(".config"));
-// 	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
-// 	dir.setPath(dir.filePath("structure_files"));
-// #else
-// 	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
-// 	dir.setPath(dir.filePath("structure_files"));
-// #endif
-// 	loadStructureFileList(dir.path());
-// }
-
-// void QFileStructureViewController::loadStructureFileList(const QString& szDirPath)
-// {
-// 	qDebug("[GUI] Loading structure files from: %s", qPrintable(szDirPath));
-
-// 	QDir dir(szDirPath);
-
-// 	QStringList listFilters;
-// 	listFilters << "*.xml";
-// 	QStringList entryList = dir.entryList(listFilters, QDir::Files, QDir::Name);
-
-// 	QComboBox* pComboBox = m_pFileStructureView->getStructureFileComboBox();
-
-// 	QStringList::const_iterator iter;
-// 	for(iter = entryList.constBegin(); iter != entryList.constEnd(); ++iter)
-// 	{
-// 		QString szFilePath = dir.filePath(*iter);
-// 		pComboBox->addItem(*iter, szFilePath);
-// 	}

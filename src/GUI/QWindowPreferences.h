@@ -23,8 +23,6 @@ private:
     void createStatusBar();
 	
     QPreferencesFilesStructuresView* m_pPreferencesFilesStructuresView;
-	QPushButton* m_pAddButton;
-	QPushButton* m_pRemoveButton;
 	QStatusBar* m_pStatusBar;
 };
 

@@ -2,7 +2,8 @@
 #define SRC_GUI_QPREFERENCESFILESSTRUCTURESVIEW_H_
 
 #include <QWidget>
-#include <QTableWidget>
+#include <QListWidget>
+#include <QPushButton>
 
 class QPreferencesFilesStructuresView : public QWidget
 {
@@ -11,11 +12,14 @@ public:
 	QPreferencesFilesStructuresView(QWidget* pParent = NULL);
 	virtual ~QPreferencesFilesStructuresView();
 
-    QTableWidget* getTableWidget() const;
+    QListWidget* getTableWidget() const;
+	QPushButton* getRemoveButton() const;
+	QPushButton* getAddButton() const;
 
 private:
-
-    QTableWidget* m_pFileTable;
+    QListWidget* m_pFileTable;
+	QPushButton* m_pAddButton;
+	QPushButton* m_pRemoveButton;
 };
 
 #endif /* SRC_GUI_QPREFERENCESFILESSTRUCTURESVIEW_H_ */

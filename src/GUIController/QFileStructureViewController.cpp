@@ -102,6 +102,11 @@ QFileStructureViewController::~QFileStructureViewController()
 
 }
 
+void QFileStructureViewController::reload()
+{
+	reloadStructureFiles();
+}
+
 
 void QFileStructureViewController::reloadStructureFiles()
 {

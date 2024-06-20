@@ -22,6 +22,7 @@
 #include "GUIController/QGoToBytesController.h"
 #include "GUIController/QFindDialogController.h"
 #include "GUIController/QWindowPreferencesController.h"
+#include "GUIController/QPreferencesFilesStructuresViewController.h"
 
 #include "QWindowMainController.h"
 
@@ -152,6 +153,7 @@ void QWindowMainController::preferences()
 {
 	QWindowPreferences* windowPreferences = new QWindowPreferences(NULL);
 	m_pWindowPreferencesController = new QWindowPreferencesController(windowPreferences);
+	connect(m_pWindowPreferencesController->getPreferencesFilesStructuresViewController(), &QPreferencesFilesStructuresViewController::updateFile, m_pFileStructureViewController, &QFileStructureViewController::reload);
 	windowPreferences->setAttribute(Qt::WA_DeleteOnClose);
 	windowPreferences->show();
 	}

@@ -23,3 +23,8 @@ QWindowPreferencesController::~QWindowPreferencesController()
 		m_pPreferencesWindow = NULL;
 	}
 }
+
+QPreferencesFilesStructuresViewController* QWindowPreferencesController::getPreferencesFilesStructuresViewController()
+{
+	return m_pPreferencesFilesStructuresViewController;
+}

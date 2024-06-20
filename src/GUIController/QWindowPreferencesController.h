@@ -13,6 +13,9 @@ public:
 	QWindowPreferencesController(QWindowPreferences* pPreferencesWindow);
 	virtual ~QWindowPreferencesController();
 
+	QPreferencesFilesStructuresViewController* getPreferencesFilesStructuresViewController();
+
+
 private:
 	QWindowPreferences* m_pPreferencesWindow;
     QPreferencesFilesStructuresViewController* m_pPreferencesFilesStructuresViewController;
