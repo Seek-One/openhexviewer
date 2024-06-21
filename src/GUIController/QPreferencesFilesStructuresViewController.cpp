@@ -93,8 +93,8 @@ void QPreferencesFilesStructuresViewController::handleAddFile()
 		QStringList listSelectedFiles;
 		listSelectedFiles = dialog.selectedFiles();
         for (QString fileName : listSelectedFiles) {
-            // copyFile(fileName, m_dataDir.path());
-            copyFile(fileName, "./data/structure_files");
+            copyFile(fileName, m_dataDir.path());
+            // copyFile(fileName, "./data/structure_files");
         }
 	}
     reloadStructureFileList();
@@ -111,15 +111,15 @@ void QPreferencesFilesStructuresViewController::handleRemoveFile()
     if (bConfigPath || bDataPath) {
         if (QFile::remove(m_dataDir.path() + fileName) || QFile::remove("./data/structure_files/" + fileName)) {
             qDebug() << "[Preferences] File removed successfully";
-            emit changedPreferencesStatusBar("File removed successfully");
+            emit changedPreferencesStatusBar(tr("File removed successfully"));
         } else {
             qWarning() << "[Preferences] Failed to remove file"; 
-            emit changedPreferencesStatusBar("Failed to remove file");
+            emit changedPreferencesStatusBar(tr("Failed to remove file"));
 
         }
     } else {
         qWarning() << "[Preferences] File does not exits";
-        emit changedPreferencesStatusBar("File does not exists");
+        emit changedPreferencesStatusBar(tr("File does not exists"));
     }
     reloadStructureFileList();
     emit updateFile();
@@ -127,23 +127,24 @@ void QPreferencesFilesStructuresViewController::handleRemoveFile()
 
 void QPreferencesFilesStructuresViewController::copyFile(const QString& szSourcePath, const QString& szDestPath)
 {
+    qDebug("%s", qPrintable(szDestPath));
     if (!QFile::exists(szSourcePath)) {
         qWarning() << "[Preferences] Source file does not exist";
-        emit changedPreferencesStatusBar("Source file does nit exist");
+        emit changedPreferencesStatusBar(tr("Source file does not exist"));
         return;
     }
 
     if (!QFile::exists(szDestPath)) {
         qWarning() << "[Preferences] Destination file does not exist";
-        emit changedPreferencesStatusBar("Destination file does nit exist");
+        emit changedPreferencesStatusBar(tr("Destination file does not exist"));
         return;
     }
 
     if (QFile::copy(szSourcePath, szDestPath)) {
         qDebug() << "[Preferences] File copied successfully";
-        emit changedPreferencesStatusBar("File copied successfully");
+        emit changedPreferencesStatusBar(tr("File copied successfully"));
     } else {
         qWarning() << "[Preferences] Failed to copy file";
-        emit changedPreferencesStatusBar("Failed to copy file");
+        emit changedPreferencesStatusBar(tr("Failed to copy file"));
     }
 }
