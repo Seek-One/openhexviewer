@@ -14,6 +14,7 @@ QWindowPreferencesController::QWindowPreferencesController(QWindowPreferences* p
 {
 	m_pPreferencesWindow = pPreferencesWindow;
     m_pPreferencesFilesStructuresViewController = new QPreferencesFilesStructuresViewController(pPreferencesWindow->getFileStructureView()); 
+	connect(m_pPreferencesFilesStructuresViewController, SIGNAL(changedPreferencesStatusBar(QString)), m_pPreferencesWindow, SLOT(changedPreferencesStatusBar(QString)));
 }
 
 QWindowPreferencesController::~QWindowPreferencesController()

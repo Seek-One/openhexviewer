@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QListWidgetItem>
 #include <QDir>
+#include <QColor>
 
 class QPreferencesFilesStructuresView;
 
@@ -23,6 +24,7 @@ public slots:
 
 signals:
 	void updateFile();
+	void changedPreferencesStatusBar(QString szText);
 	
 private:
     QPreferencesFilesStructuresView* m_pPreferencesFilesStructuresView; 

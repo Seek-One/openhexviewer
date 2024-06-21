@@ -19,6 +19,10 @@ public:
 
     QPreferencesFilesStructuresView* getFileStructureView() const;
 
+public slots:
+	void changedPreferencesStatusBar(QString szText);
+
+
 private:
     void createStatusBar();
 	

@@ -44,3 +44,9 @@ QPreferencesFilesStructuresView* QWindowPreferences::getFileStructureView() cons
 {
     return m_pPreferencesFilesStructuresView;
 }
+
+
+void QWindowPreferences::changedPreferencesStatusBar(QString szText)
+{
+    m_pStatusBar->showMessage(szText);
+}
