@@ -86,12 +86,19 @@ void QWindowMain::createMenu()
         pViewMenu->addAction(m_pFindAction);
     }
     
+
+    QMenu *pOptionMenu = menuBar()->addMenu(tr("&Option"));
+    {
+        m_pColorAction = new QAction("Colorize", this);
+        m_pColorAction->setCheckable(true);
+        pOptionMenu->addAction(m_pColorAction);
+    }
+
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
     {
         m_pAboutAction = new QAction(tr("&About"), this);
         pHelpMenu->addAction(m_pAboutAction);
     }
-
 }
 
 QAction* QWindowMain::getOpenAction() const
@@ -127,6 +134,11 @@ QAction* QWindowMain::getGoToAction() const
 QAction* QWindowMain::getFindAction() const
 {
     return m_pFindAction;
+}
+
+QAction* QWindowMain::getColorAction() const
+{
+    return m_pColorAction;
 }
 
 QFileView* QWindowMain::getFileView() const

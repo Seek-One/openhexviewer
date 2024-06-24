@@ -61,6 +61,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
 	connect(m_pMainWindow->getGoToAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
 	connect(m_pMainWindow->getFindAction(), SIGNAL(triggered()), this, SLOT(find()));
+	connect(m_pMainWindow->getColorAction(), SIGNAL(triggered()), this, SLOT(color()));
+
 
 	m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
@@ -74,6 +76,7 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 
 	connect(m_pFileViewController, SIGNAL(onBytesChanged(QString)), m_pBytesViewController, SLOT(handleBytesChanged(QString)));
 
+	connect(this, SIGNAL(colorText(bool)), m_pFileViewController, SLOT(colorText(bool)));
 }
 
 void QWindowMainController::openFile()
@@ -156,4 +159,9 @@ void QWindowMainController::preferences()
 	connect(m_pWindowPreferencesController->getPreferencesFilesStructuresViewController(), &QPreferencesFilesStructuresViewController::updateFile, m_pFileStructureViewController, &QFileStructureViewController::reload);
 	windowPreferences->setAttribute(Qt::WA_DeleteOnClose);
 	windowPreferences->show();
-	}
+}
+
+void QWindowMainController::color()
+{
+	emit colorText(m_pMainWindow->getColorAction()->isChecked());
+}

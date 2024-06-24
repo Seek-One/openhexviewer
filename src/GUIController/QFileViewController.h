@@ -40,6 +40,7 @@ signals:
 public slots:
 	void updateView();
 	void moveToRow(int iRow);
+	void colorText(bool bIsChecked);
 
 	void handleTextChangedHex(QPlainTextEdit* pHexEditor);
 	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor);

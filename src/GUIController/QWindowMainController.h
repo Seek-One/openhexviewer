@@ -27,6 +27,9 @@ public:
 
 	void init(QWindowMain* pMainWindow);
 
+signals:
+	void colorText(bool bIsChecked);
+
 public slots:
 	void openFile();
 	void saveFile();
@@ -34,6 +37,7 @@ public slots:
 	void find();
 	void preferences();
 	void goToBytes();
+	void color();
 
 	void selectFileData(qint64 offset, qint64 size);
 

@@ -436,7 +436,7 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 	}
 }
 
-// - menu find
-// - fenetre de gestion des structures, pour importer des fichiers de structure dans le dossier de l'utilisateur
-// - ajouter un gestionnaire des fichiers de structure
-// - ajouter la coloration (cf proposition de mathieu), activable et desactivable avec une option
+void QFileViewController::colorText(bool bIsChecked)
+{
+	qDebug("Color");
+}
