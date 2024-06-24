@@ -14,6 +14,8 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QColor>
+#include <QMessageBox>
+#include <QInputDialog>
 
 #include "Global/QtCompat.h"
 
@@ -92,9 +94,9 @@ void QPreferencesFilesStructuresViewController::handleAddFile()
 	if (dialog.exec()){
 		QStringList listSelectedFiles;
 		listSelectedFiles = dialog.selectedFiles();
-        for (QString fileName : listSelectedFiles) {
-            copyFile(fileName, m_dataDir.path());
-            // copyFile(fileName, "./data/structure_files");
+        for (QString szFile : listSelectedFiles) {
+            QFileInfo tFileInfo(szFile);
+            copyFile(szFile, m_dataDir.path() + "/" + tFileInfo.fileName());
         }
 	}
     reloadStructureFileList();
@@ -105,11 +107,11 @@ void QPreferencesFilesStructuresViewController::handleRemoveFile()
 {
     QString fileName = m_pPreferencesFilesStructuresView->getTableWidget()->item(m_iRow)->text();
     
-    bool bConfigPath = QFile::exists(m_dataDir.path() + fileName);
+    bool bConfigPath = QFile::exists(m_dataDir.path() + "/" + fileName);
     bool bDataPath = QFile::exists("./data/structure_files/" + fileName);
     
     if (bConfigPath || bDataPath) {
-        if (QFile::remove(m_dataDir.path() + fileName) || QFile::remove("./data/structure_files/" + fileName)) {
+        if (QFile::remove(m_dataDir.path() + "/" + fileName) || QFile::remove("./data/structure_files/" + fileName)) {
             qDebug() << "[Preferences] File removed successfully";
             emit changedPreferencesStatusBar(tr("File removed successfully"));
         } else {
@@ -127,24 +129,71 @@ void QPreferencesFilesStructuresViewController::handleRemoveFile()
 
 void QPreferencesFilesStructuresViewController::copyFile(const QString& szSourcePath, const QString& szDestPath)
 {
-    qDebug("%s", qPrintable(szDestPath));
-    if (!QFile::exists(szSourcePath)) {
+    QString szDestTemp = szDestPath;
+    QFile sourceFile(szSourcePath);
+
+    if (!sourceFile.exists()) {
         qWarning() << "[Preferences] Source file does not exist";
         emit changedPreferencesStatusBar(tr("Source file does not exist"));
         return;
     }
 
-    if (!QFile::exists(szDestPath)) {
-        qWarning() << "[Preferences] Destination file does not exist";
-        emit changedPreferencesStatusBar(tr("Destination file does not exist"));
+    if (!sourceFile.permissions().testFlag(QFileDevice::ReadUser)) {
+        qWarning() << "[Preferences] No read permission for source file";
+        emit changedPreferencesStatusBar(tr("No read permission for source file"));
         return;
     }
 
-    if (QFile::copy(szSourcePath, szDestPath)) {
-        qDebug() << "[Preferences] File copied successfully";
-        emit changedPreferencesStatusBar(tr("File copied successfully"));
-    } else {
+    QDir destDir = QFileInfo(szDestTemp).absoluteDir();
+    if (!destDir.exists()) {
+        qDebug() << "[Preferences] Destination directory does not exist. Creating...";
+        emit changedPreferencesStatusBar(tr("Destination directory does not exist. Creating..."));
+
+        if (!destDir.mkpath(".")) {
+            qWarning() << "[Preferences] Failed to create destination directory";
+            emit changedPreferencesStatusBar(tr("Failed to create destination directory"));
+            return;
+        }
+    }
+
+    while (QFile::exists(szDestTemp)) {
+        qWarning() << "[Preferences] File with the same name already exists in the destination folder";
+        emit changedPreferencesStatusBar(tr("File with the same name already exists in the destination folder"));
+        QMessageBox msgBox;
+        msgBox.setText(tr("The file already exists."));
+        msgBox.setInformativeText(tr("Do you want to change the name or remove the older one?"));
+        QPushButton *changeNameButton = msgBox.addButton(tr("Change Name"), QMessageBox::ActionRole);
+        msgBox.addButton(tr("Remove Older"), QMessageBox::ActionRole);
+        msgBox.exec();
+
+        if (msgBox.clickedButton() == changeNameButton) {
+            bool ok;
+            QString newFileName = QInputDialog::getText(nullptr, tr("Change File Name"),
+                                                        tr("New File Name:"), QLineEdit::Normal,
+                                                        QFileInfo(szDestTemp).fileName(), &ok);
+            if (ok && !newFileName.isEmpty()) {
+                szDestTemp = QFileInfo(destDir, newFileName).absoluteFilePath();
+            } else {
+                qWarning() << "[Preferences] New file name was not provided.";
+                emit changedPreferencesStatusBar(tr("New file name was not provided"));
+                return;
+            }
+        } else {
+            if (!QFile::remove(szDestTemp)) {
+                qWarning() << "[Preferences] Failed to remove existing destination file";
+                emit changedPreferencesStatusBar(tr("Failed to remove existing destination file"));
+                return;
+            }
+        }
+    }
+
+    if (!QFile::copy(szSourcePath, szDestTemp)) {
         qWarning() << "[Preferences] Failed to copy file";
         emit changedPreferencesStatusBar(tr("Failed to copy file"));
+        return;
     }
+
+    qDebug() << "[Preferences] File copied successfully";
+    emit changedPreferencesStatusBar(tr("File copied successfully"));
+    return;
 }
