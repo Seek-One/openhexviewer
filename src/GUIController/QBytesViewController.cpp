@@ -120,11 +120,15 @@ QString QBytesViewController::BeUnsignedInt(qint64 iValue, int iBits)
 QString QBytesViewController::BeFloat(qint64 iValue, int iBits)
 {
     if (iBits <= 32) {
-        return QString::number(reinterpret_cast<float&>(iValue));
+        float fValue;
+        memcpy(&fValue, &iValue, sizeof(float));
+        return QString::number(fValue);
         
     } 
     if (iBits <= 64) {
-        return QString::number(reinterpret_cast<double&>(iValue));
+        double dValue;
+        memcpy(&dValue, &iValue, sizeof(double));
+        return QString::number(dValue);
     }
     return "0";
 }

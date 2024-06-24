@@ -52,7 +52,7 @@ signals:
 
 
 protected:
-	void resizeEvent(QResizeEvent *event);
+	void resizeEvent(QResizeEvent *event) override;
 
 	bool eventFilter(QObject *obj, QEvent *event) override;
 
