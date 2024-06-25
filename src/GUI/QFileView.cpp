@@ -222,52 +222,28 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 					iSelectionStart += (keyEvent->key() == Qt::Key_Right ? 1 : -1);
 				}
 				cursor.setPosition(iSelectionStart);
-				cursor.movePosition(QTextCursor::Right);
-				cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
+				cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
 				m_pHexEditor->setTextCursor(cursor);
 			} else if (keyEvent->modifiers() == Qt::ShiftModifier) {
-				switch(keyEvent->key()) {
-					case Qt::Key_Up:
-						cursor.setPosition(iSelectionEnd);
-						cursor.movePosition(QTextCursor::Up);
-						iSelectionEnd = cursor.position();
-						break;
-					case Qt::Key_Down:
-						cursor.setPosition(iSelectionEnd);
-						cursor.movePosition(QTextCursor::Down);
-						iSelectionEnd = cursor.position();
-						break;
-					case Qt::Key_Left:
-						iSelectionEnd -= 3;
-						break;
-					case Qt::Key_Right:
-						iSelectionEnd += 3;
-						break;
-					default:
-						break;
-				}
-
-				//START
-				while (iSelectionStart > 0 && iSelectionStart < szHexText.length() && szHexText.mid(iSelectionStart - 1 * (iSelectionStart < iSelectionEnd), 1) != " " && szHexText.mid(iSelectionStart - 1 * (iSelectionStart < iSelectionEnd), 1) != szEnter) {
-					if (iSelectionStart < iSelectionEnd) {
-						iSelectionStart--;
-					} else {
-						iSelectionStart++;
+				QTextCursor tHexCursor = m_pHexEditor->textCursor();
+				if (tHexCursor.position() == tHexCursor.selectionEnd()) {
+					iSelectionStart = tHexCursor.selectionStart();
+					iSelectionEnd = tHexCursor.selectionEnd();
+					if (keyEvent->key() == Qt::Key_Left) {
+						iSelectionEnd -= 4;
+					}
+				} else {
+					iSelectionStart = tHexCursor.selectionEnd();
+					iSelectionEnd = tHexCursor.selectionStart();
+					if (keyEvent->key() == Qt::Key_Right) {
+						iSelectionEnd += 4;
 					}
 				}
-				cursor.setPosition(iSelectionStart);
-				
-				//END
-				while (iSelectionEnd < szHexText.length() && iSelectionEnd > 0 && szHexText.mid(iSelectionEnd - 1 * (iSelectionEnd < iSelectionStart), 1) != " " && szHexText.mid(iSelectionEnd - 1 * (iSelectionEnd < iSelectionStart), 1) != szEnter) {
-					if (iSelectionEnd > iSelectionStart) {
-						iSelectionEnd++;
-					} else {
-						iSelectionEnd--;
-					}
-				}
-				cursor.setPosition(iSelectionEnd, QTextCursor::KeepAnchor);
+				tHexCursor.setPosition(iSelectionStart);
+				tHexCursor.setPosition(iSelectionEnd, QTextCursor::KeepAnchor);
+				m_pHexEditor->setTextCursor(tHexCursor);
+				return QWidget::eventFilter(obj, event);
 			}
-			m_pHexEditor->setTextCursor(cursor);
 		} else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier)) {
 			if (cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1) {
 				cursor.insertText(keyText);
