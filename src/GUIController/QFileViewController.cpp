@@ -13,6 +13,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
 #include <QKeyEvent>
+#include <QByteArray>
 
 #include "Global/QtCompat.h"
 #include "GUI/QFileView.h"
@@ -30,6 +31,8 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	m_iVisibleRowCount = 0;
 	m_iTotalRowCount = 0;
 
+	m_pModifications = new QEditorModificationList();
+
 	connect(m_pFileView, SIGNAL(sizeChanged()), this, SLOT(updateView()));
 	connect(m_pFileView, SIGNAL(rowChanged(int)), this, SLOT(moveToRow(int)));
 	connect(m_pFileView, SIGNAL(textChangedHex(QPlainTextEdit*)), this, SLOT(handleTextChangedHex(QPlainTextEdit*)));
@@ -38,10 +41,10 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	connect(m_pFileView, SIGNAL(selectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleSelectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFileView, SIGNAL(cursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleCursorChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
-	connect(m_pFileView, SIGNAL(addNewByteHex(QPlainTextEdit*)), this, SLOT(addNewByteHex(QPlainTextEdit*)));
-	connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(removeByteHex(QPlainTextEdit*)));
-	connect(m_pFileView, SIGNAL(addNewByteHuman(QPlainTextEdit*, QString)), this, SLOT(addNewByteHuman(QPlainTextEdit*, QString)));
-	connect(m_pFileView, SIGNAL(removeByteHuman(QPlainTextEdit*)), this, SLOT(removeByteHuman(QPlainTextEdit*)));
+	// connect(m_pFileView, SIGNAL(addNewByteHex(QPlainTextEdit*)), this, SLOT(addNewByteHex(QPlainTextEdit*)));
+	// connect(m_pFileView, SIGNAL(removeByteHex(QPlainTextEdit*)), this, SLOT(removeByteHex(QPlainTextEdit*)));
+	// connect(m_pFileView, SIGNAL(addNewByteHuman(QPlainTextEdit*, QString)), this, SLOT(addNewByteHuman(QPlainTextEdit*, QString)));
+	// connect(m_pFileView, SIGNAL(removeByteHuman(QPlainTextEdit*)), this, SLOT(removeByteHuman(QPlainTextEdit*)));
 }
 
 QFileViewController::~QFileViewController()
@@ -82,20 +85,65 @@ bool QFileViewController::saveFile()
 		return bRes;
 	} 
 	QFile file(m_file.fileName());
-	bRes = file.open(QIODevice::WriteOnly);
-	if (bRes) {
-		qint64 iBytesWritten = file.write(m_szData.toUtf8());
-
-		if (iBytesWritten == -1) {
-			qWarning("[File] Writing error");
-		}
-		file.close();
-		qWarning("[File] Saved");
-		return bRes;
-	} else {
-		qWarning("[File] Unable to save file: %s" , qPrintable(m_file.fileName()));
+	//OPEN
+	if (!file.open(QIODevice::ReadWrite)) {
+		qWarning("[File] Failed to open file for reading and writing");
+		return false;
 	}
-	return bRes;
+	
+	char* pBuffer = new char[m_iBytePerLine];
+	int iNbRead;
+
+	for (int i = 0; i < m_iTotalRowCount; i++) {
+		//SEEK
+		if (!file.seek(i * m_iBytePerLine)) {
+			qWarning("[File] Failed to seek to offset");
+			if(pBuffer){
+				delete[] pBuffer;
+				pBuffer = NULL;
+			}
+			file.close();
+			return false;
+		}
+		//READ
+		iNbRead = file.read(pBuffer, m_iBytePerLine);
+		if (iNbRead == 0) {
+			break;
+		}
+
+		//MODIFY
+		for (int j = 0; j < iNbRead; j++) {
+			if (m_pModifications->existsPosition(i * m_iBytePerLine + j + m_iFilePos)) {
+				pBuffer[j] = (m_pModifications->lastModificationAtPosition(i * m_iBytePerLine + j + m_iFilePos).data).at(0);
+			}
+		}
+
+		//SEEK
+		if (!file.seek(i * m_iBytePerLine)) {
+			qWarning("[File] Failed to seek to offset");
+			if(pBuffer){
+				delete[] pBuffer;
+				pBuffer = NULL;
+			}
+			file.close();
+			return false;
+		}
+		//WRITE
+		qint64 iBytesWritten = file.write(pBuffer);
+		if (iBytesWritten == -1) {
+			qWarning("[File] Failed to write data");
+			if (pBuffer) {
+				delete[] pBuffer;
+				pBuffer = NULL;
+			}
+			file.close();
+			return false;
+		}
+	}
+	file.close();
+	m_pModifications->clearModifications();
+	readFile(m_iFilePos);
+	return true;
 }
 
 bool QFileViewController::readFile(qint64 iStartOffset)
@@ -105,16 +153,64 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	bool bRes;
 	m_iFilePos = iStartOffset;
 	bRes = m_file.seek(m_iFilePos);
+
+	int iBufferSize = m_iBytePerLine;
 	char* pBuffer = new char[m_iBytePerLine];
+
+	quint32 iOffset;
+	qint64 iNbRead = 1;
+	QString szOffsetText;
+	QString szHexText;
+	QString szHumanText;
+	char c;
+
 	QString szTmp;
-	int iNbRead;
+
+	int iPos = 0;
 
 	if(bRes){
-		do {
-			iNbRead = m_file.read(pBuffer, m_iBytePerLine);
-			szTmp = QString("%0%1").arg(szTmp).arg(pBuffer);
-		} while (iNbRead > 0);
-		updateText(szTmp, iStartOffset);
+		iNbRead = m_file.read(pBuffer, iBufferSize);
+		while (iPos < m_iVisibleRowCount * m_iBytePerLine && iNbRead > 0) {
+			for (int i = 0; i < iNbRead; i++) {
+				bool bTemp = false;
+				if (iPos % m_iBytePerLine == 0 && iPos > 0) {
+					iOffset = (quint32)(m_iFilePos + iPos);
+					QStringASPrintf(szTmp, "0x%08X", iOffset);
+					szOffsetText += szTmp;
+
+					szOffsetText += "\n";
+					szHexText += "\n";
+					szHumanText += "\n";	
+				}
+			
+				if (m_pModifications->existsPosition(m_iFilePos + iPos)) {
+					c = (m_pModifications->lastModificationAtPosition(m_iFilePos + iPos).data).at(0);
+				} else {
+					c = pBuffer[i];
+				}
+				if (bTemp == false) {
+					
+					//Set hex Text
+					QStringASPrintf(szTmp, "%02X", (unsigned char)c);
+					szHexText += szTmp;
+					if (iPos % m_iBytePerLine < iNbRead - 1) {
+						szHexText += " ";
+					}
+					
+					// Set human text
+					if(c >= 0x20 && c <= 0x7E){
+						szHumanText += c;
+					}else{
+						szHumanText += ".";
+					}
+				}
+				++iPos;
+			}
+			iNbRead = m_file.read(pBuffer, iBufferSize);
+		}
+		m_pFileView->setOffsetText(szOffsetText);
+		m_pFileView->setHexText(szHexText);
+		m_pFileView->setHumanText(szHumanText);
 	}
 
 	if(pBuffer){
@@ -123,62 +219,6 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	}
 
 	return bRes;
-}
-
-void QFileViewController::updateText(QString szText, qint64 iStartOffset)
-{
-	m_iFilePos = iStartOffset;
-	m_szData = szText;
-
-	quint32 iOffset;
-	qint64 iNbRead;
-	QString szOffsetText;
-	QString szHexText;
-	QString szHumanText;
-	QChar c;
-
-	QString szTmp;
-	if (szText.isEmpty()) {
-		return;
-	}
-	for(int i=0; i<m_iVisibleRowCount; i++){
-		// Prepend a line break if not first row
-		if(i>0){
-			szOffsetText += "\n";
-			if (m_szData.length() - m_iFilePos >= i * m_iBytePerLine) {
-				szHexText += "\n";
-				szHumanText += "\n";
-			}
-		}
-
-		iOffset = (quint32)(m_iFilePos+i*m_iBytePerLine);
-		QStringASPrintf(szTmp, "0x%08X", iOffset);
-		szOffsetText += szTmp;
-		iNbRead = std::min(m_szData.length() - i * m_iBytePerLine - m_iFilePos, (qint64)m_iBytePerLine);
-		for(int j=0; j<iNbRead; j++)
-		{
-			// Set hex text
-			c = m_szData.at(i * m_iBytePerLine + j + m_iFilePos);
-			QStringASPrintf(szTmp, "%02X", (unsigned char)(static_cast<char>(c.unicode())));
-			szHexText += szTmp;
-			if (j < iNbRead - 1) {
-				szHexText += " ";
-			}
-
-			// Set human text
-			if(c.unicode() >= 0x20 && c.unicode() <= 0x7E){
-				szHumanText += c;
-			}else{
-				szHumanText += ".";
-			}
-		}
-	}
-	m_pFileView->setOffsetText(szOffsetText);
-	m_pFileView->setHexText(szHexText);
-	m_pFileView->setHumanText(szHumanText);
-
-	m_iFileSize = m_szData.length();
-	m_iTotalRowCount = ceil(m_iFileSize / float(m_iBytePerLine));
 }
 
 void QFileViewController::closeFile()
@@ -210,15 +250,8 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	iNbSelectedLine++;
 
 	m_pFileView->moveToRow(iFirstVisibleRow);
-	qDebug("%d", (iPosStart - iRowStart + iFirstVisibleRow));
 	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), iNbSelectedLine);
 }
-
-QString QFileViewController::getStringData()
-{
-	return m_szData;
-}
-
 
 void QFileViewController::updateDisplayData()
 {
@@ -233,7 +266,7 @@ void QFileViewController::updateView()
 	QSignalBlocker block(m_pFileView);
 
 	updateDisplayData();
-	updateText(m_szData, m_iFilePos);
+	readFile(m_iFilePos);
 }
 
 void QFileViewController::moveToRow(int iRow)
@@ -243,7 +276,7 @@ void QFileViewController::moveToRow(int iRow)
 	iRow = qMin(iRow, m_iTotalRowCount - m_iVisibleRowCount);
 
 	qint64 iOffset = (((qint64)iRow) * m_iBytePerLine);
-	updateText(m_szData, iOffset);
+	readFile(iOffset);
 }
 
 void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor) 
@@ -266,10 +299,10 @@ void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor)
 	int iText = szTmp.toInt(&bOk, 16);
 	if (bOk) {
 		char cRes = static_cast<char>(iText);
-		m_szData.remove(tHexCursor.position() / 3 + m_iFilePos, 1);
-		m_szData.insert(tHexCursor.position() / 3 + m_iFilePos, cRes);
+		QByteArray qbytechar(&cRes);
+		m_pModifications->addModification(m_iFilePos + tHexCursor.position() / 3, Action::Update, 1, qbytechar);
 	}
-	updateText(m_szData, m_iFilePos);
+	readFile(m_iFilePos);
 
 	tHexCursor.setPosition(iSelectionStart);
 	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
@@ -285,10 +318,11 @@ void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor)
 	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
 	
 	char cRes = pHumanEditor->toPlainText().mid(tHumanCursor.position() - 1, 1).at(0).toLatin1();
-	m_szData.remove(tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, 1);
-	m_szData.insert(tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, cRes);
 
-	updateText(m_szData, m_iFilePos);
+	QByteArray qbytechar(&cRes);
+	m_pModifications->addModification(m_iFilePos + tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, Action::Update, 1, qbytechar);
+
+	readFile(m_iFilePos);
 
 	tHumanCursor.setPosition(iSelectionStart);
 	tHumanCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
@@ -350,93 +384,105 @@ void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor,
 	QSignalBlocker blocker(pHexEditor);
 }
 
-void QFileViewController::addNewByteHex(QPlainTextEdit* pHexEditor)
-{
-	QSignalBlocker block(m_pFileView);
+// void QFileViewController::addNewByteHex(QPlainTextEdit* pHexEditor)
+// {
+// 	QSignalBlocker block(m_pFileView);
 	
-	QTextCursor tHexCursor = pHexEditor->textCursor();
-	int iSelectionStart = tHexCursor.selectionStart();
-	QString szHexText = pHexEditor->toPlainText();
+// 	QTextCursor tHexCursor = pHexEditor->textCursor();
+// 	int iSelectionStart = tHexCursor.selectionStart();
+// 	QString szHexText = pHexEditor->toPlainText();
 
-	QString szTmp = "00";
+// 	QString szTmp = "00";
 
-	bool bOk;
-	int iText = szTmp.toInt(&bOk, 16);
-	if (bOk) {
-		char cRes = static_cast<char>(iText);
-		m_szData.insert(tHexCursor.position() / 3 + m_iFilePos, cRes);
-	}
-	updateText(m_szData, m_iFilePos);
+// 	bool bOk;
+// 	int iText = szTmp.toInt(&bOk, 16);
+// 	if (bOk) {
+// 		char cRes = static_cast<char>(iText);
+// 		QByteArray qbytechar(&cRes);
+// 		m_pModifications->addModification(tHexCursor.position() / 3 + m_iFilePos, Action::Add, 1, qbytechar);
+// 	}
+// 	readFile(m_iFilePos);
 
-	tHexCursor.setPosition(iSelectionStart);
-	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
-	pHexEditor->setTextCursor(tHexCursor);
-}
+// 	tHexCursor.setPosition(iSelectionStart);
+// 	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
+// 	pHexEditor->setTextCursor(tHexCursor);
+// }
 
-void QFileViewController::removeByteHex(QPlainTextEdit* pHexEditor)
-{
-	QSignalBlocker block(m_pFileView);
+// void QFileViewController::removeByteHex(QPlainTextEdit* pHexEditor)
+// {
+// 	QSignalBlocker block(m_pFileView);
 	
-	QTextCursor tHexCursor = pHexEditor->textCursor();
-	int iSelectionStart = tHexCursor.selectionStart();
-	QString szHexText = pHexEditor->toPlainText();
+// 	QTextCursor tHexCursor = pHexEditor->textCursor();
+// 	int iSelectionStart = tHexCursor.selectionStart();
+// 	QString szHexText = pHexEditor->toPlainText();
 
-	m_szData.remove(tHexCursor.position() / 3 + m_iFilePos, 1);
 
-	updateText(m_szData, m_iFilePos);
+// 	if (m_pModifications->existsPosition(tHexCursor.position() / 3 + m_iFilePos)) {
+// 		m_pModifications->addModification(tHexCursor.position() / 3 + m_iFilePos, Action::Remove, 1, ""); //m_pModifications->lastModificationAtPosition(tHexCursor.position() / 3 + m_iFilePos).data);
+// 	} else {
+// 		m_pModifications->addModification(tHexCursor.position() / 3 + m_iFilePos, Action::Remove, 1, "");
+// 	}
 
-	tHexCursor.setPosition(iSelectionStart);
-	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
-	pHexEditor->setTextCursor(tHexCursor);
-}
+// 	readFile(m_iFilePos);
 
-void QFileViewController::addNewByteHuman(QPlainTextEdit* pHumanEditor, QString szText)
-{
-	QSignalBlocker blocker(m_pFileView);
+// 	tHexCursor.setPosition(iSelectionStart);
+// 	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
+// 	pHexEditor->setTextCursor(tHexCursor);
+// }
 
-	QTextCursor tHumanCursor = pHumanEditor->textCursor();
-	int iSelectionStart = tHumanCursor.selectionStart();
-	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
+// void QFileViewController::addNewByteHuman(QPlainTextEdit* pHumanEditor, QString szText)
+// {
+// 	QSignalBlocker blocker(m_pFileView);
+
+// 	QTextCursor tHumanCursor = pHumanEditor->textCursor();
+// 	int iSelectionStart = tHumanCursor.selectionStart();
+// 	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
 	
-	m_szData.insert(tHumanCursor.selectionStart() - iNbEnter + m_iFilePos, szText);
+// 	m_pModifications->addModification(tHumanCursor.selectionStart() - iNbEnter + m_iFilePos, Action::Add, 1, szText.toUtf8());
 
-	updateText(m_szData, m_iFilePos);
+// 	readFile(m_iFilePos);
 
-	tHumanCursor.setPosition(iSelectionStart + 1);
-	pHumanEditor->setTextCursor(tHumanCursor);
-}
+// 	tHumanCursor.setPosition(iSelectionStart + 1);
+// 	pHumanEditor->setTextCursor(tHumanCursor);
+// }
 
-void QFileViewController::removeByteHuman(QPlainTextEdit* pHumanEditor)
-{
-	QSignalBlocker blocker(m_pFileView);
+// void QFileViewController::removeByteHuman(QPlainTextEdit* pHumanEditor)
+// {
+// 	QSignalBlocker blocker(m_pFileView);
 
-	QTextCursor tHumanCursor = pHumanEditor->textCursor();
-	int iSelectionStart = tHumanCursor.selectionStart();
-	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
+// 	QTextCursor tHumanCursor = pHumanEditor->textCursor();
+// 	int iSelectionStart = tHumanCursor.selectionStart();
+// 	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
 	
-	m_szData.remove(tHumanCursor.selectionStart() - 1 - iNbEnter + m_iFilePos, 1);
+// 	REMOVE
 	
-	updateText(m_szData, m_iFilePos);
+// 	readFile(m_iFilePos);
 
-	tHumanCursor.setPosition(iSelectionStart + 1);
-	pHumanEditor->setTextCursor(tHumanCursor);
-}
+// 	tHumanCursor.setPosition(iSelectionStart + 1);
+// 	pHumanEditor->setTextCursor(tHumanCursor);
+// }
 
 void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions)
 {
-	QRegularExpression re(szSubString);
-	QRegularExpressionMatchIterator i = re.globalMatch(m_szData);
+	// QRegularExpression re(szSubString);
+	// QRegularExpressionMatchIterator i = re.globalMatch(m_szData);
 
-	while (i.hasNext()) {
-		QRegularExpressionMatch match = i.next();
-		plstPositions->append(match.capturedStart());
-	}
-	if (plstPositions->size() > 0) {
-		selectFileData(plstPositions->at(0), szSubString.length()); //enter problem
-	}
+	// while (i.hasNext()) {
+	// 	QRegularExpressionMatch match = i.next();
+	// 	plstPositions->append(match.capturedStart());
+	// }
+	// if (plstPositions->size() > 0) {
+	// 	selectFileData(plstPositions->at(0), szSubString.length()); //enter problem
+	// }
 }
 
 void QFileViewController::colorText(bool bIsChecked)
 {
 	qDebug("Color");
+}
+
+QString QFileViewController::getStringData()
+{
+	QString szTmp = "NULL";
+	return szTmp;
 }

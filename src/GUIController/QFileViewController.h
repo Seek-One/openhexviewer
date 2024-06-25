@@ -10,6 +10,7 @@
 
 #include <QString>
 #include <QFile>
+#include "GUIModel/QEditorModificationList.h"
 
 class QFileView;
 class QPlainTextEdit;
@@ -49,19 +50,14 @@ public slots:
 	void handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor); 
 	void handleCursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor); 
 	
-	void addNewByteHex(QPlainTextEdit* pHexEditor);
-	void removeByteHex(QPlainTextEdit* m_pHexEditor);
-	void addNewByteHuman(QPlainTextEdit* m_pHumanEditor, QString szText);
-	void removeByteHuman(QPlainTextEdit* m_pHumanEditor);
+	// void addNewByteHex(QPlainTextEdit* pHexEditor);
+	// void removeByteHex(QPlainTextEdit* m_pHexEditor);
+	// void addNewByteHuman(QPlainTextEdit* m_pHumanEditor, QString szText);
+	// void removeByteHuman(QPlainTextEdit* m_pHumanEditor);
 
 	void findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions);
 private:
 	QFileView* m_pFileView;
-
-	//Store data
-	QString m_szData;
-	void updateText(QString szText, qint64 iStartOffset);
-
 
 	// Current file
 	bool m_bIsFileOpen;
@@ -73,6 +69,9 @@ private:
 	int m_iBytePerLine;
 	int m_iTotalRowCount;
 	int m_iVisibleRowCount;
+
+	//List of modifications of file
+	QEditorModificationList* m_pModifications;
 
 	void updateDisplayData();
 	bool readFile(qint64 iStartOffset);

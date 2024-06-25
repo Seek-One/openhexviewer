@@ -272,11 +272,12 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 			if (cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1) {
 				cursor.insertText(keyText);
 			} 
-		} else if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {	
-			emit addNewByteHex(m_pHexEditor);
-		} else if (keyEvent->key() == Qt::Key_Backspace) {
-			emit removeByteHex(m_pHexEditor);
 		}
+		//  else if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {	
+		// 	emit addNewByteHex(m_pHexEditor);
+		// } else if (keyEvent->key() == Qt::Key_Backspace) {
+		// 	emit removeByteHex(m_pHexEditor);
+		// }
 		return true;
 	}
 	return QWidget::eventFilter(obj, event);
@@ -299,11 +300,11 @@ bool QFileView::eventHumanEditor(QObject *obj, QEvent *event)
 		if (!keyText.isEmpty() && cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1){
 			return QWidget::eventFilter(obj, event);	
 		}
-		if (!keyText.isEmpty() && !cursor.hasSelection() && !(keyEvent->key() == Qt::Key_Backspace)) {
-			emit addNewByteHuman(m_pHumanEditor, keyText);
-		} else if (keyEvent->key() == Qt::Key_Backspace) {
-			emit removeByteHuman(m_pHumanEditor);
-		}
+		// if (!keyText.isEmpty() && !cursor.hasSelection() && !(keyEvent->key() == Qt::Key_Backspace)) {
+		// 	emit addNewByteHuman(m_pHumanEditor, keyText);
+		// } else if (keyEvent->key() == Qt::Key_Backspace) {
+		// 	emit removeByteHuman(m_pHumanEditor);
+		// }
 		return true;
 	}
 	return QWidget::eventFilter(obj, event);

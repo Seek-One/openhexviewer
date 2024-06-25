@@ -153,6 +153,10 @@ set(APPLICATION_SOURCES
 	src/GUIController/QPreferencesFilesStructuresViewController.h
 	src/GUIModel/QFileStructureModel.cpp
 	src/GUIModel/QFileStructureModel.h
+	src/GUIModel/QEditorModification.cpp
+	src/GUIModel/QEditorModification.h
+	src/GUIModel/QEditorModificationList.cpp
+	src/GUIModel/QEditorModificationList.h
 	src/XML/StructureFileParserHandler.cpp
 	src/XML/StructureFileParserHandler.h
 )
