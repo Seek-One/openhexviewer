@@ -14,6 +14,7 @@
 #include <QRegularExpressionMatchIterator>
 #include <QKeyEvent>
 #include <QByteArray>
+#include <QMessageBox>
 
 #include "Global/QtCompat.h"
 #include "GUI/QFileView.h"
@@ -80,11 +81,12 @@ bool QFileViewController::openFile(const QString& szFilePath)
 
 bool QFileViewController::saveFile()
 {
-	bool bRes = true;
-
 	if(!m_bIsFileOpen) {
 		qWarning("[File] No file open");
-		return bRes;
+		QMessageBox msgBox;
+		msgBox.setText(tr("No file loaded"));
+		msgBox.exec();
+		return false;
 	} 
 	QFile file(m_file.fileName());
 	//OPEN
@@ -505,16 +507,64 @@ void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor,
 
 void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions)
 {
-	// QRegularExpression re(szSubString);
-	// QRegularExpressionMatchIterator i = re.globalMatch(m_szData);
+	plstPositions->clear();
+	int iLengthSubString = szSubString.length();
+	QRegularExpression re(QRegularExpression::escape(szSubString));
+	QString szDataFile;
+	char* pBuffer = new char[iLengthSubString];
+	int iNbRead;
+	if (!m_bIsFileOpen) {
+		qWarning("[File] No file open");
+		QMessageBox msgBox;
+		msgBox.setText(tr("No file loaded"));
+		msgBox.exec();
+		return;
+	}
+	QFile file(m_file.fileName());
+	//OPEN
+	if (!file.open(QIODevice::ReadOnly)) {
+		qWarning("[File] Failed to open file for reading");
+		return;
+	}
 
-	// while (i.hasNext()) {
-	// 	QRegularExpressionMatch match = i.next();
-	// 	plstPositions->append(match.capturedStart());
-	// }
-	// if (plstPositions->size() > 0) {
-	// 	selectFileData(plstPositions->at(0), szSubString.length()); //enter problem
-	// }
+	for (int i = 0; i < m_iFileSize - iLengthSubString; i++) {
+		//SEEK
+		if (!file.seek(i)) {
+			qWarning("[File] Failed to seek to offset");
+			if(pBuffer){
+				delete[] pBuffer;
+				pBuffer = NULL;
+			}
+			file.close();
+			return;
+		}
+		//READ
+		iNbRead = file.read(pBuffer, iLengthSubString);
+		if (iNbRead != iLengthSubString) {
+			break;
+		}
+		for (int j = 0; j < iNbRead; j++) {
+			if (m_pModifications->existsPosition(i + j)) {
+				pBuffer[i + j] = (m_pModifications->lastModificationAtPosition(i + j).data).at(0);
+			}
+		}
+		szDataFile = QString::fromLatin1(pBuffer);
+		QRegularExpressionMatchIterator iter = re.globalMatch(szDataFile);
+		while (iter.hasNext()) {
+			QRegularExpressionMatch match = iter.next();
+			plstPositions->append(match.capturedStart() + i);
+			i += iLengthSubString;
+		}
+	}
+	file.close();
+
+	if (plstPositions->size() > 0) {
+		selectFileData(plstPositions->at(0), szSubString.length()); //enter problem
+	} else {
+		QMessageBox msgBox;
+		msgBox.setText(tr("No match found"));
+		msgBox.exec();
+	}
 }
 
 void QFileViewController::colorText(bool bIsChecked)
