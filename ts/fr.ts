@@ -343,6 +343,10 @@
         <source>&amp;About</source>
         <translation>&amp;À propos</translation>
     </message>
+    <message>
+        <source>&amp;Colorize</source>
+        <translation>&amp;Coloriser</translation>
+    </message>
 </context>
 <context>
     <name>QWindowPreferences</name>

@@ -89,7 +89,7 @@ void QWindowMain::createMenu()
 
     QMenu *pOptionMenu = menuBar()->addMenu(tr("&Option"));
     {
-        m_pColorAction = new QAction("Colorize", this);
+        m_pColorAction = new QAction(tr("&Colorize"), this);
         m_pColorAction->setCheckable(true);
         pOptionMenu->addAction(m_pColorAction);
     }
