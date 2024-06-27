@@ -8,6 +8,7 @@
 #include <math.h>
 #include <algorithm>
 
+#include <QTextEdit>
 #include <QTextCursor>
 #include <QPlainTextEdit>
 #include <QRegularExpression>
@@ -31,6 +32,27 @@ QFileViewController::QFileViewController(QFileView* pFileView)
 	m_iBytePerLine = 0;
 	m_iVisibleRowCount = 0;
 	m_iTotalRowCount = 0;
+
+    m_nullFormat.setForeground(QColor("#f92671"));
+    m_nullFormat.setFontWeight(QFont::Bold);
+
+    m_offsetFormat.setForeground(QColor("#fa8400"));
+    m_offsetFormat.setFontWeight(QFont::Bold);
+
+    m_printableFormat.setForeground(QColor("#57bee1"));
+    m_printableFormat.setFontWeight(QFont::Bold);
+
+    m_whitespaceFormat.setForeground(QColor("#a6e22e"));
+    m_whitespaceFormat.setFontWeight(QFont::Bold);
+
+    m_otherAsciiFormat.setForeground(QColor("#4e9a06"));
+    m_otherAsciiFormat.setFontWeight(QFont::Bold);
+
+    m_nonAsciiFormat.setForeground(QColor("#c4a000"));
+    m_nonAsciiFormat.setFontWeight(QFont::Bold);
+
+
+	m_bHighLight = false;
 
 	m_pModifications = new QEditorModificationList();
 
@@ -168,6 +190,18 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	QString szHumanText;
 	char c;
 
+	m_pFileView->setHexText("");
+	m_pFileView->setHumanText("");
+	
+	QPlainTextEdit* pHexEditor = m_pFileView->getHexEditor();
+	QPlainTextEdit* pHumanEditor = m_pFileView->getHumanEditor();
+	
+	QTextCursor hexCursor = pHexEditor->textCursor();
+	QTextCursor humanCursor = pHumanEditor->textCursor();
+	
+	QTextCharFormat currentFormat;
+	QTextCharFormat previousFormat;
+
 	QString szTmp;
 
 	int iPos = 0;
@@ -176,15 +210,15 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 		iNbRead = m_file.read(pBuffer, iBufferSize);
 		while (iPos < m_iVisibleRowCount * m_iBytePerLine && iNbRead > 0) {
 			for (int i = 0; i < iNbRead; i++) {
-				bool bTemp = false;
-				if (iPos % m_iBytePerLine == 0 && iPos > 0) {
+				if (iPos % m_iBytePerLine == 0) {
 					iOffset = (quint32)(m_iFilePos + iPos);
 					QStringASPrintf(szTmp, "0x%08X", iOffset);
 					szOffsetText += szTmp;
-
 					szOffsetText += "\n";
-					szHexText += "\n";
-					szHumanText += "\n";	
+					if (iPos > 0) {
+						szHexText += "\n";
+						szHumanText += "\n";	
+					}
 				}
 			
 				if (m_pModifications->existsPosition(m_iFilePos + iPos)) {
@@ -192,29 +226,57 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 				} else {
 					c = pBuffer[i];
 				}
-				if (bTemp == false) {
 					
-					//Set hex Text
-					QStringASPrintf(szTmp, "%02X", (unsigned char)c);
-					szHexText += szTmp;
-					if (iPos % m_iBytePerLine < iNbRead - 1) {
-						szHexText += " ";
+				//Set hex Text
+				QStringASPrintf(szTmp, "%02X", (unsigned char)c);
+				QChar szChar(c);
+				if (m_bHighLight) {
+					if (szChar == QChar::Null) {
+						currentFormat = m_nullFormat;
+					} else if (c > 0x20 && c <= 0x7E) {
+						currentFormat = m_printableFormat;
+					} else if (szChar.isSpace()) {
+						currentFormat = m_whitespaceFormat;
+					} else if (szChar.unicode() < 128) {
+						currentFormat = m_otherAsciiFormat;
+					} else {
+						currentFormat = m_nonAsciiFormat;
 					}
 					
-					// Set human text
-					if(c >= 0x20 && c <= 0x7E){
-						szHumanText += c;
-					}else{
-						szHumanText += ".";
+					if ((iPos != 0 && currentFormat != previousFormat) || iPos == m_iVisibleRowCount * m_iBytePerLine - 1) {
+						hexCursor.insertText(szHexText, previousFormat);
+						humanCursor.insertText(szHumanText, previousFormat);
+						szHexText = "";
+						szHumanText = "";
 					}
+					previousFormat = currentFormat;
 				}
+				szHexText += szTmp;
+				if (iPos % m_iBytePerLine < iNbRead - 1) {
+					szHexText += " ";
+				}
+				if (szChar == QChar::Null) {
+					szHumanText += "0"; 
+				} else if (c > 0x20 && c <= 0x7E) {
+					szHumanText += c;
+				} else if (szChar.isSpace()) {
+					szHumanText += "_";
+				} else if (szChar.unicode() < 128) {
+					szHumanText += "×";
+				} else {
+					szHumanText += "·";
+				}
+				
 				++iPos;
 			}
 			iNbRead = m_file.read(pBuffer, iBufferSize);
 		}
+		if (!m_bHighLight) {
+			QTextCharFormat normalFormat;
+			hexCursor.insertText(szHexText, normalFormat);
+			humanCursor.insertText(szHumanText, normalFormat);
+		}
 		m_pFileView->setOffsetText(szOffsetText);
-		m_pFileView->setHexText(szHexText);
-		m_pFileView->setHumanText(szHumanText);
 	}
 
 	if(pBuffer){
@@ -569,11 +631,6 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 
 void QFileViewController::colorText(bool bIsChecked)
 {
-	qDebug("Color");
-}
-
-QString QFileViewController::getStringData()
-{
-	QString szTmp = "NULL";
-	return szTmp;
+	m_bHighLight = bIsChecked;
+	readFile(m_iFilePos);
 }

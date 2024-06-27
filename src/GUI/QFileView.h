@@ -35,6 +35,10 @@ public:
 	void selectText(int iPosStart, int iPosEnd, int iStartNbRow, int iNbRow);
 
 	void selectTextRow(int iPosStart, int iPosEnd, int iRowStart, int iRowEnd, int iNbBytePerLine);
+
+	QPlainTextEdit* getHexEditor();
+	QPlainTextEdit* getHumanEditor();
+
 signals:
 	void sizeChanged();
 	void rowChanged(int iRow);

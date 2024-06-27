@@ -10,6 +10,7 @@
 
 #include <QString>
 #include <QFile>
+#include <QTextCharFormat>
 #include "GUIModel/QEditorModificationList.h"
 
 class QFileView;
@@ -29,10 +30,6 @@ public:
 	void closeFile();
 
 	void selectFileData(qint64 offset, qint64 size);
-
-	QString getStringData();
-
-
 
 signals:
 	void onBytesSelectionChanged(qint64 offset, qint64 size); 
@@ -70,6 +67,8 @@ private:
 	int m_iTotalRowCount;
 	int m_iVisibleRowCount;
 
+	bool m_bHighLight;
+
 	//List of modifications of file
 	QEditorModificationList* m_pModifications;
 
@@ -81,6 +80,12 @@ private:
 	bool eventHexEditor(QObject *obj, QEvent *event); 
 	bool eventHumanEditor(QObject *obj, QEvent *event); 
 
+    QTextCharFormat m_nonAsciiFormat;
+    QTextCharFormat m_otherAsciiFormat;
+    QTextCharFormat m_whitespaceFormat;
+    QTextCharFormat m_printableFormat;
+	QTextCharFormat m_nullFormat;
+    QTextCharFormat m_offsetFormat;
 };
 
 #endif /* SRC_GUICONTROLLER_QFILEVIEWCONTROLLER_H_ */

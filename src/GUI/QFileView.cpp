@@ -298,3 +298,13 @@ bool QFileView::eventFilter(QObject *obj, QEvent *event)
 	
 	return QWidget::eventFilter(obj, event);
 }
+
+
+QPlainTextEdit* QFileView::getHexEditor()
+{
+	return m_pHexEditor;
+}
+QPlainTextEdit* QFileView::getHumanEditor()
+{
+	return m_pHumanEditor;
+}
