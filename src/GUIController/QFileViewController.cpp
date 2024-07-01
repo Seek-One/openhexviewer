@@ -16,6 +16,8 @@
 #include <QKeyEvent>
 #include <QByteArray>
 #include <QMessageBox>
+#include <QDebug>
+#include <QByteArray>
 
 #include "Global/QtCompat.h"
 #include "GUI/QFileView.h"
@@ -385,7 +387,7 @@ void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor)
 	int iText = szTmp.toInt(&bOk, 16);
 	if (bOk) {
 		char cRes = static_cast<char>(iText);
-		QByteArray qbytechar(&cRes);
+		QByteArray qbytechar(&cRes, 1);
 		m_pModifications->addModification(m_iFilePos + tHexCursor.position() / 3, Action::Update, 1, qbytechar);
 	}
 	readFile(m_iFilePos);
@@ -594,6 +596,7 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 	QRegularExpression re(QRegularExpression::escape(szSubString));
 	QString szDataFile;
 	char* pBuffer = new char[iLengthSubString];
+	bool bFound;
 	int iNbRead;
 	if (!m_bIsFileOpen) {
 		qWarning("[File] No file open");
@@ -610,6 +613,7 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 	}
 
 	for (int i = 0; i < m_iFileSize - iLengthSubString; i++) {
+		bFound = true;
 		//SEEK
 		if (!file.seek(i)) {
 			qWarning("[File] Failed to seek to offset");
@@ -627,15 +631,16 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 		}
 		for (int j = 0; j < iNbRead; j++) {
 			if (m_pModifications->existsPosition(i + j)) {
-				pBuffer[i + j] = (m_pModifications->lastModificationAtPosition(i + j).data).at(0);
+				pBuffer[j] = m_pModifications->lastModificationAtPosition(i + j).data.data()[0];
+			}
+			if (pBuffer[j] != szSubString.at(j)) {
+				bFound = false;
+				break;
 			}
 		}
-		szDataFile = QString::fromLatin1(pBuffer);
-		QRegularExpressionMatchIterator iter = re.globalMatch(szDataFile);
-		while (iter.hasNext()) {
-			QRegularExpressionMatch match = iter.next();
-			plstPositions->append(match.capturedStart() + i);
-			i += iLengthSubString;
+		if (bFound) {
+			plstPositions->append(i);
+			i += iLengthSubString - 1;
 		}
 	}
 	file.close();
