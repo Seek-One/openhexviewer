@@ -31,14 +31,19 @@ public:
 
 	void selectFileData(qint64 offset, qint64 size);
 
+	void getSelectionOffset(qint64& offset, qint64& size);
+
 signals:
 	void onBytesSelectionChanged(qint64 offset, qint64 size); 
 	void onBytesChanged(QString szHex);
+	void fileOpened();
+	void fileClosed();
 
 public slots:
 	void updateView();
 	void moveToRow(int iRow);
 	void colorText(bool bIsChecked);
+	void selection(QString& szText);
 
 	void handleTextChangedHex(QPlainTextEdit* pHexEditor);
 	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor);

@@ -16,6 +16,7 @@
 #include "GUI/QFindDialog.h"
 #include "GUI/QWindowMain.h"
 #include "GUI/QWindowPreferences.h"
+#include "GUI/QFileExportView.h"
 #include "GUIController/QFileViewController.h"
 #include "GUIController/QFileStructureViewController.h"
 #include "GUIController/QBytesViewController.h"
@@ -23,6 +24,7 @@
 #include "GUIController/QFindDialogController.h"
 #include "GUIController/QWindowPreferencesController.h"
 #include "GUIController/QPreferencesFilesStructuresViewController.h"
+#include "GUIController/QFileExportViewController.h"
 
 #include "QWindowMainController.h"
 
@@ -48,6 +50,11 @@ QWindowMainController::~QWindowMainController()
 		delete m_pBytesViewController;
 		m_pBytesViewController = NULL;
 	}
+
+	// if (m_pFileExportViewController) {
+	// 	delete m_pFileExportViewController;
+	// 	m_pFileExportViewController = NULL;
+	// }
 }
 
 void QWindowMainController::init(QWindowMain* pMainWindow)
@@ -62,7 +69,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow->getGoToAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
 	connect(m_pMainWindow->getFindAction(), SIGNAL(triggered()), this, SLOT(find()));
 	connect(m_pMainWindow->getColorAction(), SIGNAL(triggered()), this, SLOT(color()));
-
+	connect(m_pMainWindow->getExportSelectionAction(), SIGNAL(triggered()), this, SLOT(exportSelection()));
+	actionDisabled();
 
 	m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
@@ -75,6 +83,10 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pFileViewController, SIGNAL(onBytesSelectionChanged(qint64, qint64)), this, SLOT(onBytesSelectionChanged(qint64, qint64)));
 
 	connect(m_pFileViewController, SIGNAL(onBytesChanged(QString)), m_pBytesViewController, SLOT(handleBytesChanged(QString)));
+
+	connect(m_pFileViewController, SIGNAL(fileOpened()), this, SLOT(actionEnabled()));
+
+	connect(m_pFileViewController, SIGNAL(fileClosed()), this, SLOT(actionDisabled()));
 
 	connect(this, SIGNAL(colorText(bool)), m_pFileViewController, SLOT(colorText(bool)));
 }
@@ -161,7 +173,39 @@ void QWindowMainController::preferences()
 	windowPreferences->show();
 }
 
+void QWindowMainController::exportSelection()
+{
+	QFileExportView* pfileExportView = new QFileExportView(NULL);
+	m_pFileExportViewController = new QFileExportViewController(pfileExportView);
+	connect(m_pFileExportViewController, SIGNAL(changeOffset(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
+	connect(m_pFileExportViewController, SIGNAL(selection(QString&)), m_pFileViewController, SLOT(selection(QString&)));
+	qint64 offset;
+	qint64 size;
+	m_pFileViewController->getSelectionOffset(offset, size);
+	m_pFileExportViewController->init(offset, size);
+	pfileExportView->exec();
+}
+
 void QWindowMainController::color()
 {
 	emit colorText(m_pMainWindow->getColorAction()->isChecked());
 }
+
+void QWindowMainController::actionUsable(bool bEnabled)
+{
+	m_pMainWindow->getGoToAction()->setEnabled(bEnabled);
+	m_pMainWindow->getSaveAction()->setEnabled(bEnabled);
+	m_pMainWindow->getFindAction()->setEnabled(bEnabled);
+	m_pMainWindow->getExportSelectionAction()->setEnabled(bEnabled);
+}
+
+void QWindowMainController::actionEnabled() 
+{
+	actionUsable(true);
+}
+
+void QWindowMainController::actionDisabled()
+{
+	actionUsable(false);
+}
+	

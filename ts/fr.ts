@@ -90,6 +90,56 @@
     </message>
 </context>
 <context>
+    <name>QFileExportView</name>
+    <message>
+        <source>Offset</source>
+        <translation>Position</translation>
+    </message>
+    <message>
+        <source>Type :</source>
+        <translation>Type :</translation>
+    </message>
+    <message>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <source>Dec</source>
+        <translation>Dec</translation>
+    </message>
+    <message>
+        <source>Start :</source>
+        <translation>Début :</translation>
+    </message>
+    <message>
+        <source>End :</source>
+        <translation>Fin :</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Taille</translation>
+    </message>
+    <message>
+        <source>Size :</source>
+        <translation>Taille :</translation>
+    </message>
+</context>
+<context>
+    <name>QFileExportViewController</name>
+    <message>
+        <source>File path is empty</source>
+        <translation>Le chemin du fichier est vide</translation>
+    </message>
+    <message>
+        <source>Write permission denied</source>
+        <translation>Pas de permission d&apos;écriture</translation>
+    </message>
+    <message>
+        <source>Selection saved to file</source>
+        <translation>La section a été sauvergardé</translation>
+    </message>
+</context>
+<context>
     <name>QFileStructureView</name>
     <message>
         <source>Refresh</source>
@@ -320,8 +370,16 @@
         <translation>&amp;Quitter</translation>
     </message>
     <message>
+        <source>&amp;Edit</source>
+        <translation>&amp;Edition</translation>
+    </message>
+    <message>
+        <source>&amp;Export Selection</source>
+        <translation>&amp;Exporter une Selection</translation>
+    </message>
+    <message>
         <source>&amp;View</source>
-        <translation>&amp;Voir</translation>
+        <translation>&amp;Affichage</translation>
     </message>
     <message>
         <source>&amp;Go to Bytes</source>
@@ -333,7 +391,7 @@
     </message>
     <message>
         <source>&amp;Option</source>
-        <translation>&amp;Option</translation>
+        <translation type="vanished">&amp;Option</translation>
     </message>
     <message>
         <source>&amp;Help</source>

@@ -133,6 +133,8 @@ set(APPLICATION_SOURCES
 	src/GUI/QWindowPreferences.h
 	src/GUI/QPreferencesFilesStructuresView.cpp
 	src/GUI/QPreferencesFilesStructuresView.h
+	src/GUI/QFileExportView.cpp
+	src/GUI/QFileExportView.h
 	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QFileViewController.cpp
@@ -151,6 +153,8 @@ set(APPLICATION_SOURCES
 	src/GUIController/QWindowPreferencesController.h
 	src/GUIController/QPreferencesFilesStructuresViewController.cpp
 	src/GUIController/QPreferencesFilesStructuresViewController.h
+	src/GUIController/QFileExportViewController.cpp
+	src/GUIController/QFileExportViewController.h
 	src/GUIModel/QFileStructureModel.cpp
 	src/GUIModel/QFileStructureModel.h
 	src/GUIModel/QEditorModification.cpp
@@ -172,6 +176,7 @@ set(APPLICATION_MOC_HEADERS
 	src/GUI/QWindowMain.h
 	src/GUI/QWindowPreferences.h
 	src/GUI/QPreferencesFilesStructuresView.h
+	src/GUI/QFileExportView.h
 	src/GUIController/QFileViewController.h
 	src/GUIController/QFileStructureViewController.h
 	src/GUIController/QBytesViewController.h
@@ -180,6 +185,7 @@ set(APPLICATION_MOC_HEADERS
 	src/GUIController/QWindowMainController.h
 	src/GUIController/QWindowPreferencesController.h
 	src/GUIController/QPreferencesFilesStructuresViewController.h
+	src/GUIController/QFileExportViewController.h
 )
 qtx_wrap_cpp(
 	APPLICATION_MOC_OUTFILES
@@ -201,6 +207,7 @@ set (I18N_FILES
 	src/GUI/QWindowMain.cpp
 	src/GUI/QWindowPreferences.cpp
 	src/GUI/QPreferencesFilesStructuresView.cpp
+	src/GUI/QFileExportView.cpp
 	src/GUIController/QFileViewController.cpp
 	src/GUIController/QFileStructureViewController.cpp
 	src/GUIController/QBytesViewController.cpp
@@ -209,6 +216,7 @@ set (I18N_FILES
 	src/GUIController/QWindowMainController.cpp
 	src/GUIController/QWindowPreferencesController.cpp
 	src/GUIController/QPreferencesFilesStructuresViewController.cpp
+	src/GUIController/QFileExportViewController.cpp
 )
 
 set (TS_FILES

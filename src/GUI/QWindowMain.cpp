@@ -78,20 +78,21 @@ void QWindowMain::createMenu()
         pFileMenu->addAction(m_pQuitAction);
     }
     
+    QMenu *pEditMenu = menuBar()->addMenu(tr("&Edit"));
+    {
+        m_pExportSelectionAction = new QAction(tr("&Export Selection"), this);
+        pEditMenu->addAction(m_pExportSelectionAction);
+    }
+
     QMenu *pViewMenu = menuBar()->addMenu(tr("&View"));
     {
         m_pGoToAction = new QAction(tr("&Go to Bytes"), this);
         pViewMenu->addAction(m_pGoToAction);
         m_pFindAction = new QAction(tr("&Find"), this);
         pViewMenu->addAction(m_pFindAction);
-    }
-    
-
-    QMenu *pOptionMenu = menuBar()->addMenu(tr("&Option"));
-    {
         m_pColorAction = new QAction(tr("&Colorize"), this);
         m_pColorAction->setCheckable(true);
-        pOptionMenu->addAction(m_pColorAction);
+        pViewMenu->addAction(m_pColorAction);
     }
 
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
@@ -139,6 +140,11 @@ QAction* QWindowMain::getFindAction() const
 QAction* QWindowMain::getColorAction() const
 {
     return m_pColorAction;
+}
+
+QAction* QWindowMain::getExportSelectionAction() const
+{
+    return m_pExportSelectionAction;
 }
 
 QFileView* QWindowMain::getFileView() const

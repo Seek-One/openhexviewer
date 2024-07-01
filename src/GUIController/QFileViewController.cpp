@@ -94,6 +94,8 @@ bool QFileViewController::openFile(const QString& szFilePath)
 		updateDisplayData();
 
 		bRes = readFile(0);
+
+		emit fileOpened();
 	}else{
 		qWarning("[File] Unable to open file: %s", qPrintable(szFilePath));
 	}
@@ -175,6 +177,10 @@ bool QFileViewController::saveFile()
 bool QFileViewController::readFile(qint64 iStartOffset)
 {
 	QSignalBlocker blocker(m_pFileView);
+
+	if(!m_bIsFileOpen) {
+		return false;
+	} 
 
 	bool bRes;
 	m_iFilePos = iStartOffset;
@@ -292,6 +298,7 @@ void QFileViewController::closeFile()
 	if(m_bIsFileOpen){
 		m_file.close();
 		m_bIsFileOpen = false;
+		emit fileClosed();
 	}
 }
 
@@ -318,6 +325,19 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	m_pFileView->moveToRow(iFirstVisibleRow);
 	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), iNbSelectedLine);
 }
+
+void QFileViewController::getSelectionOffset(qint64& offset, qint64& size)
+{
+	QPlainTextEdit* pEditor = m_pFileView->getHumanEditor();
+	QTextCursor cursorEditor = pEditor->textCursor();
+	qint64 iSelectionStart = cursorEditor.selectionStart();
+	qint64 iSelectionEnd = cursorEditor.selectionEnd();
+	qint64 iSelectionSize = abs(iSelectionEnd - iSelectionStart);
+	QString szTextEditor = pEditor->toPlainText();
+	offset = cursorEditor.selectionStart() - szTextEditor.mid(0, iSelectionStart).count("\n");
+	size = abs(iSelectionSize - szTextEditor.mid(iSelectionStart, iSelectionSize).count("\n"));
+}
+
 
 void QFileViewController::updateDisplayData()
 {
@@ -632,5 +652,62 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 void QFileViewController::colorText(bool bIsChecked)
 {
 	m_bHighLight = bIsChecked;
-	readFile(m_iFilePos);
+	if(!m_bIsFileOpen) {
+		readFile(m_iFilePos);
+	} 
+}
+
+void QFileViewController::selection(QString& szText)
+{
+	
+	QPlainTextEdit* editor = m_pFileView->getHumanEditor();
+	QTextCursor cursor = editor->textCursor();
+
+	char* pBuffer = new char[m_iBytePerLine];
+	int iNbRead;
+	if (!m_bIsFileOpen) {
+		qWarning("[File] No file open");
+		QMessageBox msgBox;
+		msgBox.setText(tr("No file loaded"));
+		msgBox.exec();
+		return;
+	}
+	QFile file(m_file.fileName());
+	if (!file.open(QIODevice::ReadOnly)) {
+		qWarning("[File] Failed to open file for reading");
+		return;
+	}
+	qint64 iSelectionStart = cursor.selectionStart();
+	qint64 iSelectionEnd = cursor.selectionEnd() - editor->toPlainText().mid(iSelectionStart, abs(cursor.selectionEnd() - iSelectionStart)).count("\n");
+	for (int i = iSelectionStart; i < iSelectionEnd; i += m_iBytePerLine) {
+		//SEEK
+		if (!file.seek(m_iFilePos + i)) {
+			qWarning("[File] Failed to seek to offset");
+			if(pBuffer){
+				delete[] pBuffer;
+				pBuffer = NULL;
+			}
+			file.close();
+			return;
+		}
+		//READ
+		qint64 minNbRead = std::min((qint64)m_iBytePerLine, iSelectionEnd - i);
+		iNbRead = file.read(pBuffer, minNbRead);
+		if (iNbRead == 0) {
+			break;
+		}
+		for (qint64 i = 0; i < minNbRead; i++) {
+			if (m_pModifications->existsPosition(m_iFilePos + i)) {
+				szText += (m_pModifications->lastModificationAtPosition(m_iFilePos + i).data).at(0);
+			} else {
+				szText += pBuffer[i];
+			}
+		}
+	}
+	if(pBuffer){
+		delete[] pBuffer;
+		pBuffer = NULL;
+	}
+
+	file.close();
 }

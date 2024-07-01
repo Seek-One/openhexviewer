@@ -31,6 +31,7 @@ public:
 	QAction* getGoToAction() const;
 	QAction* getFindAction() const;
 	QAction* getColorAction() const;
+	QAction* getExportSelectionAction() const;
 
 	QFileView* getFileView() const;
 	QFileStructureView* getFileStructureView() const;
@@ -49,6 +50,7 @@ private:
 	QAction* m_pGoToAction;
 	QAction* m_pFindAction;
 	QAction* m_pColorAction;
+	QAction* m_pExportSelectionAction;
 	QAction* m_pAboutAction;
 
 	QFileView* m_pFileView;
