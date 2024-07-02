@@ -182,11 +182,9 @@ bool QFindDialog::eventHexEditor(QObject *obj, QEvent *event)
 {
 
 	if (event->type() == QEvent::KeyPress) {
-		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-		QString allowedChars = "1234567890ABCDEF";
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);                
+        QString allowedChars = "1234567890ABCDEF";
 		QString keyText = keyEvent->text().toUpper();
-		QTextCursor cursor = m_pHexEditor->textCursor();
-		QString szEnter = "\n";
 		
 		bool isMovingKey = (keyEvent->key() == Qt::Key_Left ||
 							keyEvent->key() == Qt::Key_Right ||
@@ -194,64 +192,15 @@ bool QFindDialog::eventHexEditor(QObject *obj, QEvent *event)
 							keyEvent->key() == Qt::Key_Down);
 		
 		bool isTextKey = allowedChars.contains(keyText);
-		int iSelectionStart;
-		int iSelectionEnd;
-		iSelectionStart = cursor.selectionStart();
-		iSelectionEnd = cursor.selectionEnd();
-		QString szHexText = m_pHexEditor->toPlainText();
-
+		
 		if (isMovingKey) {
-			if (keyEvent->modifiers() == Qt::NoModifier) {
-				switch(keyEvent->key()) {
-					case Qt::Key_Left:
-						cursor.movePosition(QTextCursor::Left);
-						cursor.movePosition(QTextCursor::Left);
-						break;
-					case Qt::Key_Right:
-						cursor.movePosition(QTextCursor::Right);
-						break;
-					case Qt::Key_Up:
-						cursor.movePosition(QTextCursor::Up);
-						break;
-					case Qt::Key_Down:
-						cursor.movePosition(QTextCursor::Down);
-						break;
-					default:
-						break;
-				}
-				iSelectionStart = cursor.position();
-				while (iSelectionStart > 0 && iSelectionStart < szHexText.length() && (szHexText.mid(iSelectionStart, 1) == " " || szHexText.mid(iSelectionStart, 1) == szEnter)) {
-					iSelectionStart += (keyEvent->key() == Qt::Key_Right ? 1 : -1);
-				}
-				cursor.setPosition(iSelectionStart);
-				cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
-				m_pHexEditor->setTextCursor(cursor);
-			} else if (keyEvent->modifiers() == Qt::ShiftModifier) {
-				QTextCursor tHexCursor = m_pHexEditor->textCursor();
-				if (tHexCursor.position() == tHexCursor.selectionEnd()) {
-					iSelectionStart = tHexCursor.selectionStart();
-					iSelectionEnd = tHexCursor.selectionEnd();
-					if (keyEvent->key() == Qt::Key_Left) {
-						iSelectionEnd -= 4;
-					}
-				} else {
-					iSelectionStart = tHexCursor.selectionEnd();
-					iSelectionEnd = tHexCursor.selectionStart();
-					if (keyEvent->key() == Qt::Key_Right) {
-						iSelectionEnd += 4;
-					}
-				}
-				tHexCursor.setPosition(iSelectionStart);
-				tHexCursor.setPosition(iSelectionEnd, QTextCursor::KeepAnchor);
-				m_pHexEditor->setTextCursor(tHexCursor);
-				return QWidget::eventFilter(obj, event);
-			}
-		} else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier) && keyEvent->key() != Qt::Key_Backspace) {
-            cursor.insertText(keyText);
-		} else if (keyEvent->key() == Qt::Key_Backspace) {
+            return QWidget::eventFilter(obj, event);
+        } else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier) && keyEvent->key() != Qt::Key_Backspace) {
+            emit insertCharHexEditor(m_pHexEditor, keyText);
+        } else if (keyEvent->key() == Qt::Key_Backspace) {
             emit removeHexEditor(m_pHexEditor);
         }
-		return true;
+        return true;
 	}
 	return QWidget::eventFilter(obj, event);
 }
@@ -261,17 +210,13 @@ bool QFindDialog::eventHumanEditor(QObject *obj, QEvent *event)
 	if (event->type() == QEvent::KeyPress) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 		QString keyText = keyEvent->text();
-		bool isMovingKey = (keyEvent->key() == Qt::Key_Left ||
-							keyEvent->key() == Qt::Key_Right ||
-							keyEvent->key() == Qt::Key_Up ||
-							keyEvent->key() == Qt::Key_Down);
-
-		if ((isMovingKey || !keyText.isEmpty()) && keyEvent->key() != Qt::Key_Backspace) {
-			return QWidget::eventFilter(obj, event);
-		} else if (keyEvent->key() == Qt::Key_Backspace) {
+		if (!keyText.isEmpty() && keyText.at(0) >= 0x20 && keyText.at(0) <= 0x7E) {
+            emit insertCharHumanEditor(m_pHumanEditor, keyText);
+            return true;
+        } else if (keyEvent->key() == Qt::Key_Backspace || keyEvent->key() == Qt::Key_Delete) {
             emit removeHumanEditor(m_pHumanEditor);
+            return true;
         }
-		return true;
 	}
 	return QWidget::eventFilter(obj, event);
 }

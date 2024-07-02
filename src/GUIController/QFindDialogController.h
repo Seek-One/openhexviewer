@@ -31,15 +31,14 @@ public slots:
 	void findNext();
 	void findPrevious();
 
-	void handleTextChangedHex(QPlainTextEdit* pHexEditor);
-	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor);
 	void handleSelectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor);
 	void handleSelectionChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor);
-	void handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor); 
-	void handleCursorChangedHuman(QPlainTextEdit* pHumanEditor, QPlainTextEdit* pHexEditor); 
 	void removeHexEditor(QPlainTextEdit* pHexEditor);
 	void removeHumanEditor(QPlainTextEdit* pHumanEditor);
 	
+	void insertCharHumanEditor(QPlainTextEdit* pHumanEditor, QString& keyText);
+	void insertCharHexEditor(QPlainTextEdit* pHexEditor, QString& keyText);
+
 private:
     QFindDialog* m_pFindDialog;
 

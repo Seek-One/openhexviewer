@@ -48,6 +48,10 @@ signals:
 
     void removeHumanEditor(QPlainTextEdit* pHumanEditor);
     void removeHexEditor(QPlainTextEdit* pHexEditor);
+
+    void insertCharHumanEditor(QPlainTextEdit* pHumanEditor, QString& keyText);
+    void insertCharHexEditor(QPlainTextEdit* pHexEditor, QString& keyText);
+
 protected:
 	void resizeEvent(QResizeEvent *event) override;
 
