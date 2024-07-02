@@ -8,6 +8,8 @@
 #include <QCoreApplication>
 #include <QAction>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QWidget>
 
 #include "Global/QtCompat.h"
 
@@ -33,6 +35,7 @@ QWindowMainController::QWindowMainController()
 	m_pMainWindow = NULL;
 	m_pFileViewController = NULL;
 	m_pFileStructureViewController = NULL;
+	m_windowPreferences = NULL;
 }
 
 QWindowMainController::~QWindowMainController()
@@ -72,6 +75,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow->getExportSelectionAction(), SIGNAL(triggered()), this, SLOT(exportSelection()));
 	actionDisabled();
 
+	connect(m_pMainWindow, SIGNAL(mainWindowClosed(QCloseEvent*)), this, SLOT(close(QCloseEvent*)));
+
 	m_pFileViewController = new QFileViewController(m_pMainWindow->getFileView());
 
 	m_pFileStructureViewController = new QFileStructureViewController(m_pMainWindow->getFileStructureView());
@@ -88,7 +93,11 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 
 	connect(m_pFileViewController, SIGNAL(fileClosed()), this, SLOT(actionDisabled()));
 
+	connect(m_pFileViewController, SIGNAL(doChanges()), this, SLOT(doChanges()));
+
 	connect(this, SIGNAL(colorText(bool)), m_pFileViewController, SLOT(colorText(bool)));
+
+    m_bSavedChanges = true;
 }
 
 void QWindowMainController::openFile()
@@ -118,6 +127,7 @@ void QWindowMainController::openFile(const QString& szFilePath)
 void QWindowMainController::saveFile()
 {
 	qDebug("[Main] Saving file");
+	m_bSavedChanges = true;
 	m_pFileViewController->saveFile();
 }
 
@@ -172,11 +182,11 @@ void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
 
 void QWindowMainController::preferences()
 {
-	QWindowPreferences* windowPreferences = new QWindowPreferences(NULL);
-	m_pWindowPreferencesController = new QWindowPreferencesController(windowPreferences);
+	m_windowPreferences = new QWindowPreferences(NULL);
+	m_pWindowPreferencesController = new QWindowPreferencesController(m_windowPreferences);
 	connect(m_pWindowPreferencesController->getPreferencesFilesStructuresViewController(), &QPreferencesFilesStructuresViewController::updateFile, m_pFileStructureViewController, &QFileStructureViewController::reload);
-	windowPreferences->setAttribute(Qt::WA_DeleteOnClose);
-	windowPreferences->show();
+	m_windowPreferences->setAttribute(Qt::WA_DeleteOnClose);
+	m_windowPreferences->show();
 }
 
 void QWindowMainController::exportSelection()
@@ -215,3 +225,36 @@ void QWindowMainController::actionDisabled()
 	actionUsable(false);
 }
 	
+void QWindowMainController::close(QCloseEvent* event)
+{
+	if (!m_bSavedChanges) {
+		QMessageBox::StandardButton resBtn = QMessageBox::question(new QWidget(), tr("Confirm Close"),
+				tr("You have unsaved changes. Do you want to save them?\n"),
+				QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+				QMessageBox::Save);
+		if (resBtn == QMessageBox::Save) {
+			m_pFileViewController->saveFile();
+			event->accept();
+			if (m_windowPreferences != NULL) {
+				m_windowPreferences->close();
+			}
+		} else if (resBtn == QMessageBox::Discard) {
+			event->accept();
+			if (m_windowPreferences != NULL) {
+				m_windowPreferences->close();
+			}
+		} else {
+			event->ignore();
+		}
+	} else {
+		event->accept();
+		if (m_windowPreferences != NULL) {
+			m_windowPreferences->close();
+		}
+	}
+}
+
+void QWindowMainController::doChanges()
+{
+	m_bSavedChanges = false;
+}

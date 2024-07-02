@@ -10,6 +10,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
+#include <QCloseEvent>
 
 class QAction;
 class QFileView;
@@ -38,6 +39,11 @@ public:
 	QBytesView* getBytesView() const;
 
 	void setStatusBarText(const QString& szText);
+signals:
+    void mainWindowClosed(QCloseEvent* event);
+
+protected:
+	void closeEvent(QCloseEvent* event);
 
 private:
 	void createMenu(); // Creates a menu bar

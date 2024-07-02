@@ -166,3 +166,8 @@ void QWindowMain::setStatusBarText(const QString& szText)
 {
 	m_pStatusBar->showMessage(szText);
 }
+
+void QWindowMain::closeEvent(QCloseEvent* event)
+{
+    emit mainWindowClosed(event);
+}

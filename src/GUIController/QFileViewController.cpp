@@ -402,6 +402,8 @@ void QFileViewController::handleTextChangedHex(QPlainTextEdit* pHexEditor)
 	tHexCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
 	
 	pHexEditor->setTextCursor(tHexCursor);
+
+	emit doChanges();
 }	
 
 void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor) 
@@ -422,6 +424,8 @@ void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor)
 	tHumanCursor.setPosition(iSelectionStart);
 	tHumanCursor.setPosition(iSelectionStart + 1, QTextCursor::KeepAnchor);
 	pHumanEditor->setTextCursor(tHumanCursor);
+
+	emit doChanges();
 }
 
 void QFileViewController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 

@@ -38,6 +38,7 @@ signals:
 	void onBytesChanged(QString szHex);
 	void fileOpened();
 	void fileClosed();
+ 	void doChanges();
 
 public slots:
 	void updateView();

@@ -9,6 +9,10 @@
 #define SRC_GUICONTROLLER_QWINDOWMAINCONTROLLER_H_
 
 #include <QObject>
+#include <QCloseEvent> 
+
+#include "GUI/QWindowPreferences.h"
+
 
 class QWindowMain;
 class QFileViewController;
@@ -48,11 +52,18 @@ public slots:
 
 	void onBytesSelectionChanged(qint64 start, qint64 end);
 
+	void close(QCloseEvent* event);
+	
+	void doChanges();
+
 public:
 	void openFile(const QString& szFilePath);
+	
 
 private:
 	QWindowMain* m_pMainWindow;
+
+	bool m_bSavedChanges;
 
 	QFileViewController* m_pFileViewController;
 	QWindowPreferencesController* m_pWindowPreferencesController;
@@ -61,6 +72,7 @@ private:
 	QGoToBytesController* m_pGoToBytesController;
 	QFindDialogController* m_pFindDialogController;
 	QFileExportViewController* m_pFileExportViewController;
+	QWindowPreferences* m_windowPreferences;
 
 	void actionUsable(bool bEnabled);
 };
