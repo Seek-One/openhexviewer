@@ -423,6 +423,16 @@
         <source>Offset: 0x%1 (%2)</source>
         <translation>Position: 0x%1 (%2)</translation>
     </message>
+    <message>
+        <source>Confirm Close</source>
+        <translation>Confirmer la fermeture</translation>
+    </message>
+    <message>
+        <source>You have unsaved changes. Do you want to save them?
+</source>
+        <translation>Vous avez des changements non enregistrés. Voulez-vous les sauvegarder ?
+</translation>
+    </message>
 </context>
 <context>
     <name>QWindowPreferences</name>
