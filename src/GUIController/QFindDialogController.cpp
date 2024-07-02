@@ -237,7 +237,7 @@ void QFindDialogController::insertCharHexEditor(QPlainTextEdit* pHexEditor, QStr
 
 	updateText(m_iDataPos);
 
-	if (isAtTheEnd) {
+	if (isAtTheEnd && iPosition % (m_iBytePerLine * 3) != 0) {
 		iPosition ++;
 	}
 
