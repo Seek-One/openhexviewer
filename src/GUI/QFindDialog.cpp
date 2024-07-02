@@ -10,7 +10,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDialogButtonBox>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QScrollBar>
 #include <QPlainTextEdit>
@@ -192,13 +191,14 @@ bool QFindDialog::eventHexEditor(QObject *obj, QEvent *event)
 							keyEvent->key() == Qt::Key_Down);
 		
 		bool isTextKey = allowedChars.contains(keyText);
-		
+		bool isDigitKey = keyEvent->key() >= Qt::Key_0 && keyEvent->key() <= Qt::Key_9;
+
 		if (isMovingKey) {
             return QWidget::eventFilter(obj, event);
-        } else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier) && keyEvent->key() != Qt::Key_Backspace) {
-            emit insertCharHexEditor(m_pHexEditor, keyText);
-        } else if (keyEvent->key() == Qt::Key_Backspace) {
+        } else if (keyEvent->key() == Qt::Key_Backspace || keyEvent->key() == Qt::Key_Delete) {
             emit removeHexEditor(m_pHexEditor);
+        } else if ((!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier)) || isDigitKey) {
+            emit insertCharHexEditor(m_pHexEditor, keyText);
         }
         return true;
 	}

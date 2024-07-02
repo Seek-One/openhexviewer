@@ -5,18 +5,9 @@
 #include "Global/QtCompat.h"
 #include "QFindDialogController.h"
 #include "../GUI/QFileView.h"
-#include "QFileViewController.h" // Include the full definition
+#include "QFileViewController.h"
 
-
-#include <QApplication>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QDialogButtonBox>
 #include <QMessageBox>
-#include <QIcon>
-#include <QToolButton>
-#include <QPushButton>
 #include <QPlainTextEdit>
 
 #include <QFile>
@@ -120,6 +111,8 @@ void QFindDialogController::find()
 
 void QFindDialogController::updateText(qint64 iStartOffset)
 {
+	QSignalBlocker block(m_pFindDialog);
+
 	m_iDataPos = iStartOffset;
 
 	qint64 iNbRead;
@@ -129,6 +122,8 @@ void QFindDialogController::updateText(qint64 iStartOffset)
 
 	QString szTmp;
 	if (m_szData.isEmpty()) {
+		m_pFindDialog->setHexText("");
+		m_pFindDialog->setHumanText("");
 		return;
 	}
 	for(int i=0; i<m_iVisibleRowCount; i++){
@@ -277,8 +272,11 @@ void QFindDialogController::removeHexEditor(QPlainTextEdit* pHexEditor)
 		c.setPosition(iPosition);
 	} else {
 		--iPosition;
+		if (iPosition >= pHexEditor->toPlainText().length()) {
+			iPosition =	pHexEditor->toPlainText().length() - 1;
+		}
 		if(iPosition < 0) {
-			iPosition = 1;
+			iPosition = 0;
 		}
 		c.setPosition(iPosition);
 	}
@@ -297,7 +295,7 @@ void QFindDialogController::insertCharHumanEditor(QPlainTextEdit* pHumanEditor, 
 	}
 
 	if (c.hasSelection()) {
-		m_szData.remove(c.selectionStart() + m_iDataPos, c.selectionEnd() - c.selectionStart()); //iNbEnter
+		m_szData.remove(c.selectionStart() + m_iDataPos, c.selectionEnd() - c.selectionStart());
 	}
 	m_szData.insert(c.selectionStart() + m_iDataPos - iNbEnter, keyText.at(0));
 	
