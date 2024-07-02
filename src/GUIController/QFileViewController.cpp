@@ -213,7 +213,7 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	QString szTmp;
 
 	int iPos = 0;
-
+	
 	if(bRes){
 		iNbRead = m_file.read(pBuffer, iBufferSize);
 		while (iPos < m_iVisibleRowCount * m_iBytePerLine && iNbRead > 0) {
@@ -657,7 +657,7 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 void QFileViewController::colorText(bool bIsChecked)
 {
 	m_bHighLight = bIsChecked;
-	if(!m_bIsFileOpen) {
+	if(m_bIsFileOpen) {
 		readFile(m_iFilePos);
 	} 
 }
