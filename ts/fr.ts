@@ -216,6 +216,13 @@
     </message>
 </context>
 <context>
+    <name>QFindDialogController</name>
+    <message>
+        <source>Conversion problem</source>
+        <translation>Problème de conversion</translation>
+    </message>
+</context>
+<context>
     <name>QGoToBytes</name>
     <message>
         <source>Offset type :</source>
@@ -404,6 +411,17 @@
     <message>
         <source>&amp;Colorize</source>
         <translation>&amp;Coloriser</translation>
+    </message>
+</context>
+<context>
+    <name>QWindowMainController</name>
+    <message>
+        <source>Offset: 0x%1 (%2), %3 bytes from 0x%4 to 0x%5 (%6-%7) selected</source>
+        <translation>Position: 0x%1 (%2), %3 octets de 0x%4 à 0x%5 (%6-%7) sélectionnés</translation>
+    </message>
+    <message>
+        <source>Offset: 0x%1 (%2)</source>
+        <translation>Position: 0x%1 (%2)</translation>
     </message>
 </context>
 <context>

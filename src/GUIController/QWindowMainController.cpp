@@ -144,22 +144,28 @@ void QWindowMainController::find()
 {
 	QFindDialog findDialog(m_pMainWindow);
 	m_pFindDialogController = new QFindDialogController(&findDialog);
-	connect(m_pFindDialogController, SIGNAL(findAllOccurrencesRegex(QString, QList<qint64>*)), m_pFileViewController, SLOT(findAllOccurrencesRegex(QString, QList<qint64>*)));
+	connect(m_pFindDialogController, SIGNAL(findAllOccurrencesRegex(QByteArray, QList<qint64>*)), m_pFileViewController, SLOT(findAllOccurrencesRegex(QByteArray, QList<qint64>*)));
 	connect(m_pFindDialogController, SIGNAL(selectData(qint64, qint64)), this, SLOT(selectFileData(qint64, qint64)));
 	findDialog.exec();
 }
-
 
 void QWindowMainController::onBytesSelectionChanged(qint64 offset, qint64 size)
 {
 	QString szTmp;
 	if (size > 1) {
 		qint64 iOffsetEnd = offset + size - 1;
-		//TODO tr
-		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld), %lld bytes from 0x%0llX to 0x%0llX (%lld-%lld) selected", iOffsetEnd, iOffsetEnd, size, offset, iOffsetEnd, offset, iOffsetEnd);
+		szTmp = tr("Offset: 0x%1 (%2), %3 bytes from 0x%4 to 0x%5 (%6-%7) selected")
+			.arg(iOffsetEnd, 0, 16)
+			.arg(iOffsetEnd)
+			.arg(size)
+			.arg(offset, 0, 16)
+			.arg(iOffsetEnd, 0, 16)
+			.arg(offset)
+			.arg(iOffsetEnd);
 	} else {
-		//TODO tr
-		QStringASPrintf(szTmp, "Offset: 0x%0llX (%lld)", offset, offset);
+		szTmp = tr("Offset: 0x%1 (%2)")
+			.arg(offset, 0, 16)
+			.arg(offset);
 	}
 	m_pMainWindow->setStatusBarText(szTmp);
 }
