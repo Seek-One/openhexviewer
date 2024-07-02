@@ -2,7 +2,7 @@
 #define QFINDDIALOGCONTROLLER_H_
 
 #include <QDialog>
-#include <QString>
+#include <QByteArray>
 
 #include "../GUI/QFindDialog.h"
 #include "QFileViewController.h"
@@ -17,10 +17,10 @@ public:
     QFindDialogController(QFindDialog* pFindDialog);
     virtual ~QFindDialogController();
 
-    QString getStringData();
+    QByteArray getStringData();
 
 signals:
-	void findAllOccurrencesRegex(QString szData, QList<qint64>* plstPosition);
+	void findAllOccurrencesRegex(QByteArray byteArray, QList<qint64>* plstPosition);
 	void selectData(qint64 offset, qint64 size);
 
 public slots:
@@ -42,10 +42,12 @@ public slots:
 private:
     QFindDialog* m_pFindDialog;
 
-    QString m_szData;
+    QByteArray m_byteArray;
 
 	qint64 m_iDataSize;
 	qint64 m_iDataPos;
+
+	bool m_bChanged;
 
 	int m_iBytePerLine;
 	int m_iTotalRowCount;
@@ -53,7 +55,6 @@ private:
 
 	QList<qint64> m_lstPositions;
 	int m_iPositionsSize;
-	qint64 m_iFindSize;
 	qint64 m_iListIndex;
 
 	bool keyPressHumanEditor(QKeyEvent* keyEvent);

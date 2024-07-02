@@ -19,6 +19,8 @@ QFindDialogController::QFindDialogController(QFindDialog* pFindDialog)
 	m_iDataSize = 0;
 	m_iDataPos = 0;
 
+	m_bChanged = true;
+
 	m_iBytePerLine = 0;
 	m_iTotalRowCount = 0;
 	m_iVisibleRowCount = 0;
@@ -72,18 +74,18 @@ void QFindDialogController::moveToRow(int iRow)
 
 void QFindDialogController::findNext()
 {
-	if (m_lstPositions.isEmpty() || m_iPositionsSize <= 0) {
+	if (m_lstPositions.isEmpty() || m_iPositionsSize <= 0 || m_bChanged) {
 		return find();
 	}
 	(++m_iListIndex) %= m_iPositionsSize;
 	m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
 	
-	emit selectData(m_lstPositions.at(m_iListIndex), m_szData.length());
+	emit selectData(m_lstPositions.at(m_iListIndex), m_byteArray.length());
 }
 
 void QFindDialogController::findPrevious()
 {
-	if (m_lstPositions.isEmpty() || m_iPositionsSize <= 0) {
+	if (m_lstPositions.isEmpty() || m_iPositionsSize <= 0 || m_bChanged) {
 		return find();
 	}
 	if (--m_iListIndex < 0) {
@@ -91,15 +93,15 @@ void QFindDialogController::findPrevious()
 	}
 	m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
 
-	emit selectData(m_lstPositions.at(m_iListIndex), m_szData.length());
+	emit selectData(m_lstPositions.at(m_iListIndex), m_byteArray.length());
 }
 
 void QFindDialogController::find()
 {
+	m_bChanged = false;
 	m_lstPositions.clear();
-	m_iFindSize = m_szData.length();
-
-	emit findAllOccurrencesRegex(m_szData, &m_lstPositions);
+	
+	emit findAllOccurrencesRegex(m_byteArray, &m_lstPositions);
 	m_iListIndex = 0;
 	m_iPositionsSize = m_lstPositions.size(); 
 	if (m_iPositionsSize > 0) {
@@ -115,13 +117,15 @@ void QFindDialogController::updateText(qint64 iStartOffset)
 
 	m_iDataPos = iStartOffset;
 
+	m_bChanged = true;
+
 	qint64 iNbRead;
 	QString szHexText;
 	QString szHumanText;
 	QChar c;
 
 	QString szTmp;
-	if (m_szData.isEmpty()) {
+	if (m_byteArray.isEmpty()) {
 		m_pFindDialog->setHexText("");
 		m_pFindDialog->setHumanText("");
 		return;
@@ -129,17 +133,17 @@ void QFindDialogController::updateText(qint64 iStartOffset)
 	for(int i=0; i<m_iVisibleRowCount; i++){
 		// Prepend a line break if not first row
 		if(i>0){
-			if (m_szData.length() - m_iDataPos >= i * m_iBytePerLine) {
+			if (m_byteArray.length() - m_iDataPos >= i * m_iBytePerLine) {
 				szHexText += "\n";
 				szHumanText += "\n";
 			}
 		}
 
-		iNbRead = std::min(m_szData.length() - i * m_iBytePerLine - m_iDataPos, (qint64)m_iBytePerLine);
+		iNbRead = std::min(m_byteArray.length() - i * m_iBytePerLine - m_iDataPos, (qint64)m_iBytePerLine);
 		for(int j=0; j<iNbRead; j++)
 		{
 			// Set hex text
-			c = m_szData.at(i * m_iBytePerLine + j + m_iDataPos);
+			c = m_byteArray.at(i * m_iBytePerLine + j + m_iDataPos);
 			QStringASPrintf(szTmp, "%02X", (unsigned char)(static_cast<char>(c.unicode())));
 			szHexText += szTmp;
 			if (j < iNbRead - 1) {
@@ -157,7 +161,7 @@ void QFindDialogController::updateText(qint64 iStartOffset)
 	m_pFindDialog->setHexText(szHexText);
 	m_pFindDialog->setHumanText(szHumanText);
 
-	m_iDataSize = m_szData.length();
+	m_iDataSize = m_byteArray.length();
 	m_iTotalRowCount = ceil(m_iDataSize / float(m_iBytePerLine));
 }
 
@@ -216,19 +220,19 @@ void QFindDialogController::insertCharHexEditor(QPlainTextEdit* pHexEditor, QStr
 		}
 		int iText = szTmp.toInt(&bOk, 16);
 		if (bOk) {
-			m_szData[(int)(c.selectionStart() / 3 + m_iDataPos)] = static_cast<char>(iText);
+			m_byteArray[(int)(c.selectionStart() / 3 + m_iDataPos)] = static_cast<char>(iText);
 		} else {
 			QMessageBox::critical(this, "", tr("Conversion problem"), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 	} else {
 		if (c.hasSelection()) {
-			m_szData.remove(c.selectionStart() / 3 + m_iDataPos, (c.selectionEnd() - c.selectionStart()) / 3 + 1);
+			m_byteArray.remove(c.selectionStart() / 3 + m_iDataPos, (c.selectionEnd() - c.selectionStart()) / 3 + 1);
 		}
 		szTmp = keyText + "0";
 		int iText = szTmp.toInt(&bOk, 16);
 		if (bOk) {
-			m_szData.insert((c.selectionStart() + 1) / 3 + m_iDataPos, static_cast<char>(iText));
+			m_byteArray.insert((c.selectionStart() + 1) / 3 + m_iDataPos, static_cast<char>(iText));
 		}	else {
 			QMessageBox::critical(this, "", tr("Conversion problem"), QMessageBox::Ok, QMessageBox::Ok);
 			return;
@@ -262,9 +266,9 @@ void QFindDialogController::removeHexEditor(QPlainTextEdit* pHexEditor)
 	bool hasCorrectSelection = c.hasSelection() && c.selectionEnd() - c.selectionStart() > 1;
 	
 	if (hasCorrectSelection) {
-		m_szData.remove(c.selectionStart() / 3, (c.selectionEnd() - c.selectionStart()) / 3 + 1);	
+		m_byteArray.remove(c.selectionStart() / 3, (c.selectionEnd() - c.selectionStart()) / 3 + 1);	
 	} else {
-		m_szData.remove(c.selectionStart() / 3 + m_iDataPos, 1);
+		m_byteArray.remove(c.selectionStart() / 3 + m_iDataPos, 1);
 	}
 	updateText(m_iDataPos);
 
@@ -295,9 +299,9 @@ void QFindDialogController::insertCharHumanEditor(QPlainTextEdit* pHumanEditor, 
 	}
 
 	if (c.hasSelection()) {
-		m_szData.remove(c.selectionStart() + m_iDataPos, c.selectionEnd() - c.selectionStart());
+		m_byteArray.remove(c.selectionStart() + m_iDataPos, c.selectionEnd() - c.selectionStart());
 	}
-	m_szData.insert(c.selectionStart() + m_iDataPos - iNbEnter, keyText.at(0));
+	m_byteArray.insert(c.selectionStart() + m_iDataPos - iNbEnter, keyText.at(0).toLatin1());
 	
 	updateText(m_iDataPos);
 
@@ -316,9 +320,9 @@ void QFindDialogController::removeHumanEditor(QPlainTextEdit* pHumanEditor)
 	int iNbEnterSelection = szText.mid(c.selectionStart(), c.selectionEnd() - c.selectionStart()).count("\n");
 	bool hasSelection = c.hasSelection();
 	if (hasSelection) {
-		m_szData.remove(c.selectionStart() + m_iDataPos - iNbEnter, c.selectionEnd() - c.selectionStart() - iNbEnterSelection);
+		m_byteArray.remove(c.selectionStart() + m_iDataPos - iNbEnter, c.selectionEnd() - c.selectionStart() - iNbEnterSelection);
 	} else {
-		m_szData.remove(c.selectionStart() + m_iDataPos - 1 - iNbEnter, 1);
+		m_byteArray.remove(c.selectionStart() + m_iDataPos - 1 - iNbEnter, 1);
 	}
 	updateText(m_iDataPos);
 	if (hasSelection) {
@@ -333,7 +337,7 @@ void QFindDialogController::removeHumanEditor(QPlainTextEdit* pHumanEditor)
 	pHumanEditor->setTextCursor(c);
 }
 
-QString QFindDialogController::getStringData()
+QByteArray QFindDialogController::getStringData()
 {
-    return m_szData;
+    return m_byteArray;
 }

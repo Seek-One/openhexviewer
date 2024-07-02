@@ -24,6 +24,8 @@
 
 #include "QFileViewController.h"
 
+#define MAX_NB_FIND 1028
+
 QFileViewController::QFileViewController(QFileView* pFileView)
 {
 	m_pFileView = pFileView;
@@ -337,7 +339,7 @@ void QFileViewController::getSelectionOffset(qint64& offset, qint64& size)
 	qint64 iSelectionEnd = cursorEditor.selectionEnd();
 	qint64 iSelectionSize = abs(iSelectionEnd - iSelectionStart);
 	QString szTextEditor = pEditor->toPlainText();
-	offset = cursorEditor.selectionStart() - szTextEditor.mid(0, iSelectionStart).count("\n");
+	offset = cursorEditor.selectionStart() - szTextEditor.mid(0, iSelectionStart).count("\n") + m_iFilePos;
 	size = abs(iSelectionSize - szTextEditor.mid(iSelectionStart, iSelectionSize).count("\n"));
 }
 
@@ -590,12 +592,11 @@ void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor,
 // 	pHumanEditor->setTextCursor(tHumanCursor);
 // }
 
-void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions)
+void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, QList<qint64>* plstPositions)
 {
 	plstPositions->clear();
-	int iLengthSubString = szSubString.length();
-	QRegularExpression re(QRegularExpression::escape(szSubString));
-	QString szDataFile;
+	int iLengthSubString = byteArray.length();
+	QRegularExpression re(QRegularExpression::escape(byteArray));
 	char* pBuffer = new char[iLengthSubString];
 	bool bFound;
 	int iNbRead;
@@ -634,7 +635,7 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 			if (m_pModifications->existsPosition(i + j)) {
 				pBuffer[j] = m_pModifications->lastModificationAtPosition(i + j).data.data()[0];
 			}
-			if (pBuffer[j] != szSubString.at(j)) {
+			if (pBuffer[j] != byteArray.at(j)) {
 				bFound = false;
 				break;
 			}
@@ -642,12 +643,15 @@ void QFileViewController::findAllOccurrencesRegex(const QString &szSubString, QL
 		if (bFound) {
 			plstPositions->append(i);
 			i += iLengthSubString - 1;
+			if (plstPositions->size() >= MAX_NB_FIND) {
+				break;
+			}
 		}
 	}
 	file.close();
 
 	if (plstPositions->size() > 0) {
-		selectFileData(plstPositions->at(0), szSubString.length()); //enter problem
+		selectFileData(plstPositions->at(0), byteArray.length()); //enter problem
 	} else {
 		QMessageBox msgBox;
 		msgBox.setText(tr("No match found"));

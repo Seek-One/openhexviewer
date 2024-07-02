@@ -57,7 +57,7 @@ public slots:
 	// void addNewByteHuman(QPlainTextEdit* m_pHumanEditor, QString szText);
 	// void removeByteHuman(QPlainTextEdit* m_pHumanEditor);
 
-	void findAllOccurrencesRegex(const QString &szSubString, QList<qint64>* plstPositions);
+	void findAllOccurrencesRegex(const QByteArray &byteArray, QList<qint64>* plstPositions);
 private:
 	QFileView* m_pFileView;
 
