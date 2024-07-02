@@ -213,7 +213,7 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 	QString szTmp;
 
 	int iPos = 0;
-	
+
 	if(bRes){
 		iNbRead = m_file.read(pBuffer, iBufferSize);
 		while (iPos < m_iVisibleRowCount * m_iBytePerLine && iNbRead > 0) {
@@ -251,7 +251,7 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 						currentFormat = m_nonAsciiFormat;
 					}
 					
-					if ((iPos != 0 && currentFormat != previousFormat) || iPos == m_iVisibleRowCount * m_iBytePerLine - 1) {
+					if ((iPos != 0 && currentFormat != previousFormat) || iPos >= m_iVisibleRowCount * m_iBytePerLine - 1) {
 						hexCursor.insertText(szHexText, previousFormat);
 						humanCursor.insertText(szHumanText, previousFormat);
 						szHexText = "";
@@ -281,9 +281,10 @@ bool QFileViewController::readFile(qint64 iStartOffset)
 		}
 		if (!m_bHighLight) {
 			QTextCharFormat normalFormat;
-			hexCursor.insertText(szHexText, normalFormat);
-			humanCursor.insertText(szHumanText, normalFormat);
-		}
+			previousFormat = normalFormat;
+		} 
+		hexCursor.insertText(szHexText, previousFormat);
+		humanCursor.insertText(szHumanText, previousFormat);
 		m_pFileView->setOffsetText(szOffsetText);
 	}
 
