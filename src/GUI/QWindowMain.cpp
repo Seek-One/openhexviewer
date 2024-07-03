@@ -83,6 +83,13 @@ void QWindowMain::createMenu()
     
     QMenu *pEditMenu = menuBar()->addMenu(tr("&Edit"));
     {
+        m_pGoToAction = new QAction(tr("&Go to"), this);
+        m_pGoToAction->setShortcut(QKeySequence("Ctrl+J"));
+        pEditMenu->addAction(m_pGoToAction);
+        m_pFindAction = new QAction(tr("&Find"), this);
+        m_pFindAction->setShortcut(QKeySequence("Ctrl+F"));
+        pEditMenu->addAction(m_pFindAction);
+        pEditMenu->addSeparator();
         m_pExportSelectionAction = new QAction(tr("&Export Selection"), this);
         m_pExportSelectionAction->setShortcut(QKeySequence("Ctrl+E"));
         pEditMenu->addAction(m_pExportSelectionAction);
@@ -90,12 +97,6 @@ void QWindowMain::createMenu()
 
     QMenu *pViewMenu = menuBar()->addMenu(tr("&View"));
     {
-        m_pGoToAction = new QAction(tr("&Go to Bytes"), this);
-        m_pGoToAction->setShortcut(QKeySequence("Ctrl+J"));
-        pViewMenu->addAction(m_pGoToAction);
-        m_pFindAction = new QAction(tr("&Find"), this);
-        m_pFindAction->setShortcut(QKeySequence("Ctrl+F"));
-        pViewMenu->addAction(m_pFindAction);
         m_pColorAction = new QAction(tr("&Colorize"), this);
         m_pColorAction->setShortcut(QKeySequence("Ctrl+K"));
         m_pColorAction->setCheckable(true);
