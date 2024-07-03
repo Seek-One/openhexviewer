@@ -191,6 +191,7 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 							keyEvent->key() == Qt::Key_Up ||
 							keyEvent->key() == Qt::Key_Down);
 		
+		bool isDigitKey = keyEvent->key() >= Qt::Key_0 && keyEvent->key() <= Qt::Key_9;
 		bool isTextKey = allowedChars.contains(keyText);
 		int iSelectionStart;
 		int iSelectionEnd;
@@ -244,7 +245,7 @@ bool QFileView::eventHexEditor(QObject *obj, QEvent *event)
 				m_pHexEditor->setTextCursor(tHexCursor);
 				return QWidget::eventFilter(obj, event);
 			}
-		} else if (!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier)) {
+		} else if ((!keyText.isEmpty() && isTextKey && (keyEvent->modifiers() == Qt::NoModifier || keyEvent->modifiers() == Qt::ShiftModifier)) || isDigitKey) {
 			if (cursor.hasSelection() && abs(cursor.selectionEnd() - cursor.selectionStart()) == 1) {
 				cursor.insertText(keyText);
 			} 
