@@ -93,13 +93,10 @@ QFindDialog::QFindDialog(QWidget * pParent)
 
         m_pButtonFindNext = new QPushButton(tr("Find Next"));
         pButtonLayout->addWidget(m_pButtonFindNext);
-        m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Cancel);
         pButtonLayout->addWidget(m_pButtonBox);
 
         connect(m_pButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
-        connect(m_pButtonBox, &QDialogButtonBox::accepted, [this]() {
-            emit accepted();
-        });
 
         connect(m_pButtonFindNext, &QAbstractButton::clicked, [this]() {
             emit findNext();

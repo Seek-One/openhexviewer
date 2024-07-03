@@ -28,7 +28,6 @@ QFindDialogController::QFindDialogController(QFindDialog* pFindDialog)
 	connect(m_pFindDialog, SIGNAL(sizeChanged()), this, SLOT(updateView()));
 	connect(m_pFindDialog, SIGNAL(rowChanged(int)), this, SLOT(moveToRow(int)));
 
-	connect(m_pFindDialog, SIGNAL(accepted()), this, SLOT(find()));
 	connect(m_pFindDialog, SIGNAL(findNext()), this, SLOT(findNext()));
 	connect(m_pFindDialog, SIGNAL(findPrevious()), this, SLOT(findPrevious()));
 	

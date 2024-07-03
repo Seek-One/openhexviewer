@@ -35,6 +35,7 @@ QWindowMainController::QWindowMainController()
 	m_pMainWindow = NULL;
 	m_pFileViewController = NULL;
 	m_pFileStructureViewController = NULL;
+	m_pFileExportViewController = NULL;
 	m_windowPreferences = NULL;
 }
 
@@ -54,10 +55,10 @@ QWindowMainController::~QWindowMainController()
 		m_pBytesViewController = NULL;
 	}
 
-	// if (m_pFileExportViewController) {
-	// 	delete m_pFileExportViewController;
-	// 	m_pFileExportViewController = NULL;
-	// }
+	if (m_pFileExportViewController) {
+		delete m_pFileExportViewController;
+		m_pFileExportViewController = NULL;
+	}
 }
 
 void QWindowMainController::init(QWindowMain* pMainWindow)
