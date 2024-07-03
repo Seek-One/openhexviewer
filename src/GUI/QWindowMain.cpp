@@ -66,31 +66,38 @@ void QWindowMain::createMenu()
     QMenu *pFileMenu = menuBar()->addMenu(tr("&File"));
     {
         m_pOpenAction = new QAction(tr("&Open..."), this);
+        m_pOpenAction->setShortcut(QKeySequence("Ctrl+O"));
         pFileMenu->addAction(m_pOpenAction);
         pFileMenu->addSeparator();
         m_pPreferencesAction = new QAction(tr("&Preferences"), this);
         pFileMenu->addAction(m_pPreferencesAction);
         pFileMenu->addSeparator();
         m_pSaveAction = new QAction(tr("&Save"), this);
+        m_pSaveAction->setShortcut(QKeySequence("Ctrl+S"));
         pFileMenu->addAction(m_pSaveAction);
         pFileMenu->addSeparator();
         m_pQuitAction = new QAction(tr("&Quit"), this);
+        m_pQuitAction->setShortcut(QKeySequence("Ctrl+Q"));
         pFileMenu->addAction(m_pQuitAction);
     }
     
     QMenu *pEditMenu = menuBar()->addMenu(tr("&Edit"));
     {
         m_pExportSelectionAction = new QAction(tr("&Export Selection"), this);
+        m_pExportSelectionAction->setShortcut(QKeySequence("Ctrl+E"));
         pEditMenu->addAction(m_pExportSelectionAction);
     }
 
     QMenu *pViewMenu = menuBar()->addMenu(tr("&View"));
     {
         m_pGoToAction = new QAction(tr("&Go to Bytes"), this);
+        m_pGoToAction->setShortcut(QKeySequence("Ctrl+J"));
         pViewMenu->addAction(m_pGoToAction);
         m_pFindAction = new QAction(tr("&Find"), this);
+        m_pFindAction->setShortcut(QKeySequence("Ctrl+F"));
         pViewMenu->addAction(m_pFindAction);
         m_pColorAction = new QAction(tr("&Colorize"), this);
+        m_pColorAction->setShortcut(QKeySequence("Ctrl+K"));
         m_pColorAction->setCheckable(true);
         pViewMenu->addAction(m_pColorAction);
     }
@@ -98,6 +105,7 @@ void QWindowMain::createMenu()
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
     {
         m_pAboutAction = new QAction(tr("&About"), this);
+        m_pAboutAction->setShortcut(QKeySequence("Ctrl+H"));
         pHelpMenu->addAction(m_pAboutAction);
     }
 }
