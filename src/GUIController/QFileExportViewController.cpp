@@ -120,7 +120,7 @@ void QFileExportViewController::saveSelection()
 
     if (filePath.isEmpty()) {
         qWarning("[Export Selection] File path is empty");
-	    QMessageBox::critical(this, tr("Problem"), tr("File pah is empty"), QMessageBox::Ok, QMessageBox::Ok);
+	    QMessageBox::critical(this, tr("Problem"), tr("File path is empty"), QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
 

@@ -115,28 +115,12 @@
         <source>End :</source>
         <translation>Fin :</translation>
     </message>
-    <message>
-        <source>Size</source>
-        <translation>Taille</translation>
-    </message>
-    <message>
-        <source>Size :</source>
-        <translation>Taille :</translation>
-    </message>
 </context>
 <context>
     <name>QFileExportViewController</name>
     <message>
-        <source>File path is empty</source>
-        <translation>Le chemin du fichier est vide</translation>
-    </message>
-    <message>
-        <source>Write permission denied</source>
-        <translation>Pas de permission d&apos;écriture</translation>
-    </message>
-    <message>
-        <source>Selection saved to file</source>
-        <translation>La section a été sauvergardé</translation>
+        <source>Problem</source>
+        <translation>Problème</translation>
     </message>
 </context>
 <context>
@@ -167,10 +151,6 @@
     <message>
         <source>Name</source>
         <translation>Nom</translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation>Type</translation>
     </message>
     <message>
         <source>Size</source>
@@ -207,6 +187,14 @@
         <source>Too many matches found, stop offset: 0x%1 (%2)</source>
         <translation>Trop de correspondances trouvées, position arrêté à: 0x%1 (%2)</translation>
     </message>
+    <message>
+        <source>Notice</source>
+        <translation>Avis</translation>
+    </message>
+    <message>
+        <source>Problem</source>
+        <translation>Problème</translation>
+    </message>
 </context>
 <context>
     <name>QFindDialog</name>
@@ -217,34 +205,6 @@
     <message>
         <source>Find Next</source>
         <translation>Rechercher le suivant</translation>
-    </message>
-    <message>
-        <source>Size</source>
-        <translation type="obsolete">Taille</translation>
-    </message>
-    <message>
-        <source>Size :</source>
-        <translation type="obsolete">Taille :</translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="obsolete">Type</translation>
-    </message>
-    <message>
-        <source>Hex</source>
-        <translation type="obsolete">Hex</translation>
-    </message>
-    <message>
-        <source>Dec</source>
-        <translation type="obsolete">Dec</translation>
-    </message>
-    <message>
-        <source>Offset</source>
-        <translation type="obsolete">Position</translation>
-    </message>
-    <message>
-        <source>Type :</source>
-        <translation type="obsolete">Type :</translation>
     </message>
     <message>
         <source>Offset :</source>
@@ -272,7 +232,7 @@
     </message>
     <message>
         <source>Research settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres de recherche</translation>
     </message>
 </context>
 <context>
@@ -309,19 +269,13 @@
     </message>
     <message>
         <source>You may only give the offset as : 
-	 a hex number</source>
-        <translation>Vous ne pouvez donner la position que comme&#xa0;:
-	 un nombre hexadécimal</translation>
+	 a hex number or a positive decimal number</source>
+        <translation>Vous ne pouvez donner le décalage que comme&#xa0;:
+	 un nombre hexadécimal ou un nombre décimal positif</translation>
     </message>
     <message>
-        <source>You may only give the offset as : 
-	 a positive decimal number</source>
-        <translation>Vous ne pouvez donner la position que comme :
-	 un nombre décimal positif</translation>
-    </message>
-    <message>
-        <source>Radio button problem</source>
-        <translation>Problème de bouton radio</translation>
+        <source>Problem</source>
+        <translation>Problème</translation>
     </message>
 </context>
 <context>
@@ -449,16 +403,8 @@
         <translation>&amp;Affichage</translation>
     </message>
     <message>
-        <source>&amp;Go to Bytes</source>
-        <translation type="vanished">&amp;Aller aux octets</translation>
-    </message>
-    <message>
         <source>&amp;Find</source>
         <translation>&amp;Rechercher</translation>
-    </message>
-    <message>
-        <source>&amp;Option</source>
-        <translation type="vanished">&amp;Option</translation>
     </message>
     <message>
         <source>&amp;Help</source>
