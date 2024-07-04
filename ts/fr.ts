@@ -203,6 +203,10 @@
         <source>No match found</source>
         <translation>Aucun résultat trouvé</translation>
     </message>
+    <message>
+        <source>Too many matches found, stop offset: 0x%1 (%2)</source>
+        <translation>Trop de correspondances trouvées, position arrêté à: 0x%1 (%2)</translation>
+    </message>
 </context>
 <context>
     <name>QFindDialog</name>
@@ -213,6 +217,62 @@
     <message>
         <source>Find Next</source>
         <translation>Rechercher le suivant</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="obsolete">Taille</translation>
+    </message>
+    <message>
+        <source>Size :</source>
+        <translation type="obsolete">Taille :</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="obsolete">Type</translation>
+    </message>
+    <message>
+        <source>Hex</source>
+        <translation type="obsolete">Hex</translation>
+    </message>
+    <message>
+        <source>Dec</source>
+        <translation type="obsolete">Dec</translation>
+    </message>
+    <message>
+        <source>Offset</source>
+        <translation type="obsolete">Position</translation>
+    </message>
+    <message>
+        <source>Type :</source>
+        <translation type="obsolete">Type :</translation>
+    </message>
+    <message>
+        <source>Offset :</source>
+        <translation>Position :</translation>
+    </message>
+    <message>
+        <source>Start :</source>
+        <translation>Début :</translation>
+    </message>
+    <message>
+        <source>End :</source>
+        <translation>Fin :</translation>
+    </message>
+    <message>
+        <source>Start of file</source>
+        <translation>Début du fichier</translation>
+    </message>
+    <message>
+        <source>End of file</source>
+        <translation>Fin du fichier</translation>
+    </message>
+    <message>
+        <source>%0/%1</source>
+        <translation>%0/%1</translation>
+    </message>
+    <message>
+        <source>Research settings</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -390,11 +450,11 @@
     </message>
     <message>
         <source>&amp;Go to Bytes</source>
-        <translation>&amp;Aller aux octets</translation>
+        <translation type="vanished">&amp;Aller aux octets</translation>
     </message>
     <message>
         <source>&amp;Find</source>
-        <translation>&amp;Trouver</translation>
+        <translation>&amp;Rechercher</translation>
     </message>
     <message>
         <source>&amp;Option</source>
@@ -411,6 +471,10 @@
     <message>
         <source>&amp;Colorize</source>
         <translation>&amp;Coloriser</translation>
+    </message>
+    <message>
+        <source>&amp;Go to</source>
+        <translation>&amp;Aller à</translation>
     </message>
 </context>
 <context>

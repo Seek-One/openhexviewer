@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QByteArray>
 
-#include "../GUI/QFindDialog.h"
+#include "GUI/QFindDialog.h"
 #include "QFileViewController.h"
 
 class QFindDialog;
@@ -20,7 +20,7 @@ public:
     QByteArray getStringData();
 
 signals:
-	void findAllOccurrencesRegex(QByteArray byteArray, QList<qint64>* plstPosition);
+	void findAllOccurrencesRegex(QByteArray byteArray, QList<qint64>* plstPosition, qint64 iStartOffset, qint64 iEndOffset);
 	void selectData(qint64 offset, qint64 size);
 
 public slots:

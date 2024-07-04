@@ -16,7 +16,6 @@
 #include <QKeyEvent>
 #include <QByteArray>
 #include <QMessageBox>
-#include <QDebug>
 #include <QByteArray>
 
 #include "Global/QtCompat.h"
@@ -596,7 +595,7 @@ void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor,
 // 	pHumanEditor->setTextCursor(tHumanCursor);
 // }
 
-void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, QList<qint64>* plstPositions)
+void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, QList<qint64>* plstPositions, qint64 iStartOffset, qint64 iEndOffset)
 {
 	plstPositions->clear();
 	int iLengthSubString = byteArray.length();
@@ -611,6 +610,10 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 		msgBox.exec();
 		return;
 	}
+
+	if (iEndOffset < 0 || iEndOffset > m_iFileSize) {
+		iEndOffset = m_iFileSize;
+	}
 	QFile file(m_file.fileName());
 	//OPEN
 	if (!file.open(QIODevice::ReadOnly)) {
@@ -618,7 +621,7 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 		return;
 	}
 
-	for (int i = 0; i < m_iFileSize - iLengthSubString; i++) {
+	for (int i = iStartOffset; i < iEndOffset - iLengthSubString + 1; i++) {
 		bFound = true;
 		//SEEK
 		if (!file.seek(i)) {
@@ -645,11 +648,15 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 			}
 		}
 		if (bFound) {
-			plstPositions->append(i);
-			i += iLengthSubString - 1;
 			if (plstPositions->size() >= MAX_NB_FIND) {
+				QMessageBox msgBox;
+				QString szMsgText = tr("Too many matches found, stop offset: 0x%1 (%2)").arg(i, 0, 16).arg(i);
+				msgBox.setText(szMsgText);
+				msgBox.exec();
 				break;
 			}
+			plstPositions->append(i);
+			i += iLengthSubString - 1;
 		}
 	}
 	file.close();

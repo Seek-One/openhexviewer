@@ -4,7 +4,7 @@
 
 #include "Global/QtCompat.h"
 #include "QFindDialogController.h"
-#include "../GUI/QFileView.h"
+#include "GUI/QFileView.h"
 #include "QFileViewController.h"
 
 #include <QMessageBox>
@@ -30,6 +30,16 @@ QFindDialogController::QFindDialogController(QFindDialog* pFindDialog)
 
 	connect(m_pFindDialog, SIGNAL(findNext()), this, SLOT(findNext()));
 	connect(m_pFindDialog, SIGNAL(findPrevious()), this, SLOT(findPrevious()));
+
+	connect(m_pFindDialog, &QFindDialog::offsetChanged, [this]() {
+		m_bChanged = true;
+	});
+	connect(m_pFindDialog, QOverload<int>::of(&QFindDialog::comboOffsetChanged), [this](int iIndex) {
+		QSignalBlocker block(m_pFindDialog);
+		m_iListIndex = iIndex;
+		m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
+		emit selectData(m_lstPositions[m_iListIndex], m_byteArray.length());
+	});
 	
 	connect(m_pFindDialog, SIGNAL(selectionChangedHex(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleSelectionChangedHex(QPlainTextEdit*, QPlainTextEdit*)));
 	connect(m_pFindDialog, SIGNAL(selectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)), this, SLOT(handleSelectionChangedHuman(QPlainTextEdit*, QPlainTextEdit*)));
@@ -97,13 +107,42 @@ void QFindDialogController::findPrevious()
 
 void QFindDialogController::find()
 {
-	m_bChanged = false;
+	QSignalBlocker block(m_pFindDialog);
+
 	m_lstPositions.clear();
-	
-	emit findAllOccurrencesRegex(m_byteArray, &m_lstPositions);
+	m_bChanged = false;
+	OffsetValue oValues = m_pFindDialog->getOffsets();
+	Value vStartOffset = oValues.startOffset;
+	Value vEndOffset = oValues.endOffset;
+	QString szTmp;
+	bool bOk;
+	qint64 iStartOffset = 0;
+	qint64 iEndOffset = -1; //THE END
+	if (vStartOffset.type == CUSTOM) {
+		QString szText = m_pFindDialog->getStartOffset()->text();
+		iStartOffset = szText.toInt(&bOk, vStartOffset.base);
+	}
+	if (vEndOffset.type == CUSTOM) {
+		QString szText = m_pFindDialog->getEndOffset()->text();
+		iEndOffset = szText.toInt(&bOk, vEndOffset.base);
+	}
+
+	if (iEndOffset != -1 && iStartOffset > iEndOffset) {
+		qint64 iTmp = iStartOffset;
+		iStartOffset = iEndOffset;
+		iEndOffset = iTmp;
+	}
+
+	emit findAllOccurrencesRegex(m_byteArray, &m_lstPositions, iStartOffset, iEndOffset);
 	m_iListIndex = 0;
 	m_iPositionsSize = m_lstPositions.size(); 
 	if (m_iPositionsSize > 0) {
+		QComboBox* pComboBox = m_pFindDialog->getComboPosOcc();
+		pComboBox->clear();
+		for (int i = 0; i < m_iPositionsSize; i++) {
+			szTmp = QString("0x%1 (%2)").arg(m_lstPositions[i], 0, 16).arg(m_lstPositions[i]);
+			pComboBox->addItem(szTmp);
+		}
 		m_pFindDialog->setLabelNbOcc(m_iListIndex + 1, m_iPositionsSize);
 	} else {
 		m_pFindDialog->setLabelNbOcc(-1, -1);
@@ -115,8 +154,6 @@ void QFindDialogController::updateText(qint64 iStartOffset)
 	QSignalBlocker block(m_pFindDialog);
 
 	m_iDataPos = iStartOffset;
-
-	m_bChanged = true;
 
 	qint64 iNbRead;
 	QString szHexText;
@@ -203,6 +240,8 @@ void QFindDialogController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEd
 
 void QFindDialogController::insertCharHexEditor(QPlainTextEdit* pHexEditor, QString& keyText)
 {
+	m_bChanged = true;
+	
 	QTextCursor c = pHexEditor->textCursor();
 	int iPosition = c.selectionStart();
 	QString szText = pHexEditor->toPlainText();
@@ -259,6 +298,8 @@ void QFindDialogController::removeHexEditor(QPlainTextEdit* pHexEditor)
 {
 	QSignalBlocker block(m_pFindDialog);
 	
+	m_bChanged = true;
+	
 	QTextCursor c = pHexEditor->textCursor();
 	int iPosition = c.selectionStart();
 	QString szText = pHexEditor->toPlainText();
@@ -288,6 +329,8 @@ void QFindDialogController::removeHexEditor(QPlainTextEdit* pHexEditor)
 
 void QFindDialogController::insertCharHumanEditor(QPlainTextEdit* pHumanEditor, QString& keyText)
 {	
+	m_bChanged = true;
+	
 	QTextCursor c = pHumanEditor->textCursor();
 	int iPosition = c.selectionStart();
 	QString szText = pHumanEditor->toPlainText();
@@ -311,6 +354,8 @@ void QFindDialogController::insertCharHumanEditor(QPlainTextEdit* pHumanEditor, 
 void QFindDialogController::removeHumanEditor(QPlainTextEdit* pHumanEditor)
 {
 	QSignalBlocker block(m_pFindDialog);
+	
+	m_bChanged = true;
 	
 	QTextCursor c = pHumanEditor->textCursor();
 	int iPosition = c.selectionStart();
