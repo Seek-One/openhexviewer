@@ -2,7 +2,7 @@
 #define SRC_GUI_QPREFERENCESFILESSTRUCTURESVIEW_H_
 
 #include <QWidget>
-#include <QListWidget>
+#include <QListWidgetItem>
 #include <QPushButton>
 
 class QPreferencesFilesStructuresView : public QWidget
@@ -13,13 +13,14 @@ public:
 	virtual ~QPreferencesFilesStructuresView();
 
     QListWidget* getTableWidget() const;
-	QPushButton* getRemoveButton() const;
-	QPushButton* getAddButton() const;
 
+signals:
+	void listWidgetItemClicked(QListWidgetItem* pItem);
+	void addButtonClicked();
+	void removeButtonClicked();
+	
 private:
     QListWidget* m_pFileTable;
-	QPushButton* m_pAddButton;
-	QPushButton* m_pRemoveButton;
 };
 
 #endif /* SRC_GUI_QPREFERENCESFILESSTRUCTURESVIEW_H_ */

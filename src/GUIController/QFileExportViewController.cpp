@@ -28,9 +28,9 @@ QFileExportViewController::QFileExportViewController(QFileExportView* pFileExpor
     m_iEnd = 0;
 
     connect(m_pExportView, SIGNAL(saveSelection()), this, SLOT(saveSelection()));
-    connect(m_pExportView->getStartOffset(), SIGNAL(textChanged(const QString&)), this, SLOT(startOffsetChanged(const QString&)));
-    connect(m_pExportView->getSizeOffset(), SIGNAL(textChanged(const QString&)), this, SLOT(sizeOffsetChanged(const QString&)));
-    connect(m_pExportView->getEndOffset(), SIGNAL(textChanged(const QString&)), this, SLOT(endOffsetChanged(const QString&)));
+    connect(m_pExportView, SIGNAL(startOffsetChanged(const QString&)), this, SLOT(startOffsetChanged(const QString&)));
+    connect(m_pExportView, SIGNAL(sizeOffsetChanged(const QString&)), this, SLOT(sizeOffsetChanged(const QString&)));
+    connect(m_pExportView, SIGNAL(endOffsetChanged(const QString&)), this, SLOT(endOffsetChanged(const QString&)));
     connect(m_pExportView, SIGNAL(changeBase()), this, SLOT(changeBase()));
 }
 
@@ -120,14 +120,14 @@ void QFileExportViewController::saveSelection()
 
     if (filePath.isEmpty()) {
         qWarning("[Export Selection] File path is empty");
-        messageBox(tr("File path is empty"));
+	    QMessageBox::critical(this, tr("Problem"), tr("File pah is empty"), QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
 
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qWarning("[Export Selection] Write permission denied");
-        messageBox(tr("Write permission denied"));
+    	QMessageBox::critical(this, tr("Problem"), "Write permission denied", QMessageBox::Ok, QMessageBox::Ok);
         return;
     }
 
@@ -136,16 +136,10 @@ void QFileExportViewController::saveSelection()
     file.close();
 
     qDebug("Selection saved to file");
-    messageBox(tr("Selection saved to file"));
-
+	QMessageBox::critical(this, "", "Selection saved to file", QMessageBox::Ok, QMessageBox::Ok);
 }
 
 void QFileExportViewController::changeBase()
 {
     init(m_iStart, m_iSize);
-}
-
-void QFileExportViewController::messageBox(QString szText)
-{
-	QMessageBox::critical(this, "", szText, QMessageBox::Ok, QMessageBox::Ok);
 }

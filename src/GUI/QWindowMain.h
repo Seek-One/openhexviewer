@@ -9,7 +9,6 @@
 #define SRC_MAINWINDOW_H_
 
 #include <QMainWindow>
-#include <QStackedWidget>
 #include <QCloseEvent>
 
 class QAction;
@@ -24,23 +23,25 @@ public:
 	QWindowMain(QWidget* parent = 0);
 	virtual ~QWindowMain();
 
-	QAction* getOpenAction() const;
-	QAction* getPreferencesAction() const;
-	QAction* getSaveAction() const;
-	QAction* getQuitAction() const;
-	QAction* getAboutAction() const;
-	QAction* getGoToAction() const;
-	QAction* getFindAction() const;
-	QAction* getColorAction() const;
-	QAction* getExportSelectionAction() const;
-
 	QFileView* getFileView() const;
 	QFileStructureView* getFileStructureView() const;
 	QBytesView* getBytesView() const;
+	bool getColorIsChecked();
 
 	void setStatusBarText(const QString& szText);
+	void actionFileUsable(bool bEnabled);
 signals:
     void mainWindowClosed(QCloseEvent* event);
+
+	void openFileClicked();
+	void preferencesClicked();
+	void saveFileClicked();
+	void quitClicked();
+	void aboutClicked();
+	void goToClicked();
+	void findClicked();
+	void exportSelectionClicked();
+	void colorClicked();
 
 protected:
 	void closeEvent(QCloseEvent* event);
@@ -49,15 +50,11 @@ private:
 	void createMenu(); // Creates a menu bar
 
 	// List of actions
-	QAction* m_pOpenAction;
-	QAction* m_pPreferencesAction;
 	QAction* m_pSaveAction;
-	QAction* m_pQuitAction;
 	QAction* m_pGoToAction;
 	QAction* m_pFindAction;
 	QAction* m_pColorAction;
 	QAction* m_pExportSelectionAction;
-	QAction* m_pAboutAction;
 
 	QFileView* m_pFileView;
 	QFileStructureView* m_pFileStructureView;

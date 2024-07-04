@@ -35,8 +35,5 @@ private:
     qint64 m_iStart;
     qint64 m_iSize;
     qint64 m_iEnd;
-    
-    void messageBox(QString szText);
-
 };
 #endif /* __QFILEEXPORTVIEWCONTROLLER_H_ */

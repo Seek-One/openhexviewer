@@ -110,9 +110,7 @@ bool QFileViewController::saveFile()
 {
 	if(!m_bIsFileOpen) {
 		qWarning("[File] No file open");
-		QMessageBox msgBox;
-		msgBox.setText(tr("No file loaded"));
-		msgBox.exec();
+		QMessageBox::information(nullptr, tr("Notice"), tr("No file loaded"));
 		return false;
 	} 
 	QFile file(m_file.fileName());
@@ -605,9 +603,7 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 	int iNbRead;
 	if (!m_bIsFileOpen) {
 		qWarning("[File] No file open");
-		QMessageBox msgBox;
-		msgBox.setText(tr("No file loaded"));
-		msgBox.exec();
+		QMessageBox::information(nullptr, tr("Notice"), tr("No file loaded"));
 		return;
 	}
 
@@ -649,10 +645,8 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 		}
 		if (bFound) {
 			if (plstPositions->size() >= MAX_NB_FIND) {
-				QMessageBox msgBox;
 				QString szMsgText = tr("Too many matches found, stop offset: 0x%1 (%2)").arg(i, 0, 16).arg(i);
-				msgBox.setText(szMsgText);
-				msgBox.exec();
+				QMessageBox::information(nullptr, tr("Notice"), szMsgText);
 				break;
 			}
 			plstPositions->append(i);
@@ -664,9 +658,7 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 	if (plstPositions->size() > 0) {
 		selectFileData(plstPositions->at(0), byteArray.length()); //enter problem
 	} else {
-		QMessageBox msgBox;
-		msgBox.setText(tr("No match found"));
-		msgBox.exec();
+		QMessageBox::critical(nullptr, tr("Problem"), tr("No match found"));
 	}
 }
 
@@ -688,9 +680,7 @@ void QFileViewController::selection(QString& szText)
 	int iNbRead;
 	if (!m_bIsFileOpen) {
 		qWarning("[File] No file open");
-		QMessageBox msgBox;
-		msgBox.setText(tr("No file loaded"));
-		msgBox.exec();
+		QMessageBox::information(nullptr, tr("Notice"), tr("No file loaded"));
 		return;
 	}
 	QFile file(m_file.fileName());

@@ -65,16 +65,15 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 {
 	m_pMainWindow = pMainWindow;
 
-	connect(m_pMainWindow->getOpenAction(), SIGNAL(triggered()), this, SLOT(openFile()));
-	connect(m_pMainWindow->getPreferencesAction(), SIGNAL(triggered()), this, SLOT(preferences()));
-	connect(m_pMainWindow->getSaveAction(), SIGNAL(triggered()), this, SLOT(saveFile()));
-	connect(m_pMainWindow->getQuitAction(), SIGNAL(triggered()), qApp, SLOT(quit()));
-	connect(m_pMainWindow->getAboutAction(), SIGNAL(triggered()), this, SLOT(about()));
-	connect(m_pMainWindow->getGoToAction(), SIGNAL(triggered()), this, SLOT(goToBytes()));
-	connect(m_pMainWindow->getFindAction(), SIGNAL(triggered()), this, SLOT(find()));
-	connect(m_pMainWindow->getColorAction(), SIGNAL(triggered()), this, SLOT(color()));
-	connect(m_pMainWindow->getExportSelectionAction(), SIGNAL(triggered()), this, SLOT(exportSelection()));
-	actionDisabled();
+	connect(m_pMainWindow, SIGNAL(openFileClicked()), this, SLOT(openFile()));
+	connect(m_pMainWindow, SIGNAL(preferencesClicked()), this, SLOT(preferences()));
+	connect(m_pMainWindow, SIGNAL(saveFileClicked()), this, SLOT(saveFile()));
+	connect(m_pMainWindow, SIGNAL(quitClicked()), qApp, SLOT(quit()));
+	connect(m_pMainWindow, SIGNAL(aboutClicked()), this, SLOT(about()));
+	connect(m_pMainWindow, SIGNAL(goToClicked()), this, SLOT(goToBytes()));
+	connect(m_pMainWindow, SIGNAL(findClicked()), this, SLOT(find()));
+	connect(m_pMainWindow, SIGNAL(colorClicked()), this, SLOT(color()));
+	connect(m_pMainWindow, SIGNAL(exportSelectionClicked()), this, SLOT(exportSelection()));
 
 	connect(m_pMainWindow, SIGNAL(mainWindowClosed(QCloseEvent*)), this, SLOT(close(QCloseEvent*)));
 
@@ -90,15 +89,20 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 
 	connect(m_pFileViewController, SIGNAL(onBytesChanged(QString)), m_pBytesViewController, SLOT(handleBytesChanged(QString)));
 
-	connect(m_pFileViewController, SIGNAL(fileOpened()), this, SLOT(actionEnabled()));
-
-	connect(m_pFileViewController, SIGNAL(fileClosed()), this, SLOT(actionDisabled()));
+	connect(m_pFileViewController, &QFileViewController::fileOpened, this, [this]() {
+    	m_pMainWindow->actionFileUsable(true);
+	});
+	connect(m_pFileViewController, &QFileViewController::fileClosed, this, [this]() {
+    	m_pMainWindow->actionFileUsable(false);
+	});
 
 	connect(m_pFileViewController, SIGNAL(doChanges()), this, SLOT(doChanges()));
 
 	connect(this, SIGNAL(colorText(bool)), m_pFileViewController, SLOT(colorText(bool)));
 
     m_bSavedChanges = true;
+
+	m_pMainWindow->actionFileUsable(false);
 }
 
 void QWindowMainController::openFile()
@@ -205,27 +209,9 @@ void QWindowMainController::exportSelection()
 
 void QWindowMainController::color()
 {
-	emit colorText(m_pMainWindow->getColorAction()->isChecked());
+	emit colorText(m_pMainWindow->getColorIsChecked());
 }
 
-void QWindowMainController::actionUsable(bool bEnabled)
-{
-	m_pMainWindow->getGoToAction()->setEnabled(bEnabled);
-	m_pMainWindow->getSaveAction()->setEnabled(bEnabled);
-	m_pMainWindow->getFindAction()->setEnabled(bEnabled);
-	m_pMainWindow->getExportSelectionAction()->setEnabled(bEnabled);
-}
-
-void QWindowMainController::actionEnabled() 
-{
-	actionUsable(true);
-}
-
-void QWindowMainController::actionDisabled()
-{
-	actionUsable(false);
-}
-	
 void QWindowMainController::close(QCloseEvent* event)
 {
 	if (!m_bSavedChanges) {

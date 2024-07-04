@@ -22,9 +22,6 @@ public slots:
 
 private:
     QGoToBytes* m_pGoToBytes;
-    
-    void messageBox(QString szText);
-
 };
 
 #endif /* QGOTOBYTESCONTROLLER_H_ */

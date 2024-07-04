@@ -1,6 +1,3 @@
-#include <QDebug>
-#include <QCoreApplication>
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -39,9 +36,9 @@ QPreferencesFilesStructuresViewController::QPreferencesFilesStructuresViewContro
 
     reloadStructureFileList();
  
-    connect(m_pPreferencesFilesStructuresView->getTableWidget(), &QListWidget::itemClicked, this, &QPreferencesFilesStructuresViewController::handleItemClicked);
-    connect(m_pPreferencesFilesStructuresView->getAddButton(), &QAbstractButton::clicked, this, &QPreferencesFilesStructuresViewController::handleAddFile);
-    connect(m_pPreferencesFilesStructuresView->getRemoveButton(), &QAbstractButton::clicked, this, &QPreferencesFilesStructuresViewController::handleRemoveFile);
+    connect(m_pPreferencesFilesStructuresView, &QPreferencesFilesStructuresView::listWidgetItemClicked, this, &QPreferencesFilesStructuresViewController::handleItemClicked);
+    connect(m_pPreferencesFilesStructuresView, &QPreferencesFilesStructuresView::addButtonClicked, this, &QPreferencesFilesStructuresViewController::handleAddFile);
+    connect(m_pPreferencesFilesStructuresView, &QPreferencesFilesStructuresView::removeButtonClicked, this, &QPreferencesFilesStructuresViewController::handleRemoveFile);
 }
 
 QPreferencesFilesStructuresViewController::~QPreferencesFilesStructuresViewController()
@@ -112,15 +109,15 @@ void QPreferencesFilesStructuresViewController::handleRemoveFile()
     
     if (bConfigPath || bDataPath) {
         if (QFile::remove(m_dataDir.path() + "/" + fileName) || QFile::remove("./data/structure_files/" + fileName)) {
-            qDebug() << "[Preferences] File removed successfully";
+            qDebug("[Preferences] File removed successfully");
             emit changedPreferencesStatusBar(tr("File removed successfully"));
         } else {
-            qWarning() << "[Preferences] Failed to remove file"; 
+            qWarning("[Preferences] Failed to remove file"); 
             emit changedPreferencesStatusBar(tr("Failed to remove file"));
 
         }
     } else {
-        qWarning() << "[Preferences] File does not exits";
+        qWarning("[Preferences] File does not exits");
         emit changedPreferencesStatusBar(tr("File does not exists"));
     }
     reloadStructureFileList();
@@ -133,31 +130,31 @@ void QPreferencesFilesStructuresViewController::copyFile(const QString& szSource
     QFile sourceFile(szSourcePath);
 
     if (!sourceFile.exists()) {
-        qWarning() << "[Preferences] Source file does not exist";
+        qWarning("[Preferences] Source file does not exist");
         emit changedPreferencesStatusBar(tr("Source file does not exist"));
         return;
     }
 
     if (!sourceFile.permissions().testFlag(QFileDevice::ReadUser)) {
-        qWarning() << "[Preferences] No read permission for source file";
+        qWarning("[Preferences] No read permission for source file");
         emit changedPreferencesStatusBar(tr("No read permission for source file"));
         return;
     }
 
     QDir destDir = QFileInfo(szDestTemp).absoluteDir();
     if (!destDir.exists()) {
-        qDebug() << "[Preferences] Destination directory does not exist. Creating...";
+        qDebug("[Preferences] Destination directory does not exist. Creating...");
         emit changedPreferencesStatusBar(tr("Destination directory does not exist. Creating..."));
 
         if (!destDir.mkpath(".")) {
-            qWarning() << "[Preferences] Failed to create destination directory";
+            qWarning("[Preferences] Failed to create destination directory");
             emit changedPreferencesStatusBar(tr("Failed to create destination directory"));
             return;
         }
     }
 
     while (QFile::exists(szDestTemp)) {
-        qWarning() << "[Preferences] File with the same name already exists in the destination folder";
+        qWarning("[Preferences] File with the same name already exists in the destination folder");
         emit changedPreferencesStatusBar(tr("File with the same name already exists in the destination folder"));
         QMessageBox msgBox;
         msgBox.setText(tr("The file already exists."));
@@ -174,13 +171,13 @@ void QPreferencesFilesStructuresViewController::copyFile(const QString& szSource
             if (ok && !newFileName.isEmpty()) {
                 szDestTemp = QFileInfo(destDir, newFileName).absoluteFilePath();
             } else {
-                qWarning() << "[Preferences] New file name was not provided.";
+                qWarning("[Preferences] New file name was not provided.");
                 emit changedPreferencesStatusBar(tr("New file name was not provided"));
                 return;
             }
         } else {
             if (!QFile::remove(szDestTemp)) {
-                qWarning() << "[Preferences] Failed to remove existing destination file";
+                qWarning("[Preferences] Failed to remove existing destination file");
                 emit changedPreferencesStatusBar(tr("Failed to remove existing destination file"));
                 return;
             }
@@ -188,12 +185,12 @@ void QPreferencesFilesStructuresViewController::copyFile(const QString& szSource
     }
 
     if (!QFile::copy(szSourcePath, szDestTemp)) {
-        qWarning() << "[Preferences] Failed to copy file";
+        qWarning("[Preferences] Failed to copy file");
         emit changedPreferencesStatusBar(tr("Failed to copy file"));
         return;
     }
 
-    qDebug() << "[Preferences] File copied successfully";
+    qDebug("[Preferences] File copied successfully");
     emit changedPreferencesStatusBar(tr("File copied successfully"));
     return;
 }

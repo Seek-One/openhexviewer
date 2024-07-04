@@ -3,11 +3,8 @@
 
 #include <QDialog>
 #include <QString>
-#include <QLabel>
-#include <QPushButton>
 #include <QRadioButton>
 #include <QLineEdit>
-#include <QDialogButtonBox>
 
 class QAbstractButton;
 
@@ -22,14 +19,14 @@ public:
 
     void setOffset(QString szStart, QString szSize, QString szEnd);
 
-    QLineEdit* getStartOffset();
-    QLineEdit* getSizeOffset();
-    QLineEdit* getEndOffset();
-
 signals:
     void saveSelection();
     void changeOffset();
     void changeBase();
+
+    void startOffsetChanged(const QString&);
+    void endOffsetChanged(const QString&);
+    void sizeOffsetChanged(const QString&);
 
 private:
     QLineEdit* m_pStartOffset; 

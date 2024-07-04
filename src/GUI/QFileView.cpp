@@ -8,16 +8,14 @@
 #include <limits>
 #include <math.h>
 
+#include "QFileView.h"
+
 #include <QHBoxLayout>
-#include <QTextEdit>
 #include <QPlainTextEdit>
 #include <QScrollBar>
-#include <QStatusBar>
 #include <QKeyEvent>
-#include <QSignalBlocker>
 #include <QObject>
 
-#include "QFileView.h"
 
 QFileView::QFileView(QWidget* pParent)
 	: QWidget(pParent)
@@ -48,6 +46,18 @@ QFileView::QFileView(QWidget* pParent)
 	m_pHexEditor->installEventFilter(this);
     pMainLayout->addWidget(m_pHexEditor, 3);
 
+	connect(m_pHexEditor, &QPlainTextEdit::textChanged, [this]() {
+		emit textChangedHex(m_pHexEditor);
+	});
+	
+	connect(m_pHexEditor, &QPlainTextEdit::selectionChanged, [this]() {
+		emit selectionChangedHex(m_pHexEditor, m_pHumanEditor);
+	});
+	
+	connect(m_pHexEditor, &QPlainTextEdit::cursorPositionChanged, [this]() {
+		emit cursorChangedHex(m_pHexEditor, m_pHumanEditor);
+	});
+
     m_pHumanEditor = new QPlainTextEdit(pParent);
     font = m_pHumanEditor->font();
     font.setFamily("DejaVu Sans Mono");
@@ -58,37 +68,22 @@ QFileView::QFileView(QWidget* pParent)
 	m_pHumanEditor->installEventFilter(this);
     pMainLayout->addWidget(m_pHumanEditor, 1);
 
+	connect(m_pHumanEditor, &QPlainTextEdit::textChanged, [this]() {
+		emit textChangedHuman(m_pHumanEditor);
+	});
+	
+	connect(m_pHumanEditor, &QPlainTextEdit::selectionChanged, [this]() {
+		emit selectionChangedHuman(m_pHumanEditor, m_pHexEditor);
+	});
+	
+	connect(m_pHumanEditor, &QPlainTextEdit::cursorPositionChanged, [this]() {
+		emit cursorChangedHuman(m_pHumanEditor, m_pHexEditor);
+	});
+
     m_pScrollBar = new QScrollBar(pParent);
     pMainLayout->addWidget(m_pScrollBar);
 
     connect(m_pScrollBar, SIGNAL(valueChanged(int)), this, SIGNAL(rowChanged(int)));
-
-	// HEX TEXT CHANGED
-	connect(m_pHexEditor, &QPlainTextEdit::textChanged, [this]() {
-		emit textChangedHex(m_pHexEditor);
-	});
-	// HEX SELECTION CHANGED
-	connect(m_pHexEditor, &QPlainTextEdit::selectionChanged, [this]() {
-		emit selectionChangedHex(m_pHexEditor, m_pHumanEditor);
-	});
-	// // HEX CURSOR CHANGED
-	connect(m_pHexEditor, &QPlainTextEdit::cursorPositionChanged, [this]() {
-		emit cursorChangedHex(m_pHexEditor, m_pHumanEditor);
-	});
-
-	//HUMAN TEXT CHANGED 
-	connect(m_pHumanEditor, &QPlainTextEdit::textChanged, [this]() {
-		emit textChangedHuman(m_pHumanEditor);
-	});
-	//HUMAN SELECTION CHANGED
-	connect(m_pHumanEditor, &QPlainTextEdit::selectionChanged, [this]() {
-		emit selectionChangedHuman(m_pHumanEditor, m_pHexEditor);
-	});
-
-	// //HEX CURSOR CHANGED
-	connect(m_pHumanEditor, &QPlainTextEdit::cursorPositionChanged, [this]() {
-		emit cursorChangedHuman(m_pHumanEditor, m_pHexEditor);
-	});
 }
 
 QFileView::~QFileView()

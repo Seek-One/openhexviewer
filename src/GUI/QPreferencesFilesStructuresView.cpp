@@ -14,6 +14,9 @@ QPreferencesFilesStructuresView::QPreferencesFilesStructuresView(QWidget* pParen
     QSplitter* pSplitter = new QSplitter(this);
     {
         m_pFileTable = new QListWidget(pSplitter);
+        connect(m_pFileTable, &QListWidget::itemClicked, [this](QListWidgetItem* pItem) {
+            emit listWidgetItemClicked(pItem);
+        });
         pSplitter->addWidget(m_pFileTable);
         pSplitter->setStretchFactor(0, 1);
 
@@ -25,10 +28,16 @@ QPreferencesFilesStructuresView::QPreferencesFilesStructuresView(QWidget* pParen
         pWidget->setLayout(pVBoxLayout);
         {
             pVBoxLayout->addWidget(new QWidget(), 6);
-            m_pAddButton = new QPushButton(tr("&New one"));
-            pVBoxLayout->addWidget(m_pAddButton, 1);
-            m_pRemoveButton = new QPushButton(tr("&Remove"));
-            pVBoxLayout->addWidget(m_pRemoveButton, 1);
+            QPushButton* pAddButton = new QPushButton(tr("&New one"));
+            connect(pAddButton, &QAbstractButton::clicked, [this]() {
+                emit addButtonClicked();
+            });
+            pVBoxLayout->addWidget(pAddButton, 1);
+            QPushButton* pRemoveButton = new QPushButton(tr("&Remove"));
+            connect(pRemoveButton, &QAbstractButton::clicked, [this]() {
+                emit removeButtonClicked();
+            });
+            pVBoxLayout->addWidget(pRemoveButton, 1);
         }
     }
 }
@@ -41,14 +50,4 @@ QPreferencesFilesStructuresView::~QPreferencesFilesStructuresView()
 QListWidget* QPreferencesFilesStructuresView::getTableWidget() const
 {
     return m_pFileTable;
-}
-
-QPushButton* QPreferencesFilesStructuresView::getAddButton() const
-{
-    return m_pAddButton;
-}
-
-QPushButton* QPreferencesFilesStructuresView::getRemoveButton() const
-{
-    return m_pRemoveButton;
 }

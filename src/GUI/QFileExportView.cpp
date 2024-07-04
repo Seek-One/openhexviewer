@@ -11,17 +11,17 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QScrollBar>
-#include <QPlainTextEdit>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QRegExp>
-#include <QRegExpValidator>
 
 QFileExportView::QFileExportView(QWidget * pParent)
-{
+{  
+    QRegularExpression hexRegex("[0-9A-Fa-f]*");
+    QRegularExpressionValidator *hexValidator = new QRegularExpressionValidator(hexRegex, this);
+
+    QRegularExpression decRegex("[0-9]*");
+    QRegularExpressionValidator *decValidator = new QRegularExpressionValidator(decRegex, this);
+
     QVBoxLayout* pMainLayout = new QVBoxLayout(this);
     setLayout(pMainLayout);
     {
@@ -43,9 +43,7 @@ QFileExportView::QFileExportView(QWidget * pParent)
                     {
                         QRadioButton* pRadioButtonHex = new QRadioButton(tr("Hex"));
                         pRadioButtonHex->setChecked(true);
-                        connect(pRadioButtonHex, &QRadioButton::clicked, [this] () {
-                            QRegExp hexRegex("[0-9A-Fa-f]*");
-                            QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
+                        connect(pRadioButtonHex, &QRadioButton::clicked, [this, hexValidator] () {
                             m_iRadioButton = 16;
                             m_pStartOffset->setValidator(hexValidator);
                             m_pEndOffset->setValidator(hexValidator);
@@ -55,9 +53,7 @@ QFileExportView::QFileExportView(QWidget * pParent)
                         
                         QRadioButton* pRadioButtonDec = new QRadioButton(tr("Dec"));
                         pHRadioLayout->addWidget(pRadioButtonDec);
-                        connect(pRadioButtonDec, &QRadioButton::clicked, [this] () {
-                            QRegExp decRegex("[0-9]*");
-                            QRegExpValidator *decValidator = new QRegExpValidator(decRegex, this);
+                        connect(pRadioButtonDec, &QRadioButton::clicked, [this, decValidator] () {
                             m_iRadioButton = 10;
                             m_pStartOffset->setValidator(decValidator);
                             m_pEndOffset->setValidator(decValidator);
@@ -65,13 +61,13 @@ QFileExportView::QFileExportView(QWidget * pParent)
                         });
                     }
                 }
-                QRegExp hexRegex("[0-9A-Fa-f]*");
-                QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
-                
                 QLabel* pStartOffset = new QLabel(tr("Start :"));
                 pStartOffset->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 pGroupGridLayout->addWidget(pStartOffset, 1, 0);
                 m_pStartOffset = new QLineEdit();
+                connect(m_pStartOffset, &QLineEdit::textChanged, [this](const QString &szText) {
+                    emit startOffsetChanged(szText);
+                });
                 m_pStartOffset->setValidator(hexValidator);
                 pGroupGridLayout->addWidget(m_pStartOffset, 1, 1);
             
@@ -79,6 +75,9 @@ QFileExportView::QFileExportView(QWidget * pParent)
                 pEndOffset->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 pGroupGridLayout->addWidget(pEndOffset, 2, 0);
                 m_pEndOffset = new QLineEdit();
+                connect(m_pEndOffset, &QLineEdit::textChanged, [this](const QString &szText) {
+                    emit endOffsetChanged(szText);
+                });
                 m_pEndOffset->setValidator(hexValidator);
                 pGroupGridLayout->addWidget(m_pEndOffset, 2, 1);
             }
@@ -90,13 +89,13 @@ QFileExportView::QFileExportView(QWidget * pParent)
             QGridLayout* pGroupGridLayout = new QGridLayout();
             pSizeBox->setLayout(pGroupGridLayout);
             {
-                QRegExp decRegex("[0-9]*");
-                QRegExpValidator *decValidator = new QRegExpValidator(decRegex, this);
-                
                 QLabel* pSizeOffset = new QLabel(tr("Size :"));
                 pSizeOffset->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
                 pGroupGridLayout->addWidget(pSizeOffset, 0, 0);
                 m_pSizeOffset = new QLineEdit();
+                connect(m_pSizeOffset, &QLineEdit::textChanged, [this](const QString &szText) {
+                    emit endOffsetChanged(szText);
+                });
                 m_pSizeOffset->setValidator(decValidator);
                 pGroupGridLayout->addWidget(m_pSizeOffset, 0, 1);
             }
@@ -134,19 +133,4 @@ void QFileExportView::setOffset(QString szStart, QString szSize, QString szEnd)
     m_pStartOffset->setText(szStart);
     m_pSizeOffset->setText(szSize);
     m_pEndOffset->setText(szEnd);
-}
-
-QLineEdit* QFileExportView::getStartOffset()
-{
-    return m_pStartOffset;
-}
-
-QLineEdit* QFileExportView::getSizeOffset()
-{
-    return m_pSizeOffset;
-}
-
-QLineEdit* QFileExportView::getEndOffset()
-{
-    return m_pEndOffset;
 }

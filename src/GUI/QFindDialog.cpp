@@ -9,17 +9,10 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QDialogButtonBox>
 #include <QPushButton>
-#include <QScrollBar>
-#include <QPlainTextEdit>
 #include <QGroupBox>
 #include <QRadioButton>
-#include <QLineEdit>
-#include <QComboBox>
 #include <QButtonGroup>
-
-
 
 QFindDialog::QFindDialog(QWidget * pParent)
 {
@@ -55,6 +48,12 @@ QFindDialog::~QFindDialog()
 
 void QFindDialog::createSettings(QBoxLayout* pParentLayout)
 {
+    QRegularExpression hexRegex("[0-9A-Fa-f]*");
+    QRegularExpressionValidator *hexValidator = new QRegularExpressionValidator(hexRegex, this);
+
+    QRegularExpression decRegex("[0-9]*");
+    QRegularExpressionValidator *decValidator = new QRegularExpressionValidator(decRegex, this);
+
     QGroupBox* pFindGroupBox = new QGroupBox(tr("Research settings"));
     pParentLayout->addWidget(pFindGroupBox);
     
@@ -86,8 +85,6 @@ void QFindDialog::createSettings(QBoxLayout* pParentLayout)
 
         m_pStartEdit = new QLineEdit();
         m_pStartEdit->setEnabled(false);
-        QRegExp hexRegex("[0-9A-Fa-f]*");
-        QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
         m_pStartEdit->setValidator(hexValidator);
         pStartOffsetLayout->addWidget(m_pStartEdit);
 
@@ -105,37 +102,21 @@ void QFindDialog::createSettings(QBoxLayout* pParentLayout)
             m_offsets.startOffset.base = 16;
             pStartCombo->setCurrentText("HEX");
         });
-        connect(pStartCombo, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [this](QString szText) {
-            if (szText == "HEX") {
-                bool bOk;
-                QString szText = m_pStartEdit->text();
-                int iText = szText.toInt(&bOk, m_offsets.startOffset.base);
-
-                if (!bOk) {
-                    return;
-                }
-                QRegExp hexRegex("[0-9A-Fa-f]*");
-                QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
+        connect(pStartCombo, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [this, hexValidator, decValidator](QString szType) {
+            bool bOk;
+            QString szText = m_pStartEdit->text();
+            int iText = szText.toInt(&bOk, m_offsets.startOffset.base);
+            if (!bOk) {
+                return;
+            }
+            if (szType == "HEX") {
                 m_pStartEdit->setValidator(hexValidator);
                 m_offsets.startOffset.base = 16;
-
                 m_pStartEdit->setText(QString::number(iText, 16).toUpper());
-            } else if (szText == "DEC") {
-                bool bOk;
-                QString szText = m_pStartEdit->text();
-                int iText = szText.toInt(&bOk, m_offsets.startOffset.base);
-
-                if (!bOk) {
-                    return;
-                }
-
-                QRegExp decRegex("[0-9]*");
-                QRegExpValidator *decValidator = new QRegExpValidator(decRegex, this);
+            } else if (szType == "DEC") {
                 m_pStartEdit->setValidator(decValidator);
                 m_offsets.startOffset.base = 10;
-
                 m_pStartEdit->setText(QString::number(iText, 10).toUpper());
-                                            
             }
             emit offsetChanged();
         });
@@ -153,9 +134,7 @@ void QFindDialog::createSettings(QBoxLayout* pParentLayout)
                 m_pStartEdit->setFocus();
             }
         });
-        
     }
-
     {
         QLabel* pEndLabel = new QLabel(tr("End :"));
         pEndLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -180,8 +159,6 @@ void QFindDialog::createSettings(QBoxLayout* pParentLayout)
 
         m_pEndEdit = new QLineEdit();
         m_pEndEdit->setEnabled(false);
-        QRegExp hexRegex("[0-9A-Fa-f]*");
-        QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
         m_pEndEdit->setValidator(hexValidator);
         pEndOffsetLayout->addWidget(m_pEndEdit);
 
@@ -199,35 +176,21 @@ void QFindDialog::createSettings(QBoxLayout* pParentLayout)
             m_offsets.endOffset.base = 16;
             pEndCombo->setCurrentText("HEX");
         });
-        connect(pEndCombo, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [this](QString szText) {
-            if (szText == "HEX") {
-                bool bOk;
-                QString szText = m_pEndEdit->text();
-                int iText = szText.toInt(&bOk, m_offsets.endOffset.base);
+        connect(pEndCombo, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [this, hexValidator, decValidator](QString szType) {
+            bool bOk;
+            QString szText = m_pEndEdit->text();
+            int iText = szText.toInt(&bOk, m_offsets.endOffset.base);
 
-                if (!bOk) {
-                    return;
-                }
-                QRegExp hexRegex("[0-9A-Fa-f]*");
-                QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
+            if (!bOk) {
+                return;
+            }
+            if (szType == "HEX") {
                 m_pEndEdit->setValidator(hexValidator);
                 m_offsets.endOffset.base = 16;
-
                 m_pEndEdit->setText(QString::number(iText, 16).toUpper());
-            } else if (szText == "DEC") {
-                bool bOk;
-                QString szText = m_pEndEdit->text();
-                int iText = szText.toInt(&bOk, m_offsets.endOffset.base);
-
-                if (!bOk) {
-                    return;
-                }
-
-                QRegExp decRegex("[0-9]*");
-                QRegExpValidator *decValidator = new QRegExpValidator(decRegex, this);
+            } else if (szType == "DEC") {
                 m_pEndEdit->setValidator(decValidator);
                 m_offsets.endOffset.base = 10;
-
                 m_pEndEdit->setText(QString::number(iText, 10).toUpper());                        
             }
             emit offsetChanged();
@@ -345,14 +308,14 @@ OffsetValue QFindDialog::getOffsets()
     return m_offsets;
 }
 
-QLineEdit* QFindDialog::getStartOffset()
+QString QFindDialog::getStartOffset()
 {
-    return m_pStartEdit;
+    return m_pStartEdit->text();
 }
 
-QLineEdit* QFindDialog::getEndOffset()
+QString QFindDialog::getEndOffset()
 {
-    return m_pEndEdit;
+    return m_pEndEdit->text();
 }
 
 QComboBox* QFindDialog::getComboPosOcc()

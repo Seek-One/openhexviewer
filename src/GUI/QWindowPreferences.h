@@ -2,8 +2,6 @@
 #define SRC_PREFERENCESWINDOW_H_
 
 #include <QMainWindow>
-#include <QStackedWidget>
-#include <QPushButton>
 
 #include "QPreferencesFilesStructuresView.h"
 

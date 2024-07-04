@@ -45,9 +45,6 @@ public slots:
 	void color();
 	void exportSelection();
 
-	void actionEnabled();
-	void actionDisabled();
-
 	void selectFileData(qint64 offset, qint64 size);
 
 	void onBytesSelectionChanged(qint64 start, qint64 end);

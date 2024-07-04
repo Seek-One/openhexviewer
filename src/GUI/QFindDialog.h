@@ -12,7 +12,6 @@
 #include <QBoxLayout>
 #include <QComboBox>
 
-
 typedef enum {
     NORMAL,
     CUSTOM
@@ -52,8 +51,8 @@ public:
 
     OffsetValue getOffsets();
 
-    QLineEdit* getStartOffset();
-    QLineEdit* getEndOffset();
+    QString getStartOffset();
+    QString getEndOffset();
     QComboBox* getComboPosOcc();
 
 signals:

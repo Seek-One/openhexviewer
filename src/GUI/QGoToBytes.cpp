@@ -4,18 +4,11 @@
 
 #include "QGoToBytes.h"
 
-#include <QApplication>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
-#include <QMessageBox>
-#include <QIcon>
-#include <QToolButton>
-#include <QPushButton>
-
-#include <QFile>
-
+#include <QRadioButton>
 
 QGoToBytes::QGoToBytes(QWidget * parent)
 {
@@ -25,20 +18,26 @@ QGoToBytes::QGoToBytes(QWidget * parent)
         QHBoxLayout* pHRadioLayout = new QHBoxLayout();
         pMainLayout->addLayout(pHRadioLayout);
 
-        m_pLabelType = new QLabel(tr("Offset type :"));
-        pHRadioLayout->addWidget(m_pLabelType);
-        m_pRadioButtonHex = new QRadioButton(tr("Hex"), this);
-        m_pRadioButtonHex->setChecked(true);
-        pHRadioLayout->addWidget(m_pRadioButtonHex);
-        m_pRadioButtonDec = new QRadioButton(tr("Dec"), this);
-        pHRadioLayout->addWidget(m_pRadioButtonDec);
+        QLabel* pLabelType = new QLabel(tr("Offset type :"));
+        pHRadioLayout->addWidget(pLabelType);
+        QRadioButton* pRadioButtonHex = new QRadioButton(tr("Hex"), this);
+        pRadioButtonHex->setChecked(true);
+        connect(pRadioButtonHex, &QRadioButton::clicked, [this]() {
+            m_iBase = 16;
+        });
+        pHRadioLayout->addWidget(pRadioButtonHex);
+        QRadioButton* pRadioButtonDec = new QRadioButton(tr("Dec"), this);
+        connect(pRadioButtonDec, &QRadioButton::clicked, [this]() {
+            m_iBase = 10;
+        });
+        pHRadioLayout->addWidget(pRadioButtonDec);
     }
     {
         QHBoxLayout* pHEditLayout = new QHBoxLayout();
         pMainLayout->addLayout(pHEditLayout);
 
-        m_pLabelOffset = new QLabel(tr("Offset :"));
-        pHEditLayout->addWidget(m_pLabelOffset);
+        QLabel* pLabelOffset = new QLabel(tr("Offset :"));
+        pHEditLayout->addWidget(pLabelOffset);
         m_pLineOffset = new QLineEdit(this);
         pHEditLayout->addWidget(m_pLineOffset);
     }
@@ -46,23 +45,16 @@ QGoToBytes::QGoToBytes(QWidget * parent)
         QHBoxLayout* pHValidationLayout = new QHBoxLayout();
         pMainLayout->addLayout(pHValidationLayout);
 
-        QDialogButtonBox* m_pButtonBox = new QDialogButtonBox(QDialogButtonBox::Cancel, Qt::Horizontal, this);
-        pHValidationLayout->addWidget(m_pButtonBox);
+        QDialogButtonBox* pButtonBox = new QDialogButtonBox(QDialogButtonBox::Cancel, Qt::Horizontal, this);
+        pHValidationLayout->addWidget(pButtonBox);
         
-        m_pButtonBox->addButton(QDialogButtonBox::Ok);
+        pButtonBox->addButton(QDialogButtonBox::Ok);
 
-        connect(m_pButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
-        connect(m_pButtonBox, &QDialogButtonBox::accepted, [this]() {
+        connect(pButtonBox, SIGNAL(rejected()), this, SLOT(reject()));
+        connect(pButtonBox, &QDialogButtonBox::accepted, [this]() {
             emit accepted();
         });
     }
-
-    connect(m_pRadioButtonHex, &QRadioButton::clicked, this, &QGoToBytes::onRadioButtonClicked);
-    connect(m_pRadioButtonDec, &QRadioButton::clicked, this, &QGoToBytes::onRadioButtonClicked);
-
-
-
-    onRadioButtonClicked();
 }
 
 QGoToBytes::~QGoToBytes()
@@ -70,26 +62,12 @@ QGoToBytes::~QGoToBytes()
 
 }
 
-void QGoToBytes::onRadioButtonClicked() 
+int QGoToBytes::getLineBase() 
 {
-    if (m_pRadioButtonHex->isChecked()) {
-        iRadioButton = 1;
-    } else if (m_pRadioButtonDec->isChecked()) {
-        iRadioButton = 2;
-    }
+    return m_iBase;
 }
 
-QDialogButtonBox* QGoToBytes::getDialogButtonOk() 
+QString QGoToBytes::getLineOffset()
 {
-    return m_pButtonBox;
-}
-
-int QGoToBytes::getRadioButton() 
-{
-    return iRadioButton;
-}
-
-QLineEdit* QGoToBytes::getLineOffset()
-{
-    return m_pLineOffset;
+    return m_pLineOffset->text();
 }

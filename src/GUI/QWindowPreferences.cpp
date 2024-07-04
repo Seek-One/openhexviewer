@@ -1,6 +1,3 @@
-#include <QVBoxLayout>
-#include <QMenu>
-#include <QMenuBar>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QTabWidget>
@@ -32,7 +29,6 @@ QWindowPreferences::~QWindowPreferences()
 
 }
 
-
 void QWindowPreferences::createStatusBar()
 {
     m_pStatusBar = new QStatusBar(this);
@@ -44,7 +40,6 @@ QPreferencesFilesStructuresView* QWindowPreferences::getFileStructureView() cons
 {
     return m_pPreferencesFilesStructuresView;
 }
-
 
 void QWindowPreferences::changedPreferencesStatusBar(QString szText)
 {

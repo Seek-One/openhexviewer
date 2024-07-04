@@ -51,18 +51,16 @@ QBytesView::QBytesView(QWidget* pParent)
     m_pWarningLabel->setStyleSheet("QLabel { color : red;}");
     m_pWarningLabel->hide();
 
-
     QVBoxLayout *layout = new QVBoxLayout(this);
-        layout->addWidget(m_pTableView);
-        layout->addWidget(m_pWarningLabel);
+    layout->addWidget(m_pTableView);
+    layout->addWidget(m_pWarningLabel);
 
-        // Set the layout on the main window
-        this->setLayout(layout);
+    // Set the layout on the main window
+    this->setLayout(layout);
 
-        // Ensure the table view and warning label expand to fill the layout
-        m_pTableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        m_pWarningLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    
+    // Ensure the table view and warning label expand to fill the layout
+    m_pTableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_pWarningLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
 
 

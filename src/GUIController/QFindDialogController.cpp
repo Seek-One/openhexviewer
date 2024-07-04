@@ -119,11 +119,11 @@ void QFindDialogController::find()
 	qint64 iStartOffset = 0;
 	qint64 iEndOffset = -1; //THE END
 	if (vStartOffset.type == CUSTOM) {
-		QString szText = m_pFindDialog->getStartOffset()->text();
+		QString szText = m_pFindDialog->getStartOffset();
 		iStartOffset = szText.toInt(&bOk, vStartOffset.base);
 	}
 	if (vEndOffset.type == CUSTOM) {
-		QString szText = m_pFindDialog->getEndOffset()->text();
+		QString szText = m_pFindDialog->getEndOffset();
 		iEndOffset = szText.toInt(&bOk, vEndOffset.base);
 	}
 

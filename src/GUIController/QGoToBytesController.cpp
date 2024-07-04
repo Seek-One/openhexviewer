@@ -32,33 +32,16 @@ QGoToBytesController::~QGoToBytesController()
 
 void QGoToBytesController::researchOffSet()
 {
-    int iRadio = m_pGoToBytes->getRadioButton();
-    QString szText = m_pGoToBytes->getLineOffset()->text();
+    QString szText = m_pGoToBytes->getLineOffset();
     bool bOk;
     
     if (szText.isEmpty()) {
-        return messageBox(tr("No Offset has been specified"));
+        QMessageBox::critical(this, tr("Problem"), tr("No Offset has been specified"), QMessageBox::Ok, QMessageBox::Ok);
+        return; 
     }
-
-    if (iRadio == 1) { //HEX
-        int iText = szText.toInt(&bOk, 16);
-        if (bOk) {
-            emit changeOffset(iText, 1);
-            return;
-        }
-        return messageBox(tr("You may only give the offset as : \n\t a hex number"));
-    } else if (iRadio == 2) { //DEC
-        int iText = szText.toInt(&bOk, 10);
-        if (bOk) {
-            emit changeOffset(iText, 1);
-            return;
-        }
-        return messageBox(tr("You may only give the offset as : \n\t a positive decimal number"));
+    int iText = szText.toInt(&bOk, m_pGoToBytes->getLineBase());
+    if (bOk) {
+        return emit changeOffset(iText, 1);
     }
-    return messageBox(tr("Radio button problem"));
-}
-
-void QGoToBytesController::messageBox(QString szText)
-{
-	QMessageBox::critical(this, "", szText, QMessageBox::Ok, QMessageBox::Ok);
+    QMessageBox::critical(this, tr("Problem"), tr("You may only give the offset as : \n\t a hex number or a positive decimal number"), QMessageBox::Ok, QMessageBox::Ok);
 }

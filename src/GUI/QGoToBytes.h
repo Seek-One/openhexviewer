@@ -2,11 +2,7 @@
 #define QGOTOBYTES_H_
 
 #include <QDialog>
-#include <QString>
-#include <QLabel>
-#include <QRadioButton>
 #include <QLineEdit>
-#include <QDialogButtonBox>
 
 class QAbstractButton;
 
@@ -17,23 +13,14 @@ public:
 	QGoToBytes(QWidget * parent = 0);
 	virtual ~QGoToBytes();
 
-    QDialogButtonBox* getDialogButtonOk();
+    int getLineBase();
 
-    int getRadioButton();
-
-    QLineEdit* getLineOffset();
+    QString getLineOffset();
 
 private:
-    QLabel* m_pLabelType;
-    QRadioButton* m_pRadioButtonHex;
-    QRadioButton* m_pRadioButtonDec;
-    QLabel* m_pLabelOffset;
     QLineEdit* m_pLineOffset;
-    QDialogButtonBox* m_pButtonBox;
 
-    int iRadioButton;
-
-    void onRadioButtonClicked();
+    int m_iBase;
 };
 
 #endif /* QGOTOBYTES_H_ */

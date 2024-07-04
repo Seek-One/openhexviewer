@@ -65,33 +65,62 @@ void QWindowMain::createMenu()
 {
     QMenu *pFileMenu = menuBar()->addMenu(tr("&File"));
     {
-        m_pOpenAction = new QAction(tr("&Open..."), this);
-        m_pOpenAction->setShortcut(QKeySequence("Ctrl+O"));
-        pFileMenu->addAction(m_pOpenAction);
+        QAction* pOpenAction = new QAction(tr("&Open..."), this);
+        pOpenAction->setShortcut(QKeySequence("Ctrl+O"));
+        connect(pOpenAction, &QAction::triggered, [this]() {
+            emit openFileClicked();
+        });
+        pFileMenu->addAction(pOpenAction);
+
         pFileMenu->addSeparator();
-        m_pPreferencesAction = new QAction(tr("&Preferences"), this);
-        pFileMenu->addAction(m_pPreferencesAction);
+
+        QAction* pPreferencesAction = new QAction(tr("&Preferences"), this);
+        connect(pPreferencesAction, &QAction::triggered, [this]() {
+            emit preferencesClicked();
+        });
+        pFileMenu->addAction(pPreferencesAction);
+
         pFileMenu->addSeparator();
+
         m_pSaveAction = new QAction(tr("&Save"), this);
         m_pSaveAction->setShortcut(QKeySequence("Ctrl+S"));
+        connect(m_pSaveAction, &QAction::triggered, [this]() {
+            emit saveFileClicked();
+        });
         pFileMenu->addAction(m_pSaveAction);
+
         pFileMenu->addSeparator();
-        m_pQuitAction = new QAction(tr("&Quit"), this);
-        m_pQuitAction->setShortcut(QKeySequence("Ctrl+Q"));
-        pFileMenu->addAction(m_pQuitAction);
+
+        QAction* pQuitAction = new QAction(tr("&Quit"), this);
+        pQuitAction->setShortcut(QKeySequence("Ctrl+Q"));
+        connect(pQuitAction, &QAction::triggered, [this]() {
+            emit quitClicked();
+        });
+        pFileMenu->addAction(pQuitAction);
     }
     
     QMenu *pEditMenu = menuBar()->addMenu(tr("&Edit"));
     {
         m_pGoToAction = new QAction(tr("&Go to"), this);
         m_pGoToAction->setShortcut(QKeySequence("Ctrl+J"));
+        connect(m_pGoToAction, &QAction::triggered, [this]() {
+            emit goToClicked();
+        });
         pEditMenu->addAction(m_pGoToAction);
         m_pFindAction = new QAction(tr("&Find"), this);
         m_pFindAction->setShortcut(QKeySequence("Ctrl+F"));
         pEditMenu->addAction(m_pFindAction);
+        connect(m_pFindAction, &QAction::triggered, [this]() {
+            emit findClicked();
+        });
+
         pEditMenu->addSeparator();
+
         m_pExportSelectionAction = new QAction(tr("&Export Selection"), this);
         m_pExportSelectionAction->setShortcut(QKeySequence("Ctrl+E"));
+        connect(m_pExportSelectionAction, &QAction::triggered, [this]() {
+            emit exportSelectionClicked();
+        });
         pEditMenu->addAction(m_pExportSelectionAction);
     }
 
@@ -99,61 +128,22 @@ void QWindowMain::createMenu()
     {
         m_pColorAction = new QAction(tr("&Colorize"), this);
         m_pColorAction->setShortcut(QKeySequence("Ctrl+K"));
+        connect(m_pColorAction, &QAction::triggered, [this]() {
+            emit colorClicked();
+        });
         m_pColorAction->setCheckable(true);
         pViewMenu->addAction(m_pColorAction);
     }
 
     QMenu *pHelpMenu = menuBar()->addMenu(tr("&Help"));
     {
-        m_pAboutAction = new QAction(tr("&About"), this);
-        m_pAboutAction->setShortcut(QKeySequence("Ctrl+H"));
-        pHelpMenu->addAction(m_pAboutAction);
+        QAction* pAboutAction = new QAction(tr("&About"), this);
+        pAboutAction->setShortcut(QKeySequence("Ctrl+H"));
+        connect(pAboutAction, &QAction::triggered, [this]() {
+            emit aboutClicked();
+        });
+        pHelpMenu->addAction(pAboutAction);
     }
-}
-
-QAction* QWindowMain::getOpenAction() const
-{
-	return m_pOpenAction;
-}
-
-QAction* QWindowMain::getSaveAction() const
-{
-    return m_pSaveAction;
-}
-
-QAction* QWindowMain::getPreferencesAction() const
-{
-    return m_pPreferencesAction;
-}
-
-QAction* QWindowMain::getQuitAction() const
-{
-	return m_pQuitAction;
-}
-
-QAction* QWindowMain::getAboutAction() const
-{
-	return m_pAboutAction;
-}
-
-QAction* QWindowMain::getGoToAction() const
-{
-    return m_pGoToAction;
-}
-
-QAction* QWindowMain::getFindAction() const
-{
-    return m_pFindAction;
-}
-
-QAction* QWindowMain::getColorAction() const
-{
-    return m_pColorAction;
-}
-
-QAction* QWindowMain::getExportSelectionAction() const
-{
-    return m_pExportSelectionAction;
 }
 
 QFileView* QWindowMain::getFileView() const
@@ -179,4 +169,17 @@ void QWindowMain::setStatusBarText(const QString& szText)
 void QWindowMain::closeEvent(QCloseEvent* event)
 {
     emit mainWindowClosed(event);
+}
+
+void QWindowMain::actionFileUsable(bool bEnabled)
+{
+    m_pSaveAction->setEnabled(bEnabled);
+    m_pGoToAction->setEnabled(bEnabled);
+    m_pFindAction->setEnabled(bEnabled);
+    m_pExportSelectionAction->setEnabled(bEnabled);
+}
+
+bool QWindowMain::getColorIsChecked()
+{
+    return m_pColorAction->isChecked();
 }
