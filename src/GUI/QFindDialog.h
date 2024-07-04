@@ -1,6 +1,13 @@
 #ifndef QFINDDIALOG_H_
 #define QFINDDIALOG_H_
 
+
+#include <QObject>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#define USE_NO_QREGEXP
+#endif
+
 #include <QDialog>
 #include <QString>
 #include <QLabel>

@@ -16,12 +16,19 @@
 
 QFileExportView::QFileExportView(QWidget * pParent)
 {  
+#ifdef USE_NO_QREGEXP
     QRegularExpression hexRegex("[0-9A-Fa-f]*");
     QRegularExpressionValidator *hexValidator = new QRegularExpressionValidator(hexRegex, this);
 
     QRegularExpression decRegex("[0-9]*");
     QRegularExpressionValidator *decValidator = new QRegularExpressionValidator(decRegex, this);
+#else
+    QRegExp hexRegex("[0-9A-Fa-f]*");
+    QRegExpValidator *hexValidator = new QRegExpValidator(hexRegex, this);
 
+    QRegExp decRegex("[0-9]*");
+    QRegExpValidator *decValidator = new QRegExpValidator(decRegex, this);
+#endif
     QVBoxLayout* pMainLayout = new QVBoxLayout(this);
     setLayout(pMainLayout);
     {

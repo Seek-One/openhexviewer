@@ -197,7 +197,6 @@ qint64 QBytesViewController::hexStringtoQInt64(QString szHex)
 		// qDebug("[QBytesViewController] Empty string cannot be converted to qint64");
 		return 0;
 	}
-
 #ifdef USE_NO_QREGEXP
     QRegularExpression re("^[0-9A-Fa-f]+$");
     QRegularExpressionMatch match;

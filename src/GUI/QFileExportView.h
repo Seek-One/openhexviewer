@@ -1,6 +1,14 @@
 #ifndef __QFILEEXPORTVIEW_H__
 #define __QFILEEXPORTVIEW_H__
 
+#include <QObject>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#define USE_NO_QREGEXP
+#else
+#include <QRegExpValidator>
+#endif
+
 #include <QDialog>
 #include <QString>
 #include <QRadioButton>
