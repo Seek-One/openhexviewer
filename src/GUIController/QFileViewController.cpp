@@ -11,8 +11,6 @@
 #include <QTextEdit>
 #include <QTextCursor>
 #include <QPlainTextEdit>
-#include <QRegularExpression>
-#include <QRegularExpressionMatchIterator>
 #include <QKeyEvent>
 #include <QByteArray>
 #include <QMessageBox>
@@ -597,7 +595,11 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 {
 	plstPositions->clear();
 	int iLengthSubString = byteArray.length();
+#ifdef USE_NO_QREGEXP
 	QRegularExpression re(QRegularExpression::escape(byteArray));
+#else
+	QRegExp re(QRegExp::escape(byteArray));
+#endif
 	char* pBuffer = new char[iLengthSubString];
 	bool bFound;
 	int iNbRead;

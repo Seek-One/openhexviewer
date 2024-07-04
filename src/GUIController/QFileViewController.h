@@ -13,6 +13,12 @@
 #include <QTextCharFormat>
 #include "GUIModel/QEditorModificationList.h"
 
+#define USE_NO_QREGEXP
+#include <QRegularExpression>
+#else
+#include <QRegExp>
+#endif
+
 class QFileView;
 class QPlainTextEdit;
 class QKeyEvent;
