@@ -13,6 +13,7 @@
 #include <QTextCharFormat>
 #include "GUIModel/QEditorModificationList.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
 #define USE_NO_QREGEXP
 #include <QRegularExpression>
 #else
