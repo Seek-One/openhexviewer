@@ -4,15 +4,6 @@
 
 #include <QObject>
 
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-#define USE_NO_QREGEXP
-#include <QRegularExpression>
-#include <QRegularExpressionValidator>
-#else
-#include <QRegExp>
-#include <QRegExpValidator>
-#endif
-
 #include <QDialog>
 #include <QString>
 #include <QLabel>

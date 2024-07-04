@@ -2,6 +2,14 @@
 #include <config.h>
 #endif
 
+#ifdef USE_NO_QREGEXP
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+#else
+#include <QRegExp>
+#include <QRegExpValidator>
+#endif
+
 #include <limits>
 #include <math.h>
 

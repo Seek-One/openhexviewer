@@ -6,6 +6,13 @@
 
 #include <QString>
 
+#ifdef USE_NO_QREGEXP
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#else
+#include <QRegExp>
+#endif
+
 #include "QBytesViewController.h"
 
 #include <QDebug>

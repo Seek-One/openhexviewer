@@ -28,4 +28,8 @@
 #define QStringASPrintf(str, format, ...) str.sprintf(format, __VA_ARGS__)
 #endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
+#define USE_NO_QREGEXP
+#endif
+
 #endif //OPENDBVIEWER_QTCOMPAT_H

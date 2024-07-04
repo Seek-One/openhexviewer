@@ -21,6 +21,12 @@
 
 #include "QFileViewController.h"
 
+#ifdef USE_NO_QREGEXP
+#include <QRegularExpression>
+#else
+#include <QRegExp>
+#endif
+
 #define MAX_NB_FIND 1028
 
 QFileViewController::QFileViewController(QFileView* pFileView)

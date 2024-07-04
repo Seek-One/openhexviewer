@@ -9,14 +9,6 @@
 
 #include "GUI/QBytesView.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK(6,0,0)
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#define USE_NO_QREGEXP
-#include <QRegExp>
-#include <QRegExpMatch>
-#endif
-
 class QBytesViewController : public QObject
 {
     Q_OBJECT
