@@ -9,6 +9,8 @@ QBytesView::QBytesView(QWidget* pParent)
     : QWidget(pParent)
 { 
     m_pTableView = new QTableView(this);
+	m_pTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     m_pWarningLabel = new QLabel(tr("Cannot display data representation for more than 64 bits"), this);
 
     m_pModel = new QStandardItemModel(12, 3, this);

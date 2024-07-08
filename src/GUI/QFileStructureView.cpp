@@ -51,6 +51,7 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 	}
 
 	m_pTreeView = new QTreeView(this);
+	m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	m_pTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(m_pTreeView, &QTreeView::customContextMenuRequested, [=](const QPoint &pos) {
 		QModelIndex index = m_pTreeView->indexAt(pos);
