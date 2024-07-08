@@ -12,6 +12,11 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QProgressBar>
+#include <QAction>
+#include <QMenu>
+#include <QClipboard>
+#include <QGuiApplication>
+#include <QStandardItem>
 
 #include "QFileStructureView.h"
 
@@ -46,6 +51,27 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 	}
 
 	m_pTreeView = new QTreeView(this);
+	m_pTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(m_pTreeView, &QTreeView::customContextMenuRequested, [=](const QPoint &pos) {
+		QModelIndex index = m_pTreeView->indexAt(pos);
+		if (index.isValid()) {
+			QAbstractItemModel* model = m_pTreeView->model();
+			if (model) {
+				QVariant data = model->index(index.row(), 4, index.parent()).data(Qt::DisplayRole).toString();
+				if (!((data.toString()).isEmpty())) {
+					QMenu contextMenu;
+					QAction *copyAction = contextMenu.addAction(tr("Copy Value"));
+					
+					QAction *selectedAction = contextMenu.exec(m_pTreeView->mapToGlobal(pos));
+					if (selectedAction == copyAction) {
+						QClipboard *clipboard = QGuiApplication::clipboard();
+						clipboard->setText(data.toString());
+					}
+				}
+			} else {
+			}
+		}
+	});
 	pMainLayout->addWidget(m_pTreeView);
 
 	QHeaderView* pTreeHeader;
