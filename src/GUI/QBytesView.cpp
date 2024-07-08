@@ -4,6 +4,11 @@
 #include <QStandardItem>
 #include <QHeaderView>
 #include <QVBoxLayout>
+#include <QAction>
+#include <QMenu>
+#include <QClipboard>
+#include <QGuiApplication>
+#include <QStandardItem>
 
 QBytesView::QBytesView(QWidget* pParent)
     : QWidget(pParent)
@@ -63,6 +68,28 @@ QBytesView::QBytesView(QWidget* pParent)
     // Ensure the table view and warning label expand to fill the layout
     m_pTableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_pWarningLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    m_pTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(m_pTableView, &QTableView::customContextMenuRequested, [=](const QPoint &pos) {
+		QModelIndex index = m_pTableView->indexAt(pos);
+		if (index.isValid()) {
+			QAbstractItemModel* model = m_pTableView->model();
+			if (model) {
+				QVariant data = model->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
+				if (!((data.toString()).isEmpty())) {
+					QMenu contextMenu;
+					QAction *copyAction = contextMenu.addAction(tr("Copy Value"));
+					
+					QAction *selectedAction = contextMenu.exec(m_pTableView->mapToGlobal(pos));
+					if (selectedAction == copyAction) {
+						QClipboard *clipboard = QGuiApplication::clipboard();
+						clipboard->setText(data.toString());
+					}
+				}
+			} else {
+			}
+		}
+	});
 }
 
 
