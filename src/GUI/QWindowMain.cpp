@@ -101,6 +101,13 @@ void QWindowMain::createMenu()
     
     QMenu *pEditMenu = menuBar()->addMenu(tr("&Edit"));
     {
+        QAction* undoAction = new QAction(tr("&Undo"), this);
+        undoAction->setShortcut(QKeySequence("Ctrl+Z"));
+        connect(undoAction, &QAction::triggered, [this]() {
+            emit undoClicked();
+        });
+        pEditMenu->addAction(undoAction);
+
         m_pGoToAction = new QAction(tr("&Go to"), this);
         m_pGoToAction->setShortcut(QKeySequence("Ctrl+J"));
         connect(m_pGoToAction, &QAction::triggered, [this]() {

@@ -45,6 +45,7 @@ public slots:
 	void moveToRow(int iRow);
 	void colorText(bool bIsChecked);
 	void selection(QString& szText);
+	void undo();
 
 	void handleTextChangedHex(QPlainTextEdit* pHexEditor);
 	void handleTextChangedHuman(QPlainTextEdit* pHumanEditor);

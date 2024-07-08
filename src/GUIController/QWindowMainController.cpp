@@ -100,6 +100,8 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 
 	connect(this, SIGNAL(colorText(bool)), m_pFileViewController, SLOT(colorText(bool)));
 
+	connect(m_pMainWindow, SIGNAL(undoClicked()), m_pFileViewController, SLOT(undo()));
+	
     m_bSavedChanges = true;
 
 	m_pMainWindow->actionFileUsable(false);

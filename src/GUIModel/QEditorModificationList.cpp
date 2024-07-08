@@ -42,6 +42,11 @@ void QEditorModificationList::removeModification(int iIndex)
     }
 }
 
+void QEditorModificationList::removeLastModification()
+{
+    removeModification(modifications.length() - 1);
+}
+
 void QEditorModificationList::clearModifications()
 {
     modifications.clear();

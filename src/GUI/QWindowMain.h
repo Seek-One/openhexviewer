@@ -38,6 +38,7 @@ signals:
 	void saveFileClicked();
 	void quitClicked();
 	void aboutClicked();
+	void undoClicked();
 	void goToClicked();
 	void findClicked();
 	void exportSelectionClicked();

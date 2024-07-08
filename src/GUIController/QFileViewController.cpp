@@ -730,3 +730,11 @@ void QFileViewController::selection(QString& szText)
 
 	file.close();
 }
+
+void QFileViewController::undo()
+{
+	m_pModifications->removeLastModification();
+	if (m_bIsFileOpen) {
+		readFile(m_iFilePos);
+	}
+}

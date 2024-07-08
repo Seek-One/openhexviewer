@@ -11,6 +11,7 @@ public:
     void addModification(const qint64 iOffset, const Action action, const qint64 iSizeBytes, const QByteArray data);
     void addModification(const QEditorModification &modification);
     void removeModification(int iIndex);
+    void removeLastModification();
     void clearModifications();
     QEditorModification lastModificationAtPosition(qint64 iOffset) const;
     bool existsPosition(qint64 iPosition);
