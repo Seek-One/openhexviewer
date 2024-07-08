@@ -2,6 +2,8 @@
 #include <config.h>
 #endif
 
+#include "Global/QtCompat.h"
+
 #ifdef USE_NO_QREGEXP
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
