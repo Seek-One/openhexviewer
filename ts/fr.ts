@@ -73,6 +73,10 @@
         <source>Binary</source>
         <translation>Binaire</translation>
     </message>
+    <message>
+        <source>Copy Value</source>
+        <translation type="Copier la valeur"></translation>
+    </message>
 </context>
 <context>
     <name>QBytesViewController</name>
@@ -115,12 +119,24 @@
         <source>End :</source>
         <translation>Fin :</translation>
     </message>
+    <message>
+        <source>Size</source>
+        <translation type="Taile">Taille</translation>
+    </message>
+    <message>
+        <source>Size :</source>
+        <translation type="Taille :"></translation>
+    </message>
 </context>
 <context>
     <name>QFileExportViewController</name>
     <message>
         <source>Problem</source>
         <translation>Problème</translation>
+    </message>
+    <message>
+        <source>File path is empty</source>
+        <translation type="Le chemin du fichier est vide"></translation>
     </message>
 </context>
 <context>
@@ -136,6 +152,10 @@
     <message>
         <source>Load</source>
         <translation>Charger</translation>
+    </message>
+    <message>
+        <source>Copy Value</source>
+        <translation type="Copier la valeur"></translation>
     </message>
 </context>
 <context>
@@ -171,6 +191,10 @@
     <message>
         <source>Error while creating the structure of the file</source>
         <translation>Erreur à la création de la structure du fichier</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="Type"></translation>
     </message>
 </context>
 <context>
@@ -421,6 +445,10 @@
     <message>
         <source>&amp;Go to</source>
         <translation>&amp;Aller à</translation>
+    </message>
+    <message>
+        <source>&amp;Undo</source>
+        <translation type="&amp;Annuler"></translation>
     </message>
 </context>
 <context>
