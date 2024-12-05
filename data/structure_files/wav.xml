@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure_file version="1" endianness="little-endian">
+
+  <complex_type name="WAVEFORMATEX16">
+    <field name="wFormatTag" type="uint16" />
+    <field name="nChannels" type="uint16" />
+    <field name="nSamplesPerSec" type="uint32" />
+    <field name="nAvgBytesPerSec" type="uint32" />
+    <field name="nBlockAlign" type="uint16" />
+    <field name="wBitsPerSample" type="uint16" />
+  </complex_type>
+
+  <complex_type name="WAVEFORMATEX18">
+    <field name="wFormatTag" type="uint16" />
+    <field name="nChannels" type="uint16" />
+    <field name="nSamplesPerSec" type="uint32" />
+    <field name="nAvgBytesPerSec" type="uint32" />
+    <field name="nBlockAlign" type="uint16" />
+    <field name="wBitsPerSample" type="uint16" />
+    <field name="cbSize" type="uint16" />
+  </complex_type>
+
+  <complex_type name="WAVEFORMATEX40">
+    <field name="wFormatTag" type="uint16" />
+    <field name="nChannels" type="uint16" />
+    <field name="nSamplesPerSec" type="uint32" />
+    <field name="nAvgBytesPerSec" type="uint32" />
+    <field name="nBlockAlign" type="uint16" />
+    <field name="wBitsPerSample" type="uint16" />
+    <field name="cbSize" type="uint16" />
+  </complex_type>
+
+
+  <!-- DEFINE THE SUBCHUNK LIST TYPE -->
+  <complex_type name="CHUNK" >
+    <field name="ckID" type="string" size="4" />
+    <field name="ckSize" type="uint32" />
+
+    <!-- fmt -->
+    <condition expr="'${ckID}' == 'fmt '">
+      <condition expr="${ckSize} == 16">
+        <field name="WAVEFORMAT" type="WAVEFORMATEX16" size="${ckSize}" />
+      </condition>
+      <condition expr="${ckSize} == 18">
+        <field name="WAVEFORMAT" type="WAVEFORMATEX18" size="${ckSize}" />
+      </condition>
+      <condition expr="${ckSize} == 40">
+        <field name="WAVEFORMAT" type="WAVEFORMATEX40" size="${ckSize}" />
+      </condition>
+    </condition>
+
+    <!-- fmt -->
+    <condition expr="'${ckID}' == 'fact'">
+      <field name="dwSampleLength" type="uint32" />
+    </condition>
+
+    <!-- data -->
+    <condition expr="'${ckID}' == 'data'">
+      <field name="ckData" type="bytes" size="${ckSize}" />
+      <field name="ckPadByte" type="bytes" size="${ckSize} % 2" />
+    </condition>
+
+    <condition expr="['fmt ', 'fact', 'data'].indexOf('${ckID}') == -1">
+      <field name="ckData" type="bytes" size="${ckSize}" />
+    </condition>
+
+  </complex_type>
+
+  <!-- DEFINE THE ATOMIC LIST TYPE -->
+  <complex_type name="RIFF-CHUNK" >
+    <field name="ckID" type="string" size="4" />
+    <field name="ckSize" type="uint32" />
+    <field name="dwFourCC" type="string" size="4" />
+
+    <list name="CHUNKS" mode="bytes" size="${ckSize}-4" display="flat" >
+      <field name="subchunk" type="CHUNK" display="flat" />
+    </list>
+
+  </complex_type>
+
+  <root>
+    <field name="RIFF-WAVE" type="RIFF-CHUNK" />
+  </root>
+
+</structure_file>
