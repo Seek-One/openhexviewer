@@ -78,7 +78,7 @@ QBytesView::QBytesView(QWidget* pParent)
 				QVariant data = model->index(index.row(), 2, index.parent()).data(Qt::DisplayRole).toString();
 				if (!((data.toString()).isEmpty())) {
 					QMenu contextMenu;
-					QAction *copyAction = contextMenu.addAction(tr("Copy Value"));
+					QAction *copyAction = contextMenu.addAction(tr("Copy value"));
 					
 					QAction *selectedAction = contextMenu.exec(m_pTableView->mapToGlobal(pos));
 					if (selectedAction == copyAction) {

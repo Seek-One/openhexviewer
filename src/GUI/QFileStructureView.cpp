@@ -61,7 +61,7 @@ QFileStructureView::QFileStructureView(QWidget* pParent)
 				QVariant data = model->index(index.row(), 4, index.parent()).data(Qt::DisplayRole).toString();
 				if (!((data.toString()).isEmpty())) {
 					QMenu contextMenu;
-					QAction *copyAction = contextMenu.addAction(tr("Copy Value"));
+					QAction *copyAction = contextMenu.addAction(tr("Copy value"));
 					
 					QAction *selectedAction = contextMenu.exec(m_pTreeView->mapToGlobal(pos));
 					if (selectedAction == copyAction) {
