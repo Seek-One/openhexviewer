@@ -302,7 +302,7 @@ IF(WIN32)
 endif(WIN32)
 
 # Install degfault structure files
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/data/structure_files DESTINATION ${INSTALL_PATH_SHARE}/structure_files)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/data/structure_files DESTINATION ${INSTALL_PATH_SHARE})
 
 ####################
 # RPATH
