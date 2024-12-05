@@ -74,8 +74,8 @@
         <translation>Binaire</translation>
     </message>
     <message>
-        <source>Copy Value</source>
-        <translation type="Copier la valeur"></translation>
+        <source>Copy value</source>
+        <translation>Copier la valeur</translation>
     </message>
 </context>
 <context>
@@ -121,11 +121,11 @@
     </message>
     <message>
         <source>Size</source>
-        <translation type="Taile">Taille</translation>
+        <translation>Taille</translation>
     </message>
     <message>
         <source>Size :</source>
-        <translation type="Taille :"></translation>
+        <translation>Taille :</translation>
     </message>
 </context>
 <context>
@@ -136,7 +136,7 @@
     </message>
     <message>
         <source>File path is empty</source>
-        <translation type="Le chemin du fichier est vide"></translation>
+        <translation>Le chemin du fichier est vide</translation>
     </message>
 </context>
 <context>
@@ -154,8 +154,8 @@
         <translation>Charger</translation>
     </message>
     <message>
-        <source>Copy Value</source>
-        <translation type="Copier la valeur"></translation>
+        <source>Copy value</source>
+        <translation>Copier la valeur</translation>
     </message>
 </context>
 <context>
@@ -194,7 +194,19 @@
     </message>
     <message>
         <source>Type</source>
-        <translation type="Type"></translation>
+        <translation>Type</translation>
+    </message>
+    <message>
+        <source>System</source>
+        <translation>Système</translation>
+    </message>
+    <message>
+        <source>Development</source>
+        <translation>Développement</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>Utilisateur</translation>
     </message>
 </context>
 <context>
@@ -448,7 +460,7 @@
     </message>
     <message>
         <source>&amp;Undo</source>
-        <translation type="&amp;Annuler"></translation>
+        <translation>&amp;Annuler</translation>
     </message>
 </context>
 <context>

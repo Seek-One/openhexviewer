@@ -113,12 +113,23 @@ void QFileStructureViewController::reloadStructureFiles()
 	QComboBox* pComboBox = m_pFileStructureView->getStructureFileComboBox();
 	pComboBox->clear();
 
+	// Load from application directory
+	QDir dir;
+#if defined(WIN32)
+	dir.setPath(QCoreApplication::applicationDirPath() + "/structure_files");
+#elif defined(APPLE)
+	dir.setPath(QCoreApplication::applicationDirPath() + "/../Resources/structure_files");
+#else
+	dir.setPath(QCoreApplication::applicationDirPath() + "/../share/" + APPLICATION_PACKAGE_NAME + "/structure_files");
+#endif
+	loadStructureFileList(tr("System"), dir.path());
+
 	// Load from debug dir
 	QString szFilePath = "./data/structure_files";
-	loadStructureFileList(szFilePath);
+	loadStructureFileList(tr("Development"), szFilePath);
 
 	// Load from user config dir
-	QDir dir = QDir::home();
+	dir = QDir::home();
 #ifdef UNIX
 	dir.setPath(dir.filePath(".config"));
 	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
@@ -127,10 +138,10 @@ void QFileStructureViewController::reloadStructureFiles()
 	dir.setPath(dir.filePath(APPLICATION_PACKAGE_NAME));
 	dir.setPath(dir.filePath("structure_files"));
 #endif
-	loadStructureFileList(dir.path());
+	loadStructureFileList(tr("User"), dir.path());
 }
 
-void QFileStructureViewController::loadStructureFileList(const QString& szDirPath)
+void QFileStructureViewController::loadStructureFileList(const QString& szOrigin, const QString& szDirPath)
 {
 	qDebug("[GUI] Loading structure files from: %s", qPrintable(szDirPath));
 
@@ -145,8 +156,9 @@ void QFileStructureViewController::loadStructureFileList(const QString& szDirPat
 	QStringList::const_iterator iter;
 	for(iter = entryList.constBegin(); iter != entryList.constEnd(); ++iter)
 	{
+		QString szText = *iter + " (" + szOrigin + ")";
 		QString szFilePath = dir.filePath(*iter);
-		pComboBox->addItem(*iter, szFilePath);
+		pComboBox->addItem(szText, szFilePath);
 	}
 }
 

@@ -56,7 +56,7 @@ private slots:
 	void reloadStructureFiles();
 
 private:
-	void loadStructureFileList(const QString& szDirPath);
+	void loadStructureFileList(const QString& szOrigin, const QString& szDirPath);
 
 	bool readFileWithStructure(const QString& szFilePath, const FileStructure& loadedFileStructure);
 
