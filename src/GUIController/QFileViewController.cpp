@@ -92,9 +92,15 @@ bool QFileViewController::openFile(const QString& szFilePath)
 		closeFile();
 	}
 
+	QString szWindowTitle = QCoreApplication::applicationName();
+
 	m_file.setFileName(szFilePath);
 	bRes = m_file.open(QIODevice::ReadOnly);
 	if(bRes){
+		szWindowTitle = QString("%0 - %1");
+		szWindowTitle = szWindowTitle.arg(QCoreApplication::applicationName());
+		szWindowTitle = szWindowTitle.arg(szFilePath);
+
 		m_bIsFileOpen = true;
 		m_iFileSize = m_file.size();
 
@@ -106,6 +112,8 @@ bool QFileViewController::openFile(const QString& szFilePath)
 	}else{
 		qWarning("[File] Unable to open file: %s", qPrintable(szFilePath));
 	}
+
+	m_pFileView->window()->setWindowTitle(szWindowTitle);
 
 	return bRes;
 }
