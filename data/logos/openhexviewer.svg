@@ -29,8 +29,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="499.01535"
-     inkscape:cy="243.44676"
+     inkscape:cx="-77.276669"
+     inkscape:cy="351.53308"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -60,35 +60,36 @@
      id="layer1"
      transform="translate(0,-161.53336)">
     <rect
-       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:10.19583225;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:100;stroke-opacity:1"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#e04006;stroke-width:11.5493;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:6.4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect5036"
-       width="109.39583"
-       height="109.39583"
-       x="13.035417"
-       y="174.56876" />
+       width="123.9174"
+       height="123.9174"
+       x="5.7746348"
+       y="167.30807"
+       ry="21.292871" />
     <g
        aria-label="00 FF"
-       transform="matrix(0.33551856,0,0,0.26783361,-18.492538,164.16193)"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.66667175px;line-height:79.00000215%;font-family:Androgyne;-inkscape-font-specification:Androgyne;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="matrix(0.38005642,0,0,0.30338675,-29.938455,155.51966)"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.667px;line-height:79%;font-family:Androgyne;-inkscape-font-specification:Androgyne;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#e04006;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="flowRoot5038">
       <path
          d="m 197.56575,109.48277 q -14.21875,0 -21.41927,14.03646 -7.10937,13.94531 -7.10937,42.01823 0,27.98177 7.10937,42.01823 7.20052,13.94531 21.41927,13.94531 14.3099,0 21.41928,-13.94531 7.20052,-14.03646 7.20052,-42.01823 0,-28.07292 -7.20052,-42.01823 -7.10938,-14.03646 -21.41928,-14.03646 z m 0,-14.583334 q 22.87761,0 34.90886,18.138024 12.12239,18.04687 12.12239,52.5 0,34.36198 -12.12239,52.5 -12.03125,18.04688 -34.90886,18.04688 -22.8776,0 -35,-18.04688 -12.03125,-18.13802 -12.03125,-52.5 0,-34.45313 12.03125,-52.5 12.1224,-18.138024 35,-18.138024 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.66667175px;line-height:79.00000215%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.667px;line-height:79%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#e04006;fill-opacity:1"
          id="path5075"
          inkscape:connector-curvature="0" />
       <path
          d="m 316.41993,109.48277 q -14.21876,0 -21.41928,14.03646 -7.10937,13.94531 -7.10937,42.01823 0,27.98177 7.10937,42.01823 7.20052,13.94531 21.41928,13.94531 14.30989,0 21.41927,-13.94531 7.20052,-14.03646 7.20052,-42.01823 0,-28.07292 -7.20052,-42.01823 -7.10938,-14.03646 -21.41927,-14.03646 z m 0,-14.583334 q 22.8776,0 34.90885,18.138024 12.1224,18.04687 12.1224,52.5 0,34.36198 -12.1224,52.5 -12.03125,18.04688 -34.90885,18.04688 -22.87761,0 -35.00001,-18.04688 -12.03125,-18.13802 -12.03125,-52.5 0,-34.45313 12.03125,-52.5 12.1224,-18.138024 35.00001,-18.138024 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.66667175px;line-height:79.00000215%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.667px;line-height:79%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#e04006;fill-opacity:1"
          id="path5077"
          inkscape:connector-curvature="0" />
       <path
          d="m 167.85221,255.17806 h 78.20313 v 15.49479 h -59.79167 v 40.10417 H 240.222 v 15.49479 h -53.95833 v 64.98698 h -18.41146 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.66667175px;line-height:79.00000215%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.667px;line-height:79%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#e04006;fill-opacity:1"
          id="path5079"
          inkscape:connector-curvature="0" />
       <path
          d="m 275.4043,255.17806 h 78.20312 v 15.49479 h -59.79166 v 40.10417 h 53.95833 v 15.49479 h -53.95833 v 64.98698 H 275.4043 Z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.66667175px;line-height:79.00000215%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:186.667px;line-height:79%;font-family:LKLUG;-inkscape-font-specification:LKLUG;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#e04006;fill-opacity:1"
          id="path5081"
          inkscape:connector-curvature="0" />
     </g>
