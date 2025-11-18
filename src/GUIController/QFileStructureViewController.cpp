@@ -909,6 +909,11 @@ bool QFileStructureViewController::prepareExpr(const QString& szExpression, cons
 
 	szNewExpression = szNewExpression.replace("AND", "&&");
 	szNewExpression = szNewExpression.replace("OR", "||");
+	szNewExpression = szNewExpression.replace("NOT", "!");
+	szNewExpression = szNewExpression.replace("LT", "<");
+	szNewExpression = szNewExpression.replace("LE", "<=");
+	szNewExpression = szNewExpression.replace("GT", ">");
+	szNewExpression = szNewExpression.replace("GE", ">=");
 
 	return bRes;
 }
