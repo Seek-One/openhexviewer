@@ -96,6 +96,8 @@ public:
 	SizeMode m_iSizeMode;
 	qint64 m_iSize; // Size in bytes
 
+	QString m_szValue;
+
 	SeekMode m_iSeekMode;
 
 	FileStructureComplexTypeSharedPtr m_pComplexType;

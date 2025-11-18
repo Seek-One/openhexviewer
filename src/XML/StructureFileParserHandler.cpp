@@ -112,6 +112,7 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 				QString szName = attributes.value("name").toString();
 				QString szType = attributes.value("type").toString();
 				QString szSize = attributes.value("size").toString();
+				QString szValue = attributes.value("value").toString();
 				QString szDisplay = attributes.value("display").toString();
 				QString szEndianness = attributes.value("endianness").toString();
 				FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
@@ -146,6 +147,8 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 				if(szDisplay == "flat"){
 					pItem->m_iFlags |= FileStructureItem::DisplayFlat;
 				}
+				// value
+				pItem->m_szValue = szValue;
 
 				appendFileStructureItem(pItem, false);
 			}

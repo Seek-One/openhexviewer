@@ -585,18 +585,23 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT8:
 	{
-		qint8 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
+		if (pItem->m_szValue.isEmpty()) {
+			qint8 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+				case Endianness::BigEndian:
 #if QT_VERSION_MAJOR >= 5
-			entryParams.szValue = QString::number(qFromBigEndian<qint8>(i));
+					entryParams.szValue = QString::number(qFromBigEndian<qint8>(i));
 #else
-			entryParams.szValue = QString::number(i);
+					entryParams.szValue = QString::number(i);
 #endif
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+					break;
+				default:
+					entryParams.szValue = QString::number(i);
+					break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -606,18 +611,23 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::UINT8:
 	{
-		quint8 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-#if QT_VERSION_MAJOR >= 5
-			entryParams.szValue = QString::number(qFromBigEndian<quint8>(i));
-#else
-			entryParams.szValue = QString::number(i);
-#endif
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			quint8 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+	#if QT_VERSION_MAJOR >= 5
+				entryParams.szValue = QString::number(qFromBigEndian<quint8>(i));
+	#else
+				entryParams.szValue = QString::number(i);
+	#endif
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -627,14 +637,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT16:
 	{
-		qint16 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-			entryParams.szValue = QString::number(qFromBigEndian<qint16>(i));
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			qint16 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+				entryParams.szValue = QString::number(qFromBigEndian<qint16>(i));
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -644,18 +659,23 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::UINT16:
 	{
-		quint16 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-#if QT_VERSION_MAJOR >= 5
-			entryParams.szValue = QString::number(qFromBigEndian<quint16>(i));
-#else
-			entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i));
-#endif
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			quint16 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+	#if QT_VERSION_MAJOR >= 5
+				entryParams.szValue = QString::number(qFromBigEndian<quint16>(i));
+	#else
+				entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i));
+	#endif
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -665,14 +685,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT32:
 	{
-		qint32 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-			entryParams.szValue = QString::number(qFromBigEndian<qint32>(i));
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			qint32 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+				entryParams.szValue = QString::number(qFromBigEndian<qint32>(i));
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -687,16 +712,21 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		traceInfos(pItem->m_type, pItem->m_szName, QString("value:%0").arg(i));
 
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-#if QT_VERSION_MAJOR >= 5
-			entryParams.szValue = QString::number(qFromBigEndian<quint32>(i));
-#else
-			entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i));
-#endif
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+	#if QT_VERSION_MAJOR >= 5
+				entryParams.szValue = QString::number(qFromBigEndian<quint32>(i));
+	#else
+				entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i));
+	#endif
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -706,14 +736,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT64:
 	{
-		qint64 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-			entryParams.szValue = QString::number(qFromBigEndian<qint64>(i));
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			qint64 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+				entryParams.szValue = QString::number(qFromBigEndian<qint64>(i));
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -723,18 +758,23 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	break;
 	case FileStructureItem::UINT64:
 	{
-		quint64 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-		switch(iEndiannessMode){
-		case Endianness::BigEndian:
-#if QT_VERSION_MAJOR >= 5
-			entryParams.szValue = QString::number(qFromBigEndian<quint64>(i));
-#else
-			entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i));
-#endif
-			break;
-		default:
-			entryParams.szValue = QString::number(i); break;
+		if (pItem->m_szValue.isEmpty()) {
+			quint64 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+			switch(iEndiannessMode){
+			case Endianness::BigEndian:
+	#if QT_VERSION_MAJOR >= 5
+				entryParams.szValue = QString::number(qFromBigEndian<quint64>(i));
+	#else
+				entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i));
+	#endif
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
+			}
+		}else {
+			entryParams.szValue = pItem->m_szValue;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -756,15 +796,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::STRING:
 	{
-        if(iSizeExpr > 0){
-		    char* szString = new char[iSizeExpr+1];
-		    bRes = fileToRead.read((char*)szString, iSizeExpr);
-		    szString[iSizeExpr] = '\0';
-		    entryParams.szValue = szString;
-		    delete[] szString;
-        }else{
-		    entryParams.szValue = "";
-        }
+		if (pItem->m_szValue.isEmpty()) {
+	        if(iSizeExpr > 0){
+			    char* szString = new char[iSizeExpr+1];
+			    bRes = fileToRead.read((char*)szString, iSizeExpr);
+			    szString[iSizeExpr] = '\0';
+			    entryParams.szValue = szString;
+			    delete[] szString;
+	        }else{
+			    entryParams.szValue = "";
+	        }
+		}else {
+			entryParams.szValue = pItem->m_szValue;
+		}
 
         traceInfos(pItem->m_type, pItem->m_szName, QString("size:%0 bytes, value: %1").arg(iSizeExpr).arg(entryParams.szValue));
 
