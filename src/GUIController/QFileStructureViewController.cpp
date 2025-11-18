@@ -707,12 +707,12 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::UINT32:
 	{
-		quint32 i;
-		bRes = fileToRead.read((char*)&i, sizeof(i));
-
-		traceInfos(pItem->m_type, pItem->m_szName, QString("value:%0").arg(i));
-
 		if (pItem->m_szValue.isEmpty()) {
+			quint32 i;
+			bRes = fileToRead.read((char*)&i, sizeof(i));
+
+			traceInfos(pItem->m_type, pItem->m_szName, QString("value:%0").arg(i));
+
 			switch(iEndiannessMode){
 			case Endianness::BigEndian:
 	#if QT_VERSION_MAJOR >= 5

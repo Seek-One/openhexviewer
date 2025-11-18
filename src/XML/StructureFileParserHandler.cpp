@@ -126,7 +126,7 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 						bRes = false;
 					}
 				}else{
-					qint64 iSize = FileStructureItem::getBasicItemTypeSize(iType);
+					qint64 iSize = (szValue.isEmpty() ? FileStructureItem::getBasicItemTypeSize(iType) : 0);
 					pItem = FileStructureItem::createFIELD(szName, iType, iSize);
 					pItem->m_szExpr = szSize;
 				}
