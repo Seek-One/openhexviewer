@@ -53,6 +53,8 @@
 
 #include "QFileStructureViewController.h"
 
+#define ENABLE_TRACE
+
 class EntryParams
 {
 public:
@@ -585,23 +587,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT8:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			qint8 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-				case Endianness::BigEndian:
+		qint8 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+			case Endianness::BigEndian:
 #if QT_VERSION_MAJOR >= 5
-					entryParams.szValue = QString::number(qFromBigEndian<qint8>(i));
+				entryParams.szValue = QString::number(qFromBigEndian<qint8>(i));
 #else
-					entryParams.szValue = QString::number(i);
+				entryParams.szValue = QString::number(i);
 #endif
-					break;
-				default:
-					entryParams.szValue = QString::number(i);
-					break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+				break;
+			default:
+				entryParams.szValue = QString::number(i);
+				break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -611,23 +609,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::UINT8:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			quint8 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-	#if QT_VERSION_MAJOR >= 5
-				entryParams.szValue = QString::number(qFromBigEndian<quint8>(i));
-	#else
-				entryParams.szValue = QString::number(i);
-	#endif
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		quint8 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
+			entryParams.szValue = QString::number(qFromBigEndian<quint8>(i));
+#else
+			entryParams.szValue = QString::number(i);
+#endif
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -637,19 +631,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT16:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			qint16 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-				entryParams.szValue = QString::number(qFromBigEndian<qint16>(i));
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		qint16 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+			entryParams.szValue = QString::number(qFromBigEndian<qint16>(i));
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -659,23 +649,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::UINT16:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			quint16 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-	#if QT_VERSION_MAJOR >= 5
-				entryParams.szValue = QString::number(qFromBigEndian<quint16>(i));
-	#else
-				entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i));
-	#endif
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		quint16 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
+			entryParams.szValue = QString::number(qFromBigEndian<quint16>(i));
+#else
+			entryParams.szValue = QString::number((quint16)qFromBigEndian<qint16>((qint16)i));
+#endif
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -685,19 +671,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT32:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			qint32 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-				entryParams.szValue = QString::number(qFromBigEndian<qint32>(i));
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		qint32 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+			entryParams.szValue = QString::number(qFromBigEndian<qint32>(i));
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -707,26 +689,22 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::UINT32:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			quint32 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
+		quint32 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
 
-			traceInfos(pItem->m_type, pItem->m_szName, QString("value:%0").arg(i));
+		traceInfos(pItem->m_type, pItem->m_szName, QString("value:%0").arg(i));
 
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-	#if QT_VERSION_MAJOR >= 5
-				entryParams.szValue = QString::number(qFromBigEndian<quint32>(i));
-	#else
-				entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i));
-	#endif
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
+			entryParams.szValue = QString::number(qFromBigEndian<quint32>(i));
+#else
+			entryParams.szValue = QString::number((quint32)qFromBigEndian<qint32>((qint32)i));
+#endif
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -736,19 +714,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::INT64:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			qint64 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-				entryParams.szValue = QString::number(qFromBigEndian<qint64>(i));
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		qint64 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+			entryParams.szValue = QString::number(qFromBigEndian<qint64>(i));
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -758,23 +732,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 	break;
 	case FileStructureItem::UINT64:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-			quint64 i;
-			bRes = fileToRead.read((char*)&i, sizeof(i));
-			switch(iEndiannessMode){
-			case Endianness::BigEndian:
-	#if QT_VERSION_MAJOR >= 5
-				entryParams.szValue = QString::number(qFromBigEndian<quint64>(i));
-	#else
-				entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i));
-	#endif
-				break;
-			default:
-				entryParams.szValue = QString::number(i);
-				break;
-			}
-		}else {
-			entryParams.szValue = pItem->m_szValue;
+		quint64 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
+			entryParams.szValue = QString::number(qFromBigEndian<quint64>(i));
+#else
+			entryParams.szValue = QString::number((quint64)qFromBigEndian<qint64>((qint64)i));
+#endif
+			break;
+		default:
+			entryParams.szValue = QString::number(i);
+			break;
 		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
@@ -796,19 +766,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		break;
 	case FileStructureItem::STRING:
 	{
-		if (pItem->m_szValue.isEmpty()) {
-	        if(iSizeExpr > 0){
-			    char* szString = new char[iSizeExpr+1];
-			    bRes = fileToRead.read((char*)szString, iSizeExpr);
-			    szString[iSizeExpr] = '\0';
-			    entryParams.szValue = szString;
-			    delete[] szString;
-	        }else{
-			    entryParams.szValue = "";
-	        }
-		}else {
-			entryParams.szValue = pItem->m_szValue;
-		}
+        if(iSizeExpr > 0){
+		    char* szString = new char[iSizeExpr+1];
+		    bRes = fileToRead.read((char*)szString, iSizeExpr);
+		    szString[iSizeExpr] = '\0';
+		    entryParams.szValue = szString;
+		    delete[] szString;
+        }else{
+		    entryParams.szValue = "";
+        }
 
         traceInfos(pItem->m_type, pItem->m_szName, QString("size:%0 bytes, value: %1").arg(iSizeExpr).arg(entryParams.szValue));
 
@@ -816,6 +782,21 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		if(bIsVisible){
 			appendEntry(entryParams, pParentItem, entryContext);
 		}
+	}
+		break;
+	case FileStructureItem::VARIABLE:
+	{
+		QString szValue;
+		bRes = prepareExpr(pItem->m_szValue, dict, szTmp);
+		if (FileStructureItem::isValueTypeInteger(pItem->m_szValueType)){
+			auto iValue = evaluateIntExpr(szTmp);
+			szValue = QString::number(iValue);
+		}else {
+			szValue = pItem->m_szValue;
+		}
+		entryParams.szValue = szValue;
+		traceInfos(pItem->m_type, pItem->m_szName, QString("value: %1").arg(entryParams.szValue));
+		appendDict(dict, entryParams.szName, entryParams.szValue);
 	}
 		break;
 	default:
@@ -1009,13 +990,13 @@ void QFileStructureViewController::traceBegin(FileStructureItem::ItemType iItemT
 	QString szPad = QString("%0").arg(" ", (m_iTraceLevel*2)+1);
 	QString szItemType = FileStructureItem::getTypeString(iItemType).toUpper();
 
-	if(false){
+#ifdef ENABLE_TRACE
 		if(szName.isEmpty()){
 			qDebug("%03d: %s %s [offset:%lu] {",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), (unsigned long)file.pos());
 		}else{
 			qDebug("%03d: %s %s [name:%s, offset:%lu] {",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), qPrintable(szName), (unsigned long)file.pos());
 		}
-	}
+#endif
 
 	m_iTraceLevel++;
 }
@@ -1027,14 +1008,14 @@ void QFileStructureViewController::traceEnd(FileStructureItem::ItemType iItemTyp
 	QString szPad = QString("%0").arg(" ", (m_iTraceLevel*2)+1);
 	QString szItemType = FileStructureItem::getTypeString(iItemType).toUpper();
 
-	if(false){
-		qDebug("%03d: %s } // %s",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType));
-		if(szName.isEmpty()){
-			//qDebug("%s END: %s offset %lld", qPrintable(szPad), qPrintable(szItemType), (long long int)file.pos());
-		}else{
-			//qDebug("%s END: %s %s offset %lld", qPrintable(szPad), qPrintable(szItemType), qPrintable(szName), (long long int)file.pos());
-		}
+#ifdef ENABLE_TRACE
+	qDebug("%03d: %s } // %s",  m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType));
+	if(szName.isEmpty()){
+		qDebug("%03d: %s END: %s offset %lld", m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), (long long int)file.pos());
+	}else{
+		qDebug("%03d: %s END: %s %s offset %lld", m_iTraceLevel, qPrintable(szPad), qPrintable(szItemType), qPrintable(szName), (long long int)file.pos());
 	}
+#endif
 }
 
 void QFileStructureViewController::traceInfos(FileStructureItem::ItemType iItemType, const QString& szName, const QString& szMessage)
@@ -1042,7 +1023,7 @@ void QFileStructureViewController::traceInfos(FileStructureItem::ItemType iItemT
 	QString szPad = QString("%0").arg(" ", (m_iTraceLevel*2)+1);
 	QString szItemType = FileStructureItem::getTypeString(iItemType).toUpper();
 
-	if(false){
+#ifdef ENABLE_TRACE
 		qDebug("%03d: %s [%s]", m_iTraceLevel, qPrintable(szPad), qPrintable(szMessage));
-	}
+#endif
 }

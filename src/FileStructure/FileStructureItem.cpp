@@ -72,6 +72,15 @@ FileStructureItemSharedPtr FileStructureItem::createCOMPLEXTYPE(const QString& s
 	return pItem;
 }
 
+FileStructureItemSharedPtr FileStructureItem::createVARIABLE(const QString& szName)
+{
+	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
+	pItem->m_szName = szName;
+	pItem->m_type = VARIABLE;
+	pItem->m_iSize = -1;
+	return pItem;
+}
+
 FileStructureItemSharedPtr FileStructureItem::createBLOCK(const QString& szName)
 {
 	FileStructureItemSharedPtr pItem = FileStructureItemSharedPtr(new FileStructureItem());
@@ -147,6 +156,7 @@ QString FileStructureItem::getTypeString(FileStructureItem::ItemType type)
 	case UINT64: return "uint64";
 	case BYTES: return "bytes";
 	case STRING: return "string";
+	case VARIABLE: return "variable";
 	case FIELDCOMPLEXTYPE: return "field_complex_type";
 	case COMPLEXTYPE: return "complex_type";
 	case LIST: return "list";
@@ -158,4 +168,34 @@ QString FileStructureItem::getTypeString(FileStructureItem::ItemType type)
 		break;
 	}
 	return "";
+}
+
+
+bool FileStructureItem::isValueTypeInteger(const QString& szType)
+{
+	if(szType == "int8"){
+		return true;
+	}
+	if(szType == "uint8"){
+		return true;
+	}
+	if(szType == "int16"){
+		return true;
+	}
+	if(szType == "uint16"){
+		return true;
+	}
+	if(szType == "int32"){
+		return true;
+	}
+	if(szType == "uint32"){
+		return true;
+	}
+	if(szType == "int64"){
+		return true;
+	}
+	if(szType == "uint64"){
+		return true;
+	}
+	return false;
 }

@@ -31,6 +31,8 @@ public:
 		// Bytes type
 		BYTES,
 		STRING,
+		// Variable
+		VARIABLE,
 		// Complex type
 		FIELDCOMPLEXTYPE,
 		COMPLEXTYPE,
@@ -78,6 +80,7 @@ public:
 	static FileStructureItemSharedPtr createFIELD(const QString& szName, ItemType type, qint64 iSize);
 	static FileStructureItemSharedPtr createFIELD_COMPLEXTYPE(const QString& szName, const FileStructureComplexTypeSharedPtr& pComplexType);
 	static FileStructureItemSharedPtr createCOMPLEXTYPE(const QString& szName);
+	static FileStructureItemSharedPtr createVARIABLE(const QString& szName);
 	static FileStructureItemSharedPtr createBLOCK(const QString& szName);
 	static FileStructureItemSharedPtr createLIST(const QString& szName);
 	static FileStructureItemSharedPtr createLIST_ITEM_INFOS(const QString& szName);
@@ -89,6 +92,8 @@ public:
 	QString getTypeString() const;
 	static QString getTypeString(FileStructureItem::ItemType type);
 
+	static bool isValueTypeInteger(const QString& szType);
+
 public:
 	QString m_szName;
 	ItemType m_type;
@@ -96,6 +101,7 @@ public:
 	SizeMode m_iSizeMode;
 	qint64 m_iSize; // Size in bytes
 
+	QString m_szValueType;
 	QString m_szValue;
 
 	SeekMode m_iSeekMode;
