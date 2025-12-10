@@ -16,6 +16,7 @@ FileStructureItem::FileStructureItem()
 	m_iSeekMode = SeekModeNone;
 	m_iSize = -1;
 	m_iFlags = 0;
+	m_szOffsetExpr = "";
 }
 
 FileStructureItem::~FileStructureItem()
@@ -156,6 +157,7 @@ QString FileStructureItem::getTypeString(FileStructureItem::ItemType type)
 	case UINT64: return "uint64";
 	case BYTES: return "bytes";
 	case STRING: return "string";
+	case BITS: return "bits";
 	case VARIABLE: return "variable";
 	case FIELDCOMPLEXTYPE: return "field_complex_type";
 	case COMPLEXTYPE: return "complex_type";

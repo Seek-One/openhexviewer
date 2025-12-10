@@ -31,6 +31,8 @@ public:
 		// Bytes type
 		BYTES,
 		STRING,
+		// Bits
+		BITS,
 		// Variable
 		VARIABLE,
 		// Complex type
@@ -107,6 +109,9 @@ public:
 	SeekMode m_iSeekMode;
 
 	FileStructureComplexTypeSharedPtr m_pComplexType;
+
+	// For bits reading
+	QString m_szOffsetExpr;
 
 	int m_iFlags;
 

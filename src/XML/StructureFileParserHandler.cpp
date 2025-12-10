@@ -57,6 +57,9 @@ FileStructureItem::ItemType StructureFileParserHandler::getFileStructureItemType
 		if(szType == "string"){
 			return FileStructureItem::STRING;
 		}
+		if(szType == "bits"){
+			return FileStructureItem::BITS;
+		}
 		if(!szType.isEmpty()){
 			return FileStructureItem::COMPLEXTYPE;
 		}
@@ -112,6 +115,7 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 				QString szName = attributes.value("name").toString();
 				QString szType = attributes.value("type").toString();
 				QString szSize = attributes.value("size").toString();
+				QString szOffset = attributes.value("offset").toString();
 				QString szDisplay = attributes.value("display").toString();
 				QString szEndianness = attributes.value("endianness").toString();
 				FileStructureItem::ItemType iType = getFileStructureItemType(qName, szType);
@@ -129,6 +133,7 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 					pItem = FileStructureItem::createFIELD(szName, iType, iSize);
 					pItem->m_szExpr = szSize;
 				}
+				pItem->m_szOffsetExpr = szOffset;
 				// Define endianess
 				if(!szEndianness.isEmpty()){
 					if(szEndianness == "big-endian"){
@@ -162,7 +167,9 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 
 			if(qName == "block"){
 				QString szName = attributes.value("name").toString();
+				QString szValueType = attributes.value("type").toString();
 				pItem = FileStructureItem::createBLOCK(szName);
+				pItem->m_szValueType = szValueType;
 				appendFileStructureItem(pItem, true);
 			}
 

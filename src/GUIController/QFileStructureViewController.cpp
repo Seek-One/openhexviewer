@@ -79,11 +79,39 @@ enum COLUMN {
 	ColumnValue,
 };
 
+uint32_t extractBits(const char* data, qint64 iSize, qint64 iBitOffset, qint64 iNumBits)
+{
+	// Check parameters
+	if (data == nullptr || iSize == 0) {
+		return 0;
+	}
+	if (iBitOffset + iNumBits > iSize * 8) {
+		return 0;
+	}
+	if (iNumBits > 32) {
+		return 0;
+	}
+
+	uint32_t result = 0;
+	for (qint64 i = 0; i < iNumBits; ++i)
+	{
+		qint64 iByteIndex = (iBitOffset + i) / 8;
+		qint64 iBitInByte = (iBitOffset + i) % 8;
+
+		// Extract the bits
+		uint8_t iBitValue = (data[iByteIndex] >> (7 - iBitInByte)) & 0x01;
+		result = (result << 1) | iBitValue;
+	}
+	return result;
+}
+
+
 QFileStructureViewController::QFileStructureViewController(QFileStructureView* pFileStructureView)
 {
 	m_pFileStructureView = pFileStructureView;
 	m_iDefaultEndianness = Endianness::Auto;
 	m_iTraceLevel = 0;
+	m_offsetStartBitBlock = -1;
 
 	reloadStructureFiles();
 
@@ -301,6 +329,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 	QString szTmp;
 	qint64 iSizeExpr = -1;
+	qint64 iOffsetExpr = -1;
 
 	// Compute element size
 	QString szSizeText;
@@ -311,8 +340,22 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		iSizeExpr = evaluateIntExpr(szTmp);
 		szSizeText = QString::number(iSizeExpr);
 	}
+	// Compute element offset
+	if(!pItem->m_szOffsetExpr.isEmpty()){
+		bRes = prepareExpr(pItem->m_szOffsetExpr, dict, szTmp);
+		iOffsetExpr = evaluateIntExpr(szTmp);
+		if (pItem->m_type == FileStructureItem::BITS) {
+			szSizeText += " bits";
+		}
+	}
+
 	if(!bRes){
 		return false;
+	}
+
+	// If bit block reading reset position
+	if (m_offsetStartBitBlock >= 0) {
+		bRes = fileToRead.seek(m_offsetStartBitBlock);
 	}
 
 	qint64 iOffsetStart = fileToRead.pos();
@@ -434,11 +477,19 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		pBlockItem = entryContext.listColumns[0];
 
+		if(pItem->m_szValueType == "bits") {
+			m_offsetStartBitBlock = fileToRead.pos();
+		}
+
 		for(iter = pItem->m_listChildren.constBegin(); iter != pItem->m_listChildren.constEnd(); ++iter){
 			bRes = processFileStructureItem((*iter), fileToRead, dict, pBlockItem, bIsVisible);
 			if(!bRes){
 				break;
 			}
+		}
+
+		if(pItem->m_szValueType == "bits") {
+			m_offsetStartBitBlock = -1;
 		}
 
 		if(bRes){
@@ -452,7 +503,6 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iMaxSize = iSizeExpr;
 		qint64 iCount = 0;
 		qint64 iOffsetStartList = fileToRead.pos();
-
 
 		QStandardItem* pCurrentListItem;
 		qint64 iOffsetStartItem;
@@ -778,6 +828,31 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
         traceInfos(pItem->m_type, pItem->m_szName, QString("size:%0 bytes, value: %1").arg(iSizeExpr).arg(entryParams.szValue));
 
+		appendDict(dict, entryParams.szName, entryParams.szValue);
+		if(bIsVisible){
+			appendEntry(entryParams, pParentItem, entryContext);
+		}
+	}
+		break;
+	case FileStructureItem::BITS:
+	{
+		// For now support only bits reading on byte
+		quint8 i;
+		bRes = fileToRead.read((char*)&i, sizeof(i));
+		auto iValue = extractBits((const char*)&i, sizeof(i), iOffsetExpr, iSizeExpr);
+
+		switch(iEndiannessMode){
+		case Endianness::BigEndian:
+#if QT_VERSION_MAJOR >= 5
+			entryParams.szValue = QString::number(qFromBigEndian<quint32>(iValue));
+#else
+			entryParams.szValue = QString::number(iValue);
+#endif
+			break;
+		default:
+			entryParams.szValue = QString::number(iValue);
+			break;
+		}
 		appendDict(dict, entryParams.szName, entryParams.szValue);
 		if(bIsVisible){
 			appendEntry(entryParams, pParentItem, entryContext);

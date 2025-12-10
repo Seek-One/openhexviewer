@@ -82,6 +82,8 @@ private:
 	QFileStructureModel* m_pModel;
 	qint64 m_iFileSize;
 
+	qint64 m_offsetStartBitBlock;
+
 	int m_iTraceLevel;
 
 	void traceBegin(FileStructureItem::ItemType iItemType, const QString& szName, const QFile& file);
