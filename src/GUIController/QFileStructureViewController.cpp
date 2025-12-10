@@ -941,7 +941,13 @@ void QFileStructureViewController::entrySelected(const QModelIndex &current, con
 
 	siblingIndex = m_pModel->sibling(current.row(), ColumnSize, current);
 	pItem = m_pModel->itemFromIndex(siblingIndex);
-	iSize = pItem->text().toLongLong();
+	auto szSizeText = pItem->text();
+	if (szSizeText.endsWith("b")) {
+		auto iBitSize = szSizeText.left(szSizeText.size()-1).toLongLong();
+		iSize = (iBitSize / 8) + (iBitSize % 8 ? 1 : 0);
+	}else {
+		iSize = pItem->text().toLongLong();
+	}
 
 	siblingIndex = m_pModel->sibling(current.row(), ColumnOffset, current);
 	pItem = m_pModel->itemFromIndex(siblingIndex);
