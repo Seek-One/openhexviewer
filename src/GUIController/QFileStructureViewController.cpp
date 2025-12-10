@@ -472,10 +472,15 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		entryParams.szSize = "0";
 		if(bIsVisible){
-			appendEntry(entryParams, pParentItem, entryContext);
+			if(bIsFlat){
+				pBlockItem = pParentItem;
+			}else{
+				appendEntry(entryParams, pParentItem, entryContext);
+				pBlockItem = entryContext.listColumns[0];
+			}
+		}else {
+			pBlockItem = pParentItem;
 		}
-
-		pBlockItem = entryContext.listColumns[0];
 
 		if(pItem->m_szValueType == "bits") {
 			m_offsetStartBitBlock = fileToRead.pos();
@@ -494,7 +499,9 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		if(bRes){
 			iOffsetEnd = fileToRead.pos();
-			entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+			if(!bIsFlat) {
+				entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
+			}
 		}
 	}
 		break;

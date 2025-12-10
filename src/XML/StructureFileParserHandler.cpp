@@ -168,8 +168,16 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 			if(qName == "block"){
 				QString szName = attributes.value("name").toString();
 				QString szValueType = attributes.value("type").toString();
+				QString szDisplay = attributes.value("display").toString();
 				pItem = FileStructureItem::createBLOCK(szName);
 				pItem->m_szValueType = szValueType;
+				// Dispaly mode
+				if(szDisplay == "none"){
+					pItem->m_iFlags |= FileStructureItem::DisplayNone;
+				}
+				if(szDisplay == "flat"){
+					pItem->m_iFlags |= FileStructureItem::DisplayFlat;
+				}
 				appendFileStructureItem(pItem, true);
 			}
 
