@@ -345,7 +345,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		bRes = prepareExpr(pItem->m_szOffsetExpr, dict, szTmp);
 		iOffsetExpr = evaluateIntExpr(szTmp);
 		if (pItem->m_type == FileStructureItem::BITS) {
-			szSizeText += " bits";
+			szSizeText += "b";
 		}
 	}
 
