@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<structure_file version="1"  endianness="little-endian">
+
+  <complex_type name="DataSubBlocks" display="flat">
+    <field name="DataSubBlocksSize" type="uint8" />
+    <field name="DataSubBlocksValues" type="bytes" size="${DataSubBlocksSize}" />
+  </complex_type>
+
+  <complex_type name="GraphicControlExtension">
+    <field name="ExtensionIntroducer" type="uint8" />
+    <field name="GraphicControlLabel" type="uint8" />
+    <field name="BlockSize" type="uint8" />
+    <block type="bits" display="flat">
+      <field name="Reserved" type="bits" offset="0" size="3" />
+      <field name="DisposalMethod" type="bits" offset="3" size="3" />
+      <field name="UserInputFlag" type="bits" offset="6" size="1" />
+      <field name="TransparentColorFlag" type="bits" offset="7" size="1" />
+    </block>
+    <field name="DelayTime" type="uint16" />
+    <field name="TransparentColorIndex" type="uint8" />
+    <field name="BlockTerminator" type="uint8" />
+  </complex_type>
+
+  <complex_type name="ApplicationExtension">
+    <field name="ExtensionIntroducer" type="uint8" />
+    <field name="ExtensionLabel" type="uint8" />
+    <field name="BlockSize" type="uint8" />
+    <field name="ApplicationIdentifier" type="string" size="8" />
+    <field name="ApplAuthenticationCode" type="string" size="3" />
+    <field name="ApplicationData" type="DataSubBlocks" />
+    <field name="BlockTerminator" type="uint8" />
+  </complex_type>
+
+  <complex_type name="ImageDescriptor">
+    <field name="ImageSeparator" type="uint8" />
+    <field name="ImageLeftPosition" type="uint16" />
+    <field name="ImageTopPosition" type="uint16" />
+    <field name="ImageWidth" type="uint16" />
+    <field name="ImageHeight" type="uint16" />
+    <block type="bits" display="flat">
+      <field name="LocalColorTableFlag" type="bits" offset="0" size="1" />
+      <field name="InterlaceFlag" type="bits" offset="1" size="1" />
+      <field name="SortFlag" type="bits" offset="2" size="1" />
+      <field name="Reserved" type="bits" offset="3" size="2" />
+      <field name="SizeofLocalColorTable" type="bits" offset="5" size="3" />
+    </block>
+  </complex_type>
+
+  <!-- GIF Data Stream -->
+  <root>
+
+    <!-- Header -->
+    <block name="Header">
+      <field name="Signature" type="string" size="3" />
+      <field name="Version" type="string" size="3" />
+    </block>
+
+    <!-- Logical Screen -->
+    <block name="LogicalScreenDescriptor">
+      <field name="LogicalScreeWidth" type="uint16" />
+      <field name="LogicalScreeHeight" type="uint16" />
+      <block type="bits" display="flat">
+        <field name="GlobalColourTableFlag" type="bits" offset="0" size="1" />
+        <field name="ColorResolution" type="bits" offset="1" size="3" />
+        <field name="SortFlag" type="bits" offset="4" size="1" />
+        <field name="SizeofGlobalColorTable" type="bits" offset="5" size="3" />
+      </block>
+      <field name="BackgroundColourIndex" type="uint8" />
+      <field name="PixelAspectRatio" type="uint8" />
+    </block>
+    <condition expr="${GlobalColourTableFlag} == 1">
+      <list name="GlobalColourTable" mode="bytes" size="3*Math.pow(2, (${SizeofGlobalColorTable}+1))" >
+        <field name="Red" type="uint8" size="1" />
+        <field name="Green" type="uint8" size="1" />
+        <field name="Blue" type="uint8" size="1" />
+      </list>
+    </condition>
+
+    <!-- Data -->
+    <list name="DATA" display="flat" mode="condition" expr="${SepField} == 0x21 OR ${SepField} == 0x2C">
+      <field name="SepField" type="uint8" display="none" />
+
+      <condition expr="${SepField} == 0x21">
+
+        <field name="LabelField" type="uint8" display="none" />
+
+        <condition expr="${LabelField} == 0xF9">
+          <seek mode="backward" offset="2" />
+          <field name="GraphicControlExtension" type="GraphicControlExtension" />
+        </condition>
+
+        <condition expr="${LabelField} == 0xFE">
+          <seek mode="backward" offset="2" />
+          <field name="GraphicControlExtension" type="GraphicControlExtension" />
+        </condition>
+
+        <condition expr="${LabelField} == 0xFF">
+          <seek mode="backward" offset="2" />
+          <field name="ApplicationExtension" type="ApplicationExtension" />
+        </condition>
+      </condition>
+
+      <!-- Table-Based Image -->
+      <condition expr="${SepField} == 0x2C">
+        <seek mode="backward" offset="1" />
+
+        <!-- Image Descriptor -->
+        <field name="ImageDescriptor" type="ImageDescriptor" />
+
+        <!-- Local Color Table -->
+		<condition expr="${LocalColorTableFlag} == 1">
+		  <list name="LocalColorTable" mode="bytes" size="3*Math.pow(2, (${SizeofLocalColorTable}+1))" >
+		    <field name="Red" type="uint8" size="1" />
+		    <field name="Green" type="uint8" size="1" />
+		    <field name="Blue" type="uint8" size="1" />
+		  </list>
+		</condition>
+
+        <!-- Image Data -->
+        <field name="LZWMinimumCodeSize" type="uint8" size="1" />
+		<list name="ImageData" mode="condition" expr="${ImageDataBlocksSize} != 0" >
+          <field name="ImageDataBlocksSize" type="uint8" />
+          <field name="ImageDataBlocksValues" type="bytes" size="${ImageDataBlocksSize}" />
+		</list>
+
+      </condition>
+
+      <!-- Trailer -->
+      <condition expr="${SepField} == 0x3B">
+        <seek mode="backward" offset="1" />
+        <field name="Trailer" type="uint8" />
+      </condition>
+    </list>
+
+  </root>
+
+</structure_file>
