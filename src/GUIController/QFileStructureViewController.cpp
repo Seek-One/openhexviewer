@@ -333,19 +333,21 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 	// Compute element size
 	QString szSizeText;
-	if(pItem->m_iSize >= 0){
-		szSizeText = QString::number(pItem->m_iSize);
-	}else if(!pItem->m_szExpr.isEmpty()){
-		bRes = prepareExpr(pItem->m_szExpr, dict, szTmp);
-		iSizeExpr = evaluateIntExpr(szTmp);
-		szSizeText = QString::number(iSizeExpr);
-	}
-	// Compute element offset
-	if(!pItem->m_szOffsetExpr.isEmpty()){
-		bRes = prepareExpr(pItem->m_szOffsetExpr, dict, szTmp);
-		iOffsetExpr = evaluateIntExpr(szTmp);
-		if (pItem->m_type == FileStructureItem::BITS) {
-			szSizeText += "b";
+	if (pItem->m_iSizeMode != FileStructureItem::ModeCondition) {
+		if(pItem->m_iSize >= 0){
+			szSizeText = QString::number(pItem->m_iSize);
+		}else if(!pItem->m_szExpr.isEmpty()){
+			bRes = prepareExpr(pItem->m_szExpr, dict, szTmp);
+			iSizeExpr = evaluateIntExpr(szTmp);
+			szSizeText = QString::number(iSizeExpr);
+		}
+		// Compute element offset
+		if(!pItem->m_szOffsetExpr.isEmpty()){
+			bRes = prepareExpr(pItem->m_szOffsetExpr, dict, szTmp);
+			iOffsetExpr = evaluateIntExpr(szTmp);
+			if (pItem->m_type == FileStructureItem::BITS) {
+				szSizeText += "b";
+			}
 		}
 	}
 
@@ -530,28 +532,30 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		bool bStop = false;
 		do{
-			// Check stop condition
-			iOffsetCurrent = fileToRead.pos();
-			if(iMaxSize == -1){
-				if(iOffsetCurrent >= fileToRead.size()){
-					bStop = true;
-				}
-			}else{
-				if(iSizeMode == FileStructureItem::ModeCount){
-					if(iCount == iMaxSize){
-						// If count is set to
+			// If list is base on size of count
+			if (pItem->m_iSizeMode != FileStructureItem::ModeCondition) {
+				// Check stop condition
+				iOffsetCurrent = fileToRead.pos();
+				if(iMaxSize == -1){
+					if(iOffsetCurrent >= fileToRead.size()){
 						bStop = true;
 					}
 				}else{
-					if((iOffsetCurrent - iOffsetStartList) >= iMaxSize){
-						bStop = true;
+					if(iSizeMode == FileStructureItem::ModeCount){
+						if(iCount == iMaxSize){
+							// If count is set to
+							bStop = true;
+						}
+					}else{
+						if((iOffsetCurrent - iOffsetStartList) >= iMaxSize){
+							bStop = true;
+						}
 					}
 				}
 			}
 
 			// Iterate over all children
 			if(!bStop){
-
 				if(pItem->m_szName.isEmpty()){
 					szTmp = QString("item[%0]").arg(iCount);
 				}else{
@@ -600,6 +604,21 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				}
 				m_stackListItemInfos.pop();
 
+			}
+
+			// Check stop condition
+			if (bRes && !bStop) {
+				if (pItem->m_iSizeMode == FileStructureItem::ModeCondition) {
+					QString szExpr;
+					bRes = prepareExpr(pItem->m_szExpr, dictItem, szExpr);
+					bool bExprResult = false;
+					if(bRes){
+						bRes = evaluateBooleanExpr(szExpr, bExprResult);
+						if (bRes) {
+							bStop = !bExprResult;
+						}
+					}
+				}
 			}
 		}while(!bStop && bRes);
 

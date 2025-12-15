@@ -53,7 +53,8 @@ public:
 
 	enum SizeMode {
 		ModeBytes = 1,
-		ModeCount
+		ModeCount,
+		ModeCondition
 	};
 
     enum ItemFlag {

@@ -186,17 +186,24 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 				QString szSizeMode = attributes.value("mode").toString();
 				QString szSize = attributes.value("size").toString();
 				QString szDisplay = attributes.value("display").toString();
+				QString szExpr = attributes.value("expr").toString();
 				pItem = FileStructureItem::createLIST(szName);
 				if(!szSizeMode.isEmpty()){
 					if(szSizeMode == "bytes"){
 						pItem->m_iSizeMode = FileStructureItem::ModeBytes;
+					}else if(szSizeMode == "condition"){
+						pItem->m_iSizeMode = FileStructureItem::ModeCondition;
 					}else{
 						pItem->m_iSizeMode = FileStructureItem::ModeCount;
 					}
 				}else{
 					pItem->m_iSizeMode = FileStructureItem::ModeCount;
 				}
-				pItem->m_szExpr = szSize;
+				if (pItem->m_iSizeMode == FileStructureItem::ModeCondition) {
+					pItem->m_szExpr = szExpr;
+				}else {
+					pItem->m_szExpr = szSize;
+				}
 
 				// Dispaly mode
 				if(szDisplay == "none"){
