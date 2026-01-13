@@ -507,14 +507,18 @@ void QFileViewController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEdit
 	int iNbEnterStart = pHumanEditor->toPlainText().mid(0, iSelectionStart).count("\n");
 	int iNbEnterEnd = pHumanEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
+	// Update the cursor in the hex editor
+	int iSelectionHexStart = (iSelectionStart - iNbEnterStart) * 3;
+	int iSelectionHexEnd = (iSelectionEnd - iNbEnterEnd - iNbEnterStart) * 3 - 1 * (iSelectionStart - iSelectionEnd == 0 ? -2 : 1); // -1 removes last space
 	QTextCursor c = pHexEditor->textCursor();
-	c.setPosition((iSelectionStart - iNbEnterStart) * 3);
-	c.setPosition((iSelectionEnd - iNbEnterEnd - iNbEnterStart) * 3 - 1 * (iSelectionStart - iSelectionEnd == 0 ? -2 : 1), QTextCursor::KeepAnchor);  // -1 removes last space
+	c.setPosition(iSelectionHexStart);
+	c.setPosition(iSelectionHexEnd, QTextCursor::KeepAnchor);
 	pHexEditor->setTextCursor(c);
-	
 	emit onBytesSelectionChanged(iSelectionStart - iNbEnterStart + m_iFilePos, iSelectionEnd - iSelectionStart - iNbEnterEnd);
 
-	emit onBytesChanged(pHexEditor->toPlainText().mid(tHexCursor.selectionStart(), abs(tHexCursor.selectionEnd() - tHexCursor.selectionStart())));
+	// Notify the changed selected bytes
+	QString szSelectedHexString = pHexEditor->toPlainText().mid(iSelectionHexStart, abs(iSelectionHexStart-iSelectionHexEnd));
+	emit onBytesChanged(szSelectedHexString);
 }
 
 void QFileViewController::handleCursorChangedHex(QPlainTextEdit* pHexEditor, QPlainTextEdit* pHumanEditor) 

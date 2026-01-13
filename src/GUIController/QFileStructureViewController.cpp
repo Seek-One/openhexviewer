@@ -972,6 +972,8 @@ void QFileStructureViewController::entrySelected(const QModelIndex &current, con
 	pItem = m_pModel->itemFromIndex(siblingIndex);
 	iOffset = pItem->text().toLongLong();
 
+	qDebug("[FileStructureView] Selecting entry at offset %lld, size %lld", iOffset, iSize);
+
 	emit fileStructureItemSelected(iOffset, iSize);
 }
 
