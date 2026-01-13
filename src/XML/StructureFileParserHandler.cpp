@@ -212,6 +212,9 @@ bool StructureFileParserHandler::parse(QXmlStreamReader& xmlReader)
 				if(szDisplay == "flat"){
 					pItem->m_iFlags |= FileStructureItem::DisplayFlat;
 				}
+				if(szDisplay == "transparent"){
+					pItem->m_iFlags |= FileStructureItem::DisplayTransparent;
+				}
 
 				appendFileStructureItem(pItem, true);
 			}

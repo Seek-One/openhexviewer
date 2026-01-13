@@ -64,6 +64,7 @@ public:
 		// Display
 		DisplayNone = 0x04, // Item is not visible
 		DisplayFlat = 0x08,  // Item don't add new node
+    	DisplayTransparent = 0x10, // Item and list element are transparent
     };
 
 	enum SeekMode {

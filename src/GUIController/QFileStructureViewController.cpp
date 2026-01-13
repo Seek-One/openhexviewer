@@ -389,6 +389,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 	bool bIsVisible = bParentVisible &&  !(pItem->m_iFlags & FileStructureItem::DisplayNone);
 	bool bIsFlat = (pItem->m_iFlags & FileStructureItem::DisplayFlat);
+	bool bIsTransparent = (pItem->m_iFlags & FileStructureItem::DisplayTransparent);
 
 	traceBegin(pItem->m_type, pItem->m_szName, fileToRead);
 
@@ -522,7 +523,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		traceInfos(pItem->m_type, pItem->m_szName, QString("mode:%0, maxsize:%1, childrens:%2").arg(pItem->m_iSizeMode).arg(iMaxSize).arg(pItem->m_listChildren.count()));
 
 		entryParams.szSize = "0";
-		if(bIsVisible && !bIsFlat){
+		if(bIsVisible && !bIsFlat && !bIsTransparent){
 			appendEntry(entryParams, pParentItem, entryContext);
 		}
 
@@ -575,14 +576,17 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 				EntryContext entryContextItem;
 				if(bIsVisible){
-					if(bIsFlat){
-						appendEntry(entryParamsItem, pParentItem, entryContextItem);
+					if (bIsTransparent) {
+						pCurrentListItem = pParentItem;
 					}else{
-						appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+						if(bIsFlat){
+							appendEntry(entryParamsItem, pParentItem, entryContextItem);
+						}else{
+							appendEntry(entryParamsItem, entryContext.listColumns[0], entryContextItem);
+						}
+						pCurrentListItem = entryContextItem.listColumns[0];
 					}
 				}
-
-				pCurrentListItem = entryContextItem.listColumns[0];
 
 				m_stackListItemInfos.push(QString());
 
@@ -594,12 +598,14 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				}
 
 				iOffsetEndItem = fileToRead.pos();
-				entryContextItem.listColumns[ColumnSize]->setText(QString::number(iOffsetEndItem-iOffsetStartItem));
+				if(bIsVisible && !bIsTransparent) {
+					entryContextItem.listColumns[ColumnSize]->setText(QString::number(iOffsetEndItem-iOffsetStartItem));
+				}
 
 				// Handle list infos
 				QString szListItemName;
 				szListItemName = m_stackListItemInfos.top();
-				if(!szListItemName.isNull()){
+				if(bIsVisible && !szListItemName.isNull()){
 					entryContextItem.listColumns[0]->setText(szListItemName);
 				}
 				m_stackListItemInfos.pop();
@@ -624,7 +630,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 
 		if(bRes){
 			iOffsetEnd = fileToRead.pos();
-			if(!bIsFlat){
+			if(bIsVisible && !bIsFlat && !bIsTransparent){
 				entryContext.listColumns[ColumnSize]->setText(QString::number(iOffsetEnd-iOffsetStart));
 			}
 		}
