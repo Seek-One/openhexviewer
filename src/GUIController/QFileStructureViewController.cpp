@@ -514,7 +514,6 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 		qint64 iCount = 0;
 		qint64 iOffsetStartList = fileToRead.pos();
 
-		QStandardItem* pCurrentListItem;
 		qint64 iOffsetStartItem;
 		QString szOffsetStartItemText;
 		qint64 iOffsetEndItem;
@@ -575,6 +574,7 @@ bool QFileStructureViewController::processFileStructureItem(const FileStructureI
 				entryParamsItem.szOffsetStart = szOffsetStartItemText;
 
 				EntryContext entryContextItem;
+				QStandardItem* pCurrentListItem = nullptr;
 				if(bIsVisible){
 					if (bIsTransparent) {
 						pCurrentListItem = pParentItem;
