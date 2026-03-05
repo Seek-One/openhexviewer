@@ -100,6 +100,7 @@ include_directories (${PROJECT_BINARY_DIR})
 # Add sources
 ####################
 
+# src directory
 include_directories (${PROJECT_SOURCE_DIR}/src)
 
 set(APPLICATION_SOURCES
@@ -230,7 +231,11 @@ else (UPDATE_TRANSLATIONS)
 	qtx_add_translation(qm_FILES ${TS_FILES})
 endif (UPDATE_TRANSLATIONS)
 
-add_custom_target(update_ts ALL DEPENDS ${qm_FILES})
+# Create a library for resources
+add_library(${APPLICATION_EXE_NAME}_ts OBJECT
+	${qm_FILES}
+)
+add_custom_target(update_ts ALL DEPENDS ${APPLICATION_EXE_NAME}_ts)
 
 ####################
 # Resource files
@@ -281,11 +286,18 @@ configure_file (
 set (QRC_TS_FILES
 	${PROJECT_BINARY_DIR}/ts.qrc
 )
+qtx_add_resources(RCS_TS_OUTFILES ${QRC_TS_FILES})
+
 set (QRC_FILES
 	${PROJECT_BINARY_DIR}/data/app.qrc
 )
 qtx_add_resources(RCS_OUTFILES ${QRC_FILES})
-qtx_add_resources(RCS_TS_OUTFILES ${QRC_TS_FILES})
+
+# Create a library for resources
+add_library(${APPLICATION_EXE_NAME}_rcs OBJECT
+	${RCS_OUTFILES}
+	${RCS_TS_OUTFILES}
+)
 
 IF(WIN32)
 	set (RC_FILES
@@ -316,6 +328,14 @@ if(UNIX AND NOT APPLE)
 endif(UNIX AND NOT APPLE)
 
 ####################
+# Application libs
+####################
+
+# Xcode "new build system" requires a strict ordering when the same lupdate stamp
+# is involved in multiple targets.
+add_dependencies(${APPLICATION_EXE_NAME}_rcs ${APPLICATION_EXE_NAME}_ts)
+
+####################
 # Create Executable
 ####################
 
@@ -336,9 +356,8 @@ add_executable (${APPLICATION_EXE_NAME}
 	${RC_FILES}
 	${APPLICATION_SOURCES}
 	${APPLICATION_MOC_OUTFILES}
-	${RCS_OUTFILES}
-	${RCS_TS_OUTFILES}
-	${qm_FILES}
+	$<TARGET_OBJECTS:${APPLICATION_EXE_NAME}_rcs>
+	$<TARGET_OBJECTS:${APPLICATION_EXE_NAME}_ts>
 )
 target_link_libraries (${APPLICATION_EXE_NAME}
 	${QT_LIBRARIES}
