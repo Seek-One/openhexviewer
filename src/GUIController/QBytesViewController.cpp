@@ -30,7 +30,7 @@ void QBytesViewController::handleBytesChanged(QString szHex)
 {
     szHex = removeSpace(szHex);
     qint64 iNb = hexStringtoQInt64(szHex);
-    int iBits = szHex.length() * 4;
+    int iBits = (int)szHex.length() * 4;
 
     if (iBits <= 64) {
         m_pBytesView->showTable();

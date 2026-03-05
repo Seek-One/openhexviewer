@@ -399,7 +399,7 @@ void QFindDialog::setLabelNbOcc(qint64 iIndexOcc, qint64 iNbOcc)
         m_pComboPosOcc->setHidden(true);
     } else {
         m_pLabelNbOcc->setText(QString(tr("%0/%1")).arg(iIndexOcc).arg(iNbOcc));
-        m_pComboPosOcc->setCurrentIndex(iIndexOcc - 1);
+        m_pComboPosOcc->setCurrentIndex((int)(iIndexOcc - 1));
         m_pComboPosOcc->setHidden(false);
     }
 }

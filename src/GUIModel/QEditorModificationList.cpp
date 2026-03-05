@@ -44,7 +44,7 @@ void QEditorModificationList::removeModification(int iIndex)
 
 void QEditorModificationList::removeLastModification()
 {
-    removeModification(modifications.length() - 1);
+    removeModification((int)modifications.length() - 1);
 }
 
 void QEditorModificationList::clearModifications()
@@ -54,7 +54,7 @@ void QEditorModificationList::clearModifications()
 
 QEditorModification QEditorModificationList::lastModificationAtPosition(qint64 iOffset) const
 {
-    for (int i = modifications.size() - 1; i >= 0; --i) {
+    for (qsizetype i = modifications.size() - 1; i >= 0; --i) {
         if (modifications.at(i).offset == iOffset) {
             return modifications.at(i);
         }

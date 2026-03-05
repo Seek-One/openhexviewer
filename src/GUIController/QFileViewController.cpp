@@ -318,15 +318,15 @@ void QFileViewController::closeFile()
 
 void QFileViewController::selectFileData(qint64 offset, qint64 size)
 {
-	int iRowStart = offset / m_iBytePerLine;
-	int iPosStart = offset % m_iBytePerLine;
+	auto iRowStart = offset / m_iBytePerLine;
+	auto iPosStart = offset % m_iBytePerLine;
 
 	qint64 offsetEnd = offset+size-1;
 	int iRowEnd = offsetEnd / m_iBytePerLine;
 	iRowEnd = qMin(iRowEnd, iRowStart+m_iVisibleRowCount-1);
 	//int iColEnd = offsetEnd % m_iBytePerLine;
 
-	int iFirstVisibleRow = std::min(iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
+	int iFirstVisibleRow = std::min((int)iRowStart, std::max(m_iTotalRowCount-m_iVisibleRowCount, 0));
 	qint64 iPosMax = m_iVisibleRowCount*m_iBytePerLine - iPosStart;
 	qint64 iSize = std::min(size, iPosMax);
 	if(iFirstVisibleRow < iRowStart){
@@ -421,7 +421,7 @@ void QFileViewController::handleTextChangedHuman(QPlainTextEdit* pHumanEditor)
 
 	QTextCursor tHumanCursor = pHumanEditor->textCursor();
 	int iSelectionStart = tHumanCursor.selectionStart();
-	int iNbEnter = pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
+	int iNbEnter = (int)pHumanEditor->toPlainText().mid(0, tHumanCursor.selectionStart()).count("\n");
 	
 	char cRes = pHumanEditor->toPlainText().mid(tHumanCursor.position() - 1, 1).at(0).toLatin1();
 
@@ -454,8 +454,8 @@ void QFileViewController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor, 
 	}
 	QString szHexText = pHexEditor->toPlainText();
 
-	int iNbEnterStart = szHexText.mid(0, iSelectionStart).count("\n");
-	int iNbEnterEnd = szHexText.mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
+	int iNbEnterStart = (int)szHexText.mid(0, iSelectionStart).count("\n");
+	int iNbEnterEnd = (int)szHexText.mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
 	if (abs(iSelectionEnd - iSelectionStart) != 1) {
 		//START
@@ -504,8 +504,8 @@ void QFileViewController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEdit
 	int iSelectionStart = tHumanCursor.selectionStart();
 	int iSelectionEnd = tHumanCursor.selectionEnd();
 
-	int iNbEnterStart = pHumanEditor->toPlainText().mid(0, iSelectionStart).count("\n");
-	int iNbEnterEnd = pHumanEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
+	int iNbEnterStart = (int)pHumanEditor->toPlainText().mid(0, iSelectionStart).count("\n");
+	int iNbEnterEnd = (int)pHumanEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
 	// Update the cursor in the hex editor
 	int iSelectionHexStart = (iSelectionStart - iNbEnterStart) * 3;
@@ -612,7 +612,7 @@ void QFileViewController::handleCursorChangedHuman(QPlainTextEdit* pHumanEditor,
 void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, QList<qint64>* plstPositions, qint64 iStartOffset, qint64 iEndOffset)
 {
 	plstPositions->clear();
-	int iLengthSubString = byteArray.length();
+	qint64 iLengthSubString = (qint64)byteArray.length();
 #ifdef USE_NO_QREGEXP
 	QRegularExpression re(QRegularExpression::escape(byteArray));
 #else
@@ -620,7 +620,7 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 #endif
 	char* pBuffer = new char[iLengthSubString];
 	bool bFound;
-	int iNbRead;
+	qint64 iNbRead;
 	if (!m_bIsFileOpen) {
 		qWarning("[File] No file open");
 		QMessageBox::information(nullptr, tr("Notice"), tr("No file loaded"));
@@ -637,7 +637,7 @@ void QFileViewController::findAllOccurrencesRegex(const QByteArray &byteArray, Q
 		return;
 	}
 
-	for (int i = iStartOffset; i < iEndOffset - iLengthSubString + 1; i++) {
+	for (qint64 i = iStartOffset; i < iEndOffset - iLengthSubString + 1; i++) {
 		bFound = true;
 		//SEEK
 		if (!file.seek(i)) {
@@ -710,7 +710,7 @@ void QFileViewController::selection(QString& szText)
 	}
 	qint64 iSelectionStart = cursor.selectionStart();
 	qint64 iSelectionEnd = cursor.selectionEnd() - editor->toPlainText().mid(iSelectionStart, abs(cursor.selectionEnd() - iSelectionStart)).count("\n");
-	for (int i = iSelectionStart; i < iSelectionEnd; i += m_iBytePerLine) {
+	for (qint64 i = iSelectionStart; i < iSelectionEnd; i += m_iBytePerLine) {
 		//SEEK
 		if (!file.seek(m_iFilePos + i)) {
 			qWarning("[File] Failed to seek to offset");

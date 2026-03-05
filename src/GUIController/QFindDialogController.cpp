@@ -135,7 +135,7 @@ void QFindDialogController::find()
 
 	emit findAllOccurrencesRegex(m_byteArray, &m_lstPositions, iStartOffset, iEndOffset);
 	m_iListIndex = 0;
-	m_iPositionsSize = m_lstPositions.size(); 
+	m_iPositionsSize = (int)m_lstPositions.size();
 	if (m_iPositionsSize > 0) {
 		QComboBox* pComboBox = m_pFindDialog->getComboPosOcc();
 		pComboBox->clear();
@@ -210,8 +210,8 @@ void QFindDialogController::handleSelectionChangedHex(QPlainTextEdit* pHexEditor
 	int iSelectionStart = tHexCursor.selectionStart();
 	int iSelectionEnd = tHexCursor.selectionEnd();
 
-	int iNbEnterStart = pHexEditor->toPlainText().mid(0, iSelectionStart).count("\n");
-	int iNbEnterEnd = pHexEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
+	int iNbEnterStart = (int)pHexEditor->toPlainText().mid(0, iSelectionStart).count("\n");
+	int iNbEnterEnd = (int)pHexEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
 	QTextCursor c = pHumanEditor->textCursor();
 	c.setPosition(iSelectionStart / 3 + iNbEnterStart);
@@ -229,8 +229,8 @@ void QFindDialogController::handleSelectionChangedHuman(QPlainTextEdit* pHumanEd
 	int iSelectionStart = tHumanCursor.selectionStart();
 	int iSelectionEnd = tHumanCursor.selectionEnd();
 
-	int iNbEnterStart = pHumanEditor->toPlainText().mid(0, iSelectionStart).count("\n");
-	int iNbEnterEnd = pHumanEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
+	int iNbEnterStart = (int)pHumanEditor->toPlainText().mid(0, iSelectionStart).count("\n");
+	int iNbEnterEnd = (int)pHumanEditor->toPlainText().mid(iSelectionStart, abs(iSelectionEnd - iSelectionStart)).count("\n");
 
 	QTextCursor c = pHexEditor->textCursor();
 	c.setPosition((iSelectionStart - iNbEnterStart) * 3);
@@ -317,7 +317,7 @@ void QFindDialogController::removeHexEditor(QPlainTextEdit* pHexEditor)
 	} else {
 		--iPosition;
 		if (iPosition >= pHexEditor->toPlainText().length()) {
-			iPosition =	pHexEditor->toPlainText().length() - 1;
+			iPosition =	(int)(pHexEditor->toPlainText().length() - 1);
 		}
 		if(iPosition < 0) {
 			iPosition = 0;
@@ -334,7 +334,7 @@ void QFindDialogController::insertCharHumanEditor(QPlainTextEdit* pHumanEditor, 
 	QTextCursor c = pHumanEditor->textCursor();
 	int iPosition = c.selectionStart();
 	QString szText = pHumanEditor->toPlainText();
-	int iNbEnter = szText.mid(0, c.selectionStart()).count("\n");
+	int iNbEnter = (int)szText.mid(0, c.selectionStart()).count("\n");
 
 	if (szText.mid(c.selectionStart(), 1).contains("\n")) {
 		iPosition++;
@@ -360,8 +360,8 @@ void QFindDialogController::removeHumanEditor(QPlainTextEdit* pHumanEditor)
 	QTextCursor c = pHumanEditor->textCursor();
 	int iPosition = c.selectionStart();
 	QString szText = pHumanEditor->toPlainText();
-	int iNbEnter = szText.mid(0, c.selectionStart()).count("\n");
-	int iNbEnterSelection = szText.mid(c.selectionStart(), c.selectionEnd() - c.selectionStart()).count("\n");
+	int iNbEnter = (int)szText.mid(0, c.selectionStart()).count("\n");
+	int iNbEnterSelection = (int)szText.mid(c.selectionStart(), c.selectionEnd() - c.selectionStart()).count("\n");
 	bool hasSelection = c.hasSelection();
 	if (hasSelection) {
 		m_byteArray.remove(c.selectionStart() + m_iDataPos - iNbEnter, c.selectionEnd() - c.selectionStart() - iNbEnterSelection);

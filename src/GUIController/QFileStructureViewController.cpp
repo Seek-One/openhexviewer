@@ -208,7 +208,7 @@ void QFileStructureViewController::openStructureFile()
 		QFileInfo tFileInfo(listSelectedFiles[0]);
 		pComboBox->addItem(tFileInfo.fileName() + tr(" (Open by user)") , listSelectedFiles[0]);
 
-		pComboBox->setCurrentIndex(pComboBox->count() - listSelectedFiles.size());
+		pComboBox->setCurrentIndex((int)(pComboBox->count() - listSelectedFiles.size()));
 		loadStructure();
 	}
 }
