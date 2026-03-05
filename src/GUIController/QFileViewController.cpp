@@ -133,7 +133,7 @@ bool QFileViewController::saveFile()
 	}
 	
 	char* pBuffer = new char[m_iBytePerLine];
-	int iNbRead;
+	qint64 iNbRead;
 
 	for (int i = 0; i < m_iTotalRowCount; i++) {
 		//SEEK
@@ -153,7 +153,7 @@ bool QFileViewController::saveFile()
 		}
 
 		//MODIFY
-		for (int j = 0; j < iNbRead; j++) {
+		for (qint64 j = 0; j < iNbRead; j++) {
 			if (m_pModifications->existsPosition(i * m_iBytePerLine + j + m_iFilePos)) {
 				pBuffer[j] = (m_pModifications->lastModificationAtPosition(i * m_iBytePerLine + j + m_iFilePos).data).at(0);
 			}
@@ -322,7 +322,7 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 	auto iPosStart = offset % m_iBytePerLine;
 
 	qint64 offsetEnd = offset+size-1;
-	int iRowEnd = offsetEnd / m_iBytePerLine;
+	auto iRowEnd = offsetEnd / m_iBytePerLine;
 	iRowEnd = qMin(iRowEnd, iRowStart+m_iVisibleRowCount-1);
 	//int iColEnd = offsetEnd % m_iBytePerLine;
 
@@ -333,11 +333,11 @@ void QFileViewController::selectFileData(qint64 offset, qint64 size)
 		iPosStart += (iRowStart-iFirstVisibleRow) * m_iBytePerLine;
 	}
 
-	int iNbSelectedLine = (iRowEnd-iRowStart);
+	int iNbSelectedLine = (int)(iRowEnd-iRowStart);
 	iNbSelectedLine++;
 
 	m_pFileView->moveToRow(iFirstVisibleRow);
-	m_pFileView->selectText(iPosStart, iPosStart + (int)(iSize), (iRowStart-iFirstVisibleRow), iNbSelectedLine);
+	m_pFileView->selectText((int)iPosStart, (int)iPosStart + (int)(iSize), (int)(iRowStart-iFirstVisibleRow), iNbSelectedLine);
 }
 
 void QFileViewController::getSelectionOffset(qint64& offset, qint64& size)
