@@ -697,7 +697,7 @@ void QFileViewController::selection(QString& szText)
 	QTextCursor cursor = editor->textCursor();
 
 	char* pBuffer = new char[m_iBytePerLine];
-	int iNbRead;
+	qint64 iNbRead;
 	if (!m_bIsFileOpen) {
 		qWarning("[File] No file open");
 		QMessageBox::information(nullptr, tr("Notice"), tr("No file loaded"));
