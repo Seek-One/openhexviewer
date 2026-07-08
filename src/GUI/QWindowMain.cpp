@@ -12,7 +12,9 @@
 #include <QStatusBar>
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include <QGraphicsBlurEffect>
 
+#include "Widget/QDropAreaWidget.h"
 #include "GUI/QFileView.h"
 #include "GUI/QFileStructureView.h"
 #include "GUI/QBytesView.h"
@@ -57,6 +59,10 @@ QWindowMain::QWindowMain(QWidget* parent)
     this->setStatusBar(m_pStatusBar);
     
     m_bFileOpen = false;
+    
+    // Create drop area widget
+    QString szName = tr("Drop files here");
+    m_pDropArea = new QDropAreaWidget(szName, this);
     
     //QList<int> listSizes;
     //listSizes << 1 << 0;
@@ -175,6 +181,11 @@ QBytesView* QWindowMain::getBytesView() const
     return m_pBytesView;
 }
 
+QDropAreaWidget* QWindowMain::getDropArea() const
+{
+	return m_pDropArea;
+}
+
 void QWindowMain::setStatusBarText(const QString& szText)
 {
 	m_pStatusBar->showMessage(szText);
@@ -209,33 +220,39 @@ void QWindowMain::setFileOpen(bool bOpen)
     m_bFileOpen = bOpen;
 }
 
+void QWindowMain::enableBlurEffect(bool bEnable)
+{
+	if (bEnable) {
+		menuBar()->setGraphicsEffect(new QGraphicsBlurEffect);
+	} else {
+		menuBar()->setGraphicsEffect(0);
+	}
+}
+
 void QWindowMain::dragEnterEvent(QDragEnterEvent* event)
 {
-    if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
-    }
+	emit dragEnterTriggered(event);
+}
+
+void QWindowMain::dragLeaveEvent(QDragLeaveEvent* event)
+{
+	emit dragLeaveTriggered(event);
 }
 
 void QWindowMain::dragMoveEvent(QDragMoveEvent* event)
 {
-    if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
-    }
+	if (event->mimeData()->hasUrls()) {
+		event->acceptProposedAction();
+	}
 }
 
 void QWindowMain::dropEvent(QDropEvent* event)
 {
-    const QMimeData* mimeData = event->mimeData();
-    if (mimeData->hasUrls()) {
-        QList<QUrl> urlList = mimeData->urls();
-        if (!urlList.isEmpty()) {
-            QString filePath = urlList.first().toLocalFile();
-            if (!filePath.isEmpty()) {
-                emit fileDropped(filePath);
-                event->acceptProposedAction();
-                return;
-            }
-        }
-    }
-    event->ignore();
+	emit dropTriggered(event);
+}
+
+void QWindowMain::resizeEvent(QResizeEvent* event)
+{
+	m_pDropArea->resize(this->size());
+	QMainWindow::resizeEvent(event);
 }

@@ -114,6 +114,8 @@ set(APPLICATION_SOURCES
 	src/FileStructure/FileStructureComplexType.cpp
 	src/FileStructure/FileStructureComplexType.h
 	src/FileStructure/FileStructureDefinitions.h
+	src/Widget/QDropAreaWidget.cpp
+	src/Widget/QDropAreaWidget.h
 	src/FileStructure/FileStructureItem.cpp
 	src/FileStructure/FileStructureItem.h
 	src/GUI/QAboutDialog.cpp

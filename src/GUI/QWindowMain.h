@@ -10,11 +10,13 @@
 
 #include <QMainWindow>
 #include <QCloseEvent>
+#include <QGraphicsEffect>
 
 class QAction;
 class QFileView;
 class QFileStructureView;
 class QBytesView;
+class QDropAreaWidget;
 
 /**
  * @brief The main window class for the application.
@@ -60,6 +62,13 @@ public:
 	QBytesView* getBytesView() const;
 
 	/**
+     * @brief Gets the drop area widget.
+     * 
+     * @return A pointer to the QDropAreaWidget object.
+     */
+	QDropAreaWidget* getDropArea() const;
+
+	/**
      * @brief Checks if the color option is enabled.
      * 
      * @return True if the color option is enabled, false otherwise.
@@ -93,6 +102,13 @@ public:
      * @param bOpen True if a file is open, false otherwise.
      */
 	void setFileOpen(bool bOpen);
+
+	/**
+     * @brief Enables or disables the blur effect.
+     * 
+     * @param bEnable True to enable the blur effect, false to disable it.
+     */
+	void enableBlurEffect(bool bEnable);
 
 signals:
 	/**
@@ -158,6 +174,24 @@ signals:
      */
 	void fileDropped(const QString& filePath);
 
+	/**
+     * @brief Signal emitted when drag enter event occurs.
+     * @param event The drag enter event.
+     */
+	void dragEnterTriggered(QDragEnterEvent* event);
+
+	/**
+     * @brief Signal emitted when drag leave event occurs.
+     * @param event The drag leave event.
+     */
+	void dragLeaveTriggered(QDragLeaveEvent* event);
+
+	/**
+     * @brief Signal emitted when drop event occurs.
+     * @param event The drop event.
+     */
+	void dropTriggered(QDropEvent* event);
+
 protected:
 	/**
      * @brief Handles the close event for the main window.
@@ -174,6 +208,13 @@ protected:
 	void dragEnterEvent(QDragEnterEvent* event);
 
 	/**
+     * @brief Handles drag leave events.
+     * 
+     * @param event The drag leave event.
+     */
+	void dragLeaveEvent(QDragLeaveEvent* event);
+
+	/**
      * @brief Handles drag move events.
      * 
      * @param event The drag move event.
@@ -186,6 +227,13 @@ protected:
      * @param event The drop event.
      */
 	void dropEvent(QDropEvent* event);
+
+	/**
+     * @brief Handles resize events.
+     * 
+     * @param event The resize event.
+     */
+	void resizeEvent(QResizeEvent* event);
 
 private:
 	/**
@@ -204,6 +252,7 @@ private:
 	QFileStructureView* m_pFileStructureView; /**< File structure view widget. */
 	QBytesView* m_pBytesView; /**< Bytes view widget. */
 	QStatusBar* m_pStatusBar; /**< Status bar widget. */
+	QDropAreaWidget* m_pDropArea; /**< Drop area widget. */
 	bool m_bFileOpen; /**< Indicates if a file is currently open. */
 };
 
