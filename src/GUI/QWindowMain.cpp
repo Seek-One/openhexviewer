@@ -10,6 +10,8 @@
 #include <QMenuBar>
 #include <QSplitter>
 #include <QStatusBar>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 #include "GUI/QFileView.h"
 #include "GUI/QFileStructureView.h"
@@ -23,6 +25,9 @@ QWindowMain::QWindowMain(QWidget* parent)
 {
     //Set minimum window size
     setMinimumSize(800, 600);
+
+    // Enable drag and drop
+    setAcceptDrops(true);
 
     createMenu();
 
@@ -50,6 +55,8 @@ QWindowMain::QWindowMain(QWidget* parent)
     m_pStatusBar = new QStatusBar(this);
     m_pStatusBar->showMessage("");
     this->setStatusBar(m_pStatusBar);
+    
+    m_bFileOpen = false;
     
     //QList<int> listSizes;
     //listSizes << 1 << 0;
@@ -184,9 +191,51 @@ void QWindowMain::actionFileUsable(bool bEnabled)
     m_pGoToAction->setEnabled(bEnabled);
     m_pFindAction->setEnabled(bEnabled);
     m_pExportSelectionAction->setEnabled(bEnabled);
+    m_bFileOpen = bEnabled;
 }
 
 bool QWindowMain::getColorIsChecked()
 {
     return m_pColorAction->isChecked();
+}
+
+bool QWindowMain::isFileOpen() const
+{
+    return m_bFileOpen;
+}
+
+void QWindowMain::setFileOpen(bool bOpen)
+{
+    m_bFileOpen = bOpen;
+}
+
+void QWindowMain::dragEnterEvent(QDragEnterEvent* event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void QWindowMain::dragMoveEvent(QDragMoveEvent* event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void QWindowMain::dropEvent(QDropEvent* event)
+{
+    const QMimeData* mimeData = event->mimeData();
+    if (mimeData->hasUrls()) {
+        QList<QUrl> urlList = mimeData->urls();
+        if (!urlList.isEmpty()) {
+            QString filePath = urlList.first().toLocalFile();
+            if (!filePath.isEmpty()) {
+                emit fileDropped(filePath);
+                event->acceptProposedAction();
+                return;
+            }
+        }
+    }
+    event->ignore();
 }

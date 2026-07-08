@@ -122,6 +122,12 @@ public slots:
      */
 	void doChanges();
 
+	/**
+     * @brief Handles file drop event.
+     * @param filePath The path of the dropped file.
+     */
+	void onFileDropped(const QString& filePath);
+
 public:
 	/**
      * @brief Opens a file given its path.
