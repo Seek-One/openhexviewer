@@ -10,9 +10,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QWidget>
+#include <QMimeData>
+#include <QUrl>
 
 #include "Global/QtCompat.h"
 
+#include "Widget/QDropAreaWidget.h"
 #include "GUI/QAboutDialog.h"
 #include "GUI/QGoToBytes.h"
 #include "GUI/QFindDialog.h"
@@ -74,7 +77,10 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow, SIGNAL(findClicked()), this, SLOT(find()));
 	connect(m_pMainWindow, SIGNAL(colorClicked()), this, SLOT(color()));
 	connect(m_pMainWindow, SIGNAL(exportSelectionClicked()), this, SLOT(exportSelection()));
-	connect(m_pMainWindow, SIGNAL(fileDropped(const QString&)), this, SLOT(onFileDropped(const QString&)));
+
+	connect(m_pMainWindow, SIGNAL(dragEnterTriggered(QDragEnterEvent*)), this, SLOT(dragEnterReceived(QDragEnterEvent*)));
+	connect(m_pMainWindow, SIGNAL(dragLeaveTriggered(QDragLeaveEvent*)), this, SLOT(dragLeaveReceived(QDragLeaveEvent*)));
+	connect(m_pMainWindow, SIGNAL(dropTriggered(QDropEvent*)), this, SLOT(dropReceived(QDropEvent*)));
 
 	connect(m_pMainWindow, SIGNAL(mainWindowClosed(QCloseEvent*)), this, SLOT(close(QCloseEvent*)));
 
@@ -132,23 +138,55 @@ void QWindowMainController::openFile(const QString& szFilePath)
 	m_pFileStructureViewController->setCurrentFile(szFilePath);
 }
 
-void QWindowMainController::onFileDropped(const QString& filePath)
+void QWindowMainController::dragEnterReceived(QDragEnterEvent* pEvent)
 {
-	// Check if a file is already open
-	if (m_pMainWindow->isFileOpen()) {
-		QMessageBox::StandardButton reply = QMessageBox::question(
-			m_pMainWindow,
-			tr("Replace current file"),
-			tr("A file is already open. Do you want to replace it with the dropped file?"),
-			QMessageBox::Yes | QMessageBox::No
-		);
-		
-		if (reply == QMessageBox::Yes) {
-			openFile(filePath);
+	const QMimeData* pMimeData = pEvent->mimeData();
+	if(pMimeData && pMimeData->hasUrls()){
+		QList<QUrl> listUrls = pMimeData->urls();
+		if (!listUrls.isEmpty()) {
+			pEvent->acceptProposedAction();
+			m_pMainWindow->enableBlurEffect(true);
+			m_pMainWindow->getDropArea()->startPaint();
 		}
-	} else {
-		// No file is open, just open the dropped file
-		openFile(filePath);
+	}
+}
+
+void QWindowMainController::dragLeaveReceived(QDragLeaveEvent* pEvent)
+{
+	m_pMainWindow->enableBlurEffect(false);
+	m_pMainWindow->getDropArea()->stopPaint();
+}
+
+void QWindowMainController::dropReceived(QDropEvent* pEvent)
+{
+	m_pMainWindow->enableBlurEffect(false);
+	m_pMainWindow->getDropArea()->stopPaint();
+	
+	const QMimeData* pMimeData = pEvent->mimeData();
+	if(pMimeData && pMimeData->hasUrls()){
+		QList<QUrl> listUrls = pMimeData->urls();
+		if (!listUrls.isEmpty()) {
+			QString filePath = listUrls.first().toLocalFile();
+			if (!filePath.isEmpty()) {
+				// Check if a file is already open
+				if (m_pMainWindow->isFileOpen()) {
+					QMessageBox::StandardButton reply = QMessageBox::question(
+						m_pMainWindow,
+						tr("Replace current file"),
+						tr("A file is already open. Do you want to replace it with the dropped file?"),
+						QMessageBox::Yes | QMessageBox::No
+					);
+					
+					if (reply == QMessageBox::Yes) {
+						openFile(filePath);
+					}
+				} else {
+					// No file is open, just open the dropped file
+					openFile(filePath);
+				}
+				pEvent->acceptProposedAction();
+			}
+		}
 	}
 }
 

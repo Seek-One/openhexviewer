@@ -10,6 +10,9 @@
 
 #include <QObject>
 #include <QCloseEvent> 
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDropEvent>
 
 #include "GUI/QWindowPreferences.h"
 
@@ -123,10 +126,22 @@ public slots:
 	void doChanges();
 
 	/**
-     * @brief Handles file drop event.
-     * @param filePath The path of the dropped file.
+     * @brief Handles drag enter event.
+     * @param event The drag enter event.
      */
-	void onFileDropped(const QString& filePath);
+	void dragEnterReceived(QDragEnterEvent* event);
+
+	/**
+     * @brief Handles drag leave event.
+     * @param event The drag leave event.
+     */
+	void dragLeaveReceived(QDragLeaveEvent* event);
+
+	/**
+     * @brief Handles drop event.
+     * @param event The drop event.
+     */
+	void dropReceived(QDropEvent* event);
 
 public:
 	/**

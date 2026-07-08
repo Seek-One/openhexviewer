@@ -462,6 +462,10 @@
         <source>&amp;Undo</source>
         <translation>&amp;Annuler</translation>
     </message>
+    <message>
+        <source>Drop files here</source>
+        <translation>Glisser des fichiers ici</translation>
+    </message>
 </context>
 <context>
     <name>QWindowMainController</name>
@@ -482,6 +486,14 @@
 </source>
         <translation>Vous avez des changements non enregistrés. Voulez-vous les sauvegarder ?
 </translation>
+    </message>
+    <message>
+        <source>Replace current file</source>
+        <translation>Remplacer le fichier courant</translation>
+    </message>
+    <message>
+        <source>A file is already open. Do you want to replace it with the dropped file?</source>
+        <translation>Un fichier est déjà ouvert. Voulez vous le remplacer avec le fichier déposé ?</translation>
     </message>
 </context>
 <context>
