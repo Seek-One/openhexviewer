@@ -74,6 +74,7 @@ void QWindowMainController::init(QWindowMain* pMainWindow)
 	connect(m_pMainWindow, SIGNAL(findClicked()), this, SLOT(find()));
 	connect(m_pMainWindow, SIGNAL(colorClicked()), this, SLOT(color()));
 	connect(m_pMainWindow, SIGNAL(exportSelectionClicked()), this, SLOT(exportSelection()));
+	connect(m_pMainWindow, SIGNAL(fileDropped(const QString&)), this, SLOT(onFileDropped(const QString&)));
 
 	connect(m_pMainWindow, SIGNAL(mainWindowClosed(QCloseEvent*)), this, SLOT(close(QCloseEvent*)));
 
@@ -129,6 +130,26 @@ void QWindowMainController::openFile(const QString& szFilePath)
 	qDebug("[Main] Opening file %s", qPrintable(szFilePath));
 	m_pFileViewController->openFile(szFilePath);
 	m_pFileStructureViewController->setCurrentFile(szFilePath);
+}
+
+void QWindowMainController::onFileDropped(const QString& filePath)
+{
+	// Check if a file is already open
+	if (m_pMainWindow->isFileOpen()) {
+		QMessageBox::StandardButton reply = QMessageBox::question(
+			m_pMainWindow,
+			tr("Replace current file"),
+			tr("A file is already open. Do you want to replace it with the dropped file?"),
+			QMessageBox::Yes | QMessageBox::No
+		);
+		
+		if (reply == QMessageBox::Yes) {
+			openFile(filePath);
+		}
+	} else {
+		// No file is open, just open the dropped file
+		openFile(filePath);
+	}
 }
 
 void QWindowMainController::saveFile()

@@ -79,6 +79,21 @@ public:
      * @param bEnabled True to enable the actions, false to disable them.
      */
 	void actionFileUsable(bool bEnabled);
+
+	/**
+     * @brief Checks if a file is currently open.
+     * 
+     * @return True if a file is open, false otherwise.
+     */
+	bool isFileOpen() const;
+
+	/**
+     * @brief Sets the file open status.
+     * 
+     * @param bOpen True if a file is open, false otherwise.
+     */
+	void setFileOpen(bool bOpen);
+
 signals:
 	/**
      * @brief Signal emitted when the main window is closed.
@@ -137,6 +152,12 @@ signals:
      */
     void colorClicked();
 
+	/**
+     * @brief Signal emitted when files are dropped onto the window.
+     * @param filePath The path of the dropped file.
+     */
+	void fileDropped(const QString& filePath);
+
 protected:
 	/**
      * @brief Handles the close event for the main window.
@@ -144,6 +165,27 @@ protected:
      * @param event The close event.
      */
 	void closeEvent(QCloseEvent* event);
+
+	/**
+     * @brief Handles drag enter events.
+     * 
+     * @param event The drag enter event.
+     */
+	void dragEnterEvent(QDragEnterEvent* event);
+
+	/**
+     * @brief Handles drag move events.
+     * 
+     * @param event The drag move event.
+     */
+	void dragMoveEvent(QDragMoveEvent* event);
+
+	/**
+     * @brief Handles drop events.
+     * 
+     * @param event The drop event.
+     */
+	void dropEvent(QDropEvent* event);
 
 private:
 	/**
@@ -162,6 +204,7 @@ private:
 	QFileStructureView* m_pFileStructureView; /**< File structure view widget. */
 	QBytesView* m_pBytesView; /**< Bytes view widget. */
 	QStatusBar* m_pStatusBar; /**< Status bar widget. */
+	bool m_bFileOpen; /**< Indicates if a file is currently open. */
 };
 
 #endif /* SRC_MAINWINDOW_H_ */
