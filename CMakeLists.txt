@@ -299,8 +299,8 @@ add_library(${APPLICATION_EXE_NAME}_rcs OBJECT
 	${RCS_TS_OUTFILES}
 )
 
-IF(WIN32)
-	set (RC_FILES
+if(WIN32)
+	set(RC_FILES
 		"${PROJECT_BINARY_DIR}/data/logos/icon.rc"
 		"platforms/win32/versioninfo.rc"
 	)
